@@ -155,3 +155,50 @@ This system was designed based on:
 4. **Rich context**: Agents receive full role/goal/backstory for better performance
 5. **Status-driven handoffs**: Agents report COMPLETE/BLOCKED/NEEDS_INPUT for coordination
 6. **Graceful failure**: If agents fail, orchestrator summarizes and asks for guidance
+
+## Permissions & Safety Configuration
+
+This project includes a pre-configured `.claude/settings.json` with maximum permissions and safety guardrails.
+
+### What's Allowed
+
+| Category | Permissions |
+|----------|-------------|
+| **File Operations** | Read, Write, Edit, Glob, Grep |
+| **Development Tools** | npm, node, python, pip, cargo, go, dotnet, mvn, gradle |
+| **Testing** | pytest, jest, vitest, eslint, prettier, tsc |
+| **Git (Read-Only)** | status, diff, log, show, branch, checkout, stash, fetch, pull, merge, rebase, blame |
+| **System** | ls, pwd, mkdir, cp, mv, cat, head, tail, diff, echo, which |
+| **Claude Tools** | Task, TodoWrite, WebSearch, WebFetch, NotebookEdit |
+
+### What's Blocked
+
+| Category | Why |
+|----------|-----|
+| **git add/commit/push** | Prevent accidental commits; user controls version history |
+| **rm -rf, sudo** | Prevent destructive system operations |
+| **curl, wget** | Prevent data exfiltration |
+| **.env, secrets/, *.pem, *.key** | Protect sensitive credentials |
+| **~/.ssh, ~/.aws, ~/.config/gcloud** | Protect cloud/SSH credentials |
+
+### Sandbox Mode
+
+The configuration enables Claude Code's sandbox with:
+- **Filesystem isolation**: Write access limited to project directory
+- **Network isolation**: Prevents unauthorized external connections
+- **Auto-allow bash**: Safe commands run without prompts inside sandbox
+
+### Customizing Permissions
+
+Edit `.claude/settings.json` to adjust. Key patterns:
+
+```json
+{
+  "permissions": {
+    "allow": ["Bash(your-command:*)"],
+    "deny": ["Read(./sensitive-path/**)"]
+  }
+}
+```
+
+See [Claude Code Settings Documentation](https://code.claude.com/docs/en/settings) for full reference.
