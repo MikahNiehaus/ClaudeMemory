@@ -68,10 +68,27 @@ Every task folder should have a `context.md` file:
 ```markdown
 # Task: [Task ID]
 
+## Quick Resume
+[1-2 sentences: Current state for session recovery after compaction]
+Example: "Implementing auth refactor. debug-agent found root cause in token.ts:45, waiting for test-agent to write regression tests."
+
 ## Status
 - **State**: [ACTIVE/BLOCKED/COMPLETE]
 - **Current Phase**: [Phase name or description]
-- **Blocked By**: [If blocked, what's stopping progress]
+- **Last Agent**: [Most recent agent that contributed]
+- **Created**: [YYYY-MM-DD]
+- **Updated**: [YYYY-MM-DD]
+
+## Blocked Resolution (if BLOCKED)
+- **Blocked By**: [Specific blocker description]
+- **To Unblock**: [Required action or input needed]
+- **Owner**: [Who needs to act: user/specific-agent/external]
+- **Attempted**: [What has been tried so far]
+
+## Key Files
+[Critical files for this task - read these first when resuming]
+- `path/to/file1.ts` - [why important]
+- `path/to/file2.ts` - [why important]
 
 ## Task Description
 [What this task is about, requirements, goals]
@@ -106,11 +123,34 @@ Every task folder should have a `context.md` file:
 - [ ] Question 1
 - [ ] Question 2
 
+## Next Steps
+1. [First thing to do when resuming]
+2. [Second thing to do]
+3. [Third thing to do]
+
 ## Session History
 | Time | Agent | Action | Result |
 |------|-------|--------|--------|
 | - | - | - | - |
 ```
+
+## Status Definitions
+
+### Task Status (in MEMORY.md / context.md)
+
+| Status | Meaning | Actions |
+|--------|---------|---------|
+| **ACTIVE** | Work in progress | Continue with next steps |
+| **BLOCKED** | Cannot proceed | Check "Blocked Resolution" section |
+| **COMPLETE** | Task finished | Archive or clean up |
+
+### Agent Status (in agent outputs)
+
+| Status | Meaning | Orchestrator Action |
+|--------|---------|---------------------|
+| **COMPLETE** | Agent finished successfully | Continue to next agent or synthesize |
+| **BLOCKED** | Cannot proceed | Check blocker, route to unblocking agent or ask user |
+| **NEEDS_INPUT** | Requires user clarification | Present question to user |
 
 ## Context Lifecycle
 

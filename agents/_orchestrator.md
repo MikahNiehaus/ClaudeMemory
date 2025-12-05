@@ -136,6 +136,7 @@ Use this to determine routing when multiple agents are involved:
 | test-agent | debug-agent | Tests fail unexpectedly, need root cause |
 | test-agent | architect-agent | Unclear component boundaries |
 | debug-agent | architect-agent | Bug reveals design flaw |
+| debug-agent | performance-agent | Bug is performance-related |
 | workflow-agent | architect-agent | Implementation hits design questions |
 | ui-agent | architect-agent | Component structure unclear |
 | estimator-agent | architect-agent | Need design clarity for estimate |
@@ -147,6 +148,62 @@ Use this to determine routing when multiple agents are involved:
 | explore-agent | architect-agent | Exploration reveals complex design patterns |
 | explore-agent | security-agent | Exploration discovers potential vulnerabilities |
 | explore-agent | debug-agent | Exploration finds suspicious code paths |
+| performance-agent | architect-agent | Performance requires architectural changes |
+| performance-agent | debug-agent | Profiling reveals race condition or bug |
+| performance-agent | refactor-agent | Code structure prevents optimization |
+
+### Advanced Collaboration Patterns
+
+| Request Type | Agent Sequence | Reason |
+|--------------|----------------|--------|
+| Performance audit | explore → performance → architect | Understand code, profile, design fixes |
+| Security + performance | security → performance | Security first, then optimize (never compromise security for speed) |
+| Full code health | security + refactor + test + performance (parallel) | Comprehensive parallel audit |
+| Tech debt reduction | explore → refactor → test → performance | Understand, clean up, verify, optimize |
+| API redesign | research → architect → security → docs | Best practices, design, security review, document |
+| Migration planning | explore → architect → estimator → workflow | Understand current, design new, estimate, plan |
+| Incident response | debug → security → performance → docs | Fix, audit, verify performance, document |
+| Pre-release audit | security + test + performance + reviewer (parallel) | Comprehensive release checklist |
+
+---
+
+## Conflict Resolution
+
+When agents disagree or provide conflicting recommendations, follow these resolution rules:
+
+### Priority Hierarchy
+
+1. **Security ALWAYS Wins**: Never compromise security for performance, simplicity, or speed
+2. **Correctness Over Speed**: A slower correct solution beats a fast buggy one
+3. **Test Coverage**: test-agent recommendations for coverage trump speed-to-delivery concerns
+4. **User Requirements**: When in doubt, ask user for priority guidance
+
+### Specific Conflict Resolutions
+
+| Conflict Type | Resolution |
+|---------------|------------|
+| Security vs. Performance | Security wins - optimize within security constraints |
+| Elegance vs. Simplicity | architect-agent decides based on project context |
+| More Tests vs. Faster Delivery | test-agent recommendations prioritized |
+| Refactor vs. Quick Fix | Consider timeline - ask user if unclear |
+| Performance vs. Readability | Readability unless profiling shows critical path |
+
+### Escalation Protocol
+
+If 2+ agents report BLOCKED on the same issue:
+1. Immediately ask user for clarification/priority
+2. Do NOT attempt to resolve by picking one agent's approach
+3. Present both perspectives to user with trade-offs
+
+### Tie-Breaking Rules
+
+When agents provide equally valid alternatives:
+1. Present both options to user with trade-offs
+2. If user unavailable, prefer:
+   - The simpler solution
+   - The more reversible decision
+   - The industry-standard approach
+   - The approach with better test coverage
 
 ## Delegation Patterns
 

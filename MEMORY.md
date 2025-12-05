@@ -12,7 +12,7 @@
 
 Multi-agent orchestration system where Claude acts as lead agent, delegating to specialized subagents. Agents collaborate through per-task context files.
 
-**12 Specialist Agents** | **14 Knowledge Bases** | **Per-task context isolation**
+**13 Specialist Agents** | **17 Knowledge Bases** | **Per-task context isolation** | **5 Slash Commands**
 
 ## Architecture
 
@@ -20,9 +20,12 @@ Multi-agent orchestration system where Claude acts as lead agent, delegating to 
 ClaudeMemory/
 ├── CLAUDE.md              # Main orchestrator instructions (loaded every session)
 ├── MEMORY.md              # This file - system registry (check first!)
+├── .claude/
+│   ├── settings.json      # Permissions, hooks, sandbox config
+│   └── commands/          # 5 slash commands
 ├── agents/                # Agent definitions
-│   ├── _orchestrator.md   # Routing logic + collaboration matrix
-│   └── [12 specialist agents]
+│   ├── _orchestrator.md   # Routing logic + collaboration matrix + conflict resolution
+│   └── [13 specialist agents]
 ├── workspace/             # Task-organized work area
 │   └── [task-id]/         # Per-task folders
 │       ├── mockups/       # Input designs, references
@@ -30,7 +33,7 @@ ClaudeMemory/
 │       ├── snapshots/     # Screenshots, progress
 │       └── context.md     # Task context & agent handoffs
 └── knowledge/             # Knowledge bases
-    └── [14 documentation files]
+    └── [17 documentation files]
 ```
 
 ## Agent Registry
@@ -49,6 +52,7 @@ ClaudeMemory/
 | `security-agent` | Security review, OWASP | `knowledge/security.md` | 2025-12-04 |
 | `refactor-agent` | Code smells, refactoring | `knowledge/refactoring.md` | 2025-12-04 |
 | `explore-agent` | Codebase exploration, understanding | `knowledge/code-exploration.md` | 2025-12-04 |
+| `performance-agent` | Profiling, optimization, bottleneck analysis | `knowledge/performance.md` | 2025-12-05 |
 
 ## Documentation Registry
 
@@ -69,6 +73,19 @@ ClaudeMemory/
 | `knowledge/api-design.md` | API Design | API, REST, endpoint, HTTP, versioning | 2025-12-04 |
 | `knowledge/code-exploration.md` | Code Exploration | explore, codebase, understand, find, where, how does | 2025-12-04 |
 | `knowledge/memory-management.md` | Memory & Context | memory, context, compact, compaction, session, persist | 2025-12-04 |
+| `knowledge/performance.md` | Performance Optimization | performance, profiling, bottleneck, latency, throughput | 2025-12-05 |
+| `knowledge/observability.md` | Observability | logging, metrics, tracing, monitoring, observability, alerts | 2025-12-05 |
+| `knowledge/error-handling.md` | Error Handling | error, exception, handling, recovery, retry, fault tolerance | 2025-12-05 |
+
+## Slash Commands
+
+| Command | Description | Added |
+|---------|-------------|-------|
+| `/spawn-agent <agent> <task-id>` | Spawn agent with full compliance validation | 2025-12-05 |
+| `/agent-status <task-id>` | Display task status and agent contributions | 2025-12-05 |
+| `/list-agents` | List all available agents with expertise | 2025-12-05 |
+| `/check-task <task-id>` | Validate task folder structure | 2025-12-05 |
+| `/compact-review` | Preview critical state before compaction | 2025-12-05 |
 
 ## Active Tasks
 
@@ -139,6 +156,20 @@ ClaudeMemory/
   - Added `knowledge/memory-management.md` - compaction recovery, context persistence
   - Updated MEMORY.md with "Session Quick Start" section for compaction recovery
   - Total: 12 agents, 14 knowledge bases
+
+- **2025-12-05**: System-Wide Improvements
+  - **Security**: Moved dangerous Bash commands to "ask" permissions (user preference: ask instead of deny)
+  - **Hooks**: Added SessionStart (auto-load MEMORY.md), PreCompact (preserve context), Task validation (enforce agent compliance)
+  - **New Agent**: Created `performance-agent` for profiling, optimization, bottleneck analysis
+  - **New Knowledge Bases**:
+    - `knowledge/performance.md` - profiling tools, bottleneck types, caching, load testing
+    - `knowledge/observability.md` - logs, metrics, traces, alerting, SLOs
+    - `knowledge/error-handling.md` - error design, recovery patterns, circuit breaker
+  - **Expanded**: `knowledge/api-design.md` - added comprehensive GraphQL coverage
+  - **Slash Commands**: Created 5 workflow commands (spawn-agent, agent-status, list-agents, check-task, compact-review)
+  - **Orchestrator**: Expanded collaboration matrix, added conflict resolution rules
+  - **Templates**: Enhanced context.md with Quick Resume, Blocked Resolution, Key Files sections
+  - Total: 13 agents, 17 knowledge bases, 5 slash commands
 
 ## Notes
 

@@ -94,6 +94,7 @@ See `knowledge/organization.md` for full guidelines.
 | `security-agent` | Security review, OWASP | `knowledge/security.md` | Security audits, vulnerability review |
 | `refactor-agent` | Code smells, refactoring | `knowledge/refactoring.md` | Code cleanup, technical debt |
 | `explore-agent` | Codebase exploration | `knowledge/code-exploration.md` | Understanding code, finding patterns |
+| `performance-agent` | Profiling, optimization | `knowledge/performance.md` | Performance issues, bottlenecks, load testing |
 
 ## Quick Decision Tree
 
@@ -259,9 +260,12 @@ For simple documentation lookups without full agent delegation:
 | research, search, verify, citation | `knowledge/research.md` |
 | security, OWASP, vulnerability, XSS, injection | `knowledge/security.md` |
 | refactor, code smell, technical debt, clean code | `knowledge/refactoring.md` |
-| API, REST, endpoint, HTTP, versioning | `knowledge/api-design.md` |
+| API, REST, endpoint, HTTP, versioning, GraphQL | `knowledge/api-design.md` |
 | explore, codebase, understand, find, where | `knowledge/code-exploration.md` |
 | memory, context, compact, compaction, session | `knowledge/memory-management.md` |
+| performance, profiling, optimization, bottleneck, latency | `knowledge/performance.md` |
+| logging, metrics, tracing, monitoring, observability | `knowledge/observability.md` |
+| error, exception, handling, recovery, retry | `knowledge/error-handling.md` |
 
 ---
 
@@ -286,7 +290,15 @@ For simple documentation lookups without full agent delegation:
 ClaudeMemory/
 ├── CLAUDE.md              # This file (orchestrator)
 ├── MEMORY.md              # System state & registry
-├── agents/                # Agent definitions
+├── .claude/
+│   ├── settings.json      # Permissions, hooks, sandbox config
+│   └── commands/          # Slash commands
+│       ├── spawn-agent.md
+│       ├── agent-status.md
+│       ├── list-agents.md
+│       ├── check-task.md
+│       └── compact-review.md
+├── agents/                # Agent definitions (13 agents)
 │   ├── _orchestrator.md   # Detailed routing logic
 │   ├── test-agent.md
 │   ├── debug-agent.md
@@ -299,14 +311,15 @@ ClaudeMemory/
 │   ├── research-agent.md
 │   ├── security-agent.md
 │   ├── refactor-agent.md
-│   └── explore-agent.md
+│   ├── explore-agent.md
+│   └── performance-agent.md
 ├── workspace/             # Task-organized work area
 │   └── [task-id]/         # Per-task folders
 │       ├── mockups/
 │       ├── outputs/
 │       ├── snapshots/
 │       └── context.md     # Task context & agent handoffs
-└── knowledge/             # Knowledge bases (14 files)
+└── knowledge/             # Knowledge bases (17 files)
     ├── testing.md
     ├── debugging.md
     ├── documentation.md
@@ -321,7 +334,10 @@ ClaudeMemory/
     ├── refactoring.md
     ├── api-design.md
     ├── code-exploration.md
-    └── memory-management.md
+    ├── memory-management.md
+    ├── performance.md
+    ├── observability.md
+    └── error-handling.md
 ```
 
 ---
