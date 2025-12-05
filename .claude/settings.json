@@ -202,5 +202,31 @@
       "allowLocalBinding": true
     }
   },
-  "includeCoAuthoredBy": true
+  "includeCoAuthoredBy": true,
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Edit",
+        "hooks": [
+          {
+            "type": "prompt",
+            "prompt": "ENFORCEMENT CHECK: A file edit is about to occur. Analyze if this edit involves: testing, debugging, architecture, security, refactoring, or significant code changes. If the edit involves any specialized domain, verify that an appropriate agent (test-agent, debug-agent, architect-agent, security-agent, refactor-agent) was consulted in this conversation. Respond ONLY with 'ALLOW' if: (1) appropriate agent was consulted, OR (2) this is a trivial edit (typo, comment, formatting, config file). Respond with 'BLOCK: Must spawn [agent-name] before this edit' if a required agent was not consulted. Input: $ARGUMENTS",
+            "timeout": 30,
+            "statusMessage": "Validating agent compliance..."
+          }
+        ]
+      },
+      {
+        "matcher": "Write",
+        "hooks": [
+          {
+            "type": "prompt",
+            "prompt": "ENFORCEMENT CHECK: A new file is being created. If this file contains: test code (verify test-agent consulted), application logic (verify appropriate agent consulted), security-related code (verify security-agent consulted). Respond ONLY with 'ALLOW' if appropriate agent was consulted OR file is configuration/documentation only. Respond with 'BLOCK: Must spawn [agent-name] first' if required agent was not consulted. Input: $ARGUMENTS",
+            "timeout": 30,
+            "statusMessage": "Validating agent compliance..."
+          }
+        ]
+      }
+    ]
+  }
 }

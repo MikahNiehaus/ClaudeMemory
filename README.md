@@ -206,3 +206,50 @@ Edit `.claude/settings.json` to adjust. Key patterns:
 ```
 
 See [Claude Code Settings Documentation](https://code.claude.com/docs/en/settings) for full reference.
+
+## Instruction Enforcement System
+
+This project includes mechanisms to ensure Claude consistently follows the defined rules.
+
+### Critical Rules (in CLAUDE.md)
+
+Non-negotiable rules enforced at the top of CLAUDE.md:
+
+1. **NEVER write code without spawning the appropriate agent first**
+2. **ALWAYS include full knowledge base when spawning agents**
+3. **ALWAYS use TodoWrite for multi-step tasks**
+4. **NEVER bypass the agent system** (even for "simple" tasks)
+5. **ALWAYS validate agent status** (COMPLETE/BLOCKED/NEEDS_INPUT)
+6. **ALWAYS log decisions per-task** in `workspace/[task-id]/context.md`
+
+### Per-Task Storage
+
+**Everything is stored per-task.** No global state.
+
+```
+workspace/[task-id]/
+├── context.md      # Orchestrator decisions, agent outputs, handoffs
+├── mockups/        # Input designs, references
+├── outputs/        # Generated artifacts
+└── snapshots/      # Screenshots, progress
+```
+
+### Enforcement Hooks
+
+LLM-based hooks validate compliance before file operations:
+
+- **Edit hook**: Verifies appropriate agent was consulted before code changes
+- **Write hook**: Verifies appropriate agent was consulted before creating files
+
+Hooks add ~5-10 seconds per operation but ensure agent system is not bypassed.
+
+### Compliance Checklist (in _orchestrator.md)
+
+Before ANY response, orchestrator must verify:
+- Task ID identified
+- Task folder created
+- Appropriate agent(s) spawned
+- Full agent definition included
+- Full knowledge base included
+- TodoWrite used for multi-step tasks
+- All decisions logged to context.md

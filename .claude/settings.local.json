@@ -5,6 +5,8 @@
       "WebFetch(domain:platform.claude.com)"
     ],
     "deny": [],
-    "ask": []
+    "ask": [
+      "WebFetch(domain:www.anthropic.com)"
+    ]
   }
 }

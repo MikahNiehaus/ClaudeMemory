@@ -76,6 +76,15 @@ Every task folder should have a `context.md` file:
 ## Task Description
 [What this task is about, requirements, goals]
 
+## Orchestrator Decisions
+
+### Request Analysis - [Timestamp]
+- **User Request**: [Original request]
+- **Domains Identified**: [testing, debugging, architecture, etc.]
+- **Agents Considered**: [List all agents that could apply]
+- **Agents Spawned**: [List agents actually spawned and WHY]
+- **Rationale**: [Why these specific agents]
+
 ## Notes & Findings
 [Human notes, discoveries, key decisions made]
 
@@ -85,7 +94,7 @@ Every task folder should have a `context.md` file:
 - **Task**: What agent was asked to do
 - **Status**: COMPLETE/BLOCKED/NEEDS_INPUT
 - **Key Findings**: Main discoveries
-- **Output**: What was produced
+- **Output**: What was produced (or path to outputs/ folder)
 - **Handoff Notes**: What next agent needs to know
 
 ## Handoff Queue
@@ -133,18 +142,21 @@ COMPLETE → Task finished, final summary in Notes
 
 ## When to Create Task Folders
 
-**DO create a task folder when:**
+**ALWAYS create a task folder when:**
+- Task involves ANY code changes
 - Task involves multiple steps
+- ANY agent is being spawned
 - You'll generate artifacts (screenshots, outputs)
 - Multiple agents will collaborate
 - Work spans multiple sessions
 - You need to track progress
 
-**DON'T need a task folder for:**
-- Quick questions
-- Simple file reads
-- One-shot explanations
-- No artifacts generated
+**ONLY skip task folder for:**
+- Single read-only questions (no file modifications)
+- Simple explanations that fit in one response
+- Codebase navigation questions
+
+**When in doubt → create the folder.**
 
 ## Workflow Integration
 

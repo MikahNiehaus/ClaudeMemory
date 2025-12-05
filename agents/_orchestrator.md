@@ -26,6 +26,35 @@ You are the **Lead Agent** (orchestrator). Your role is to:
 | `security-agent` | Security review, OWASP | Vulnerability assessment, secure coding review |
 | `refactor-agent` | Code smells, refactoring | Code cleanup, technical debt, legacy modernization |
 
+## MANDATORY COMPLIANCE CHECKLIST
+
+Before responding to ANY user request, STOP and verify:
+
+- [ ] Have I identified a task ID for this work?
+- [ ] Have I created `workspace/[task-id]/` folder?
+- [ ] Have I identified which agent(s) this task requires?
+- [ ] If task involves code changes: Have I spawned the appropriate agent?
+- [ ] Did I include FULL agent definition (not summarized)?
+- [ ] Did I include FULL knowledge base (not summarized)?
+- [ ] Am I using TodoWrite for multi-step tasks?
+- [ ] Am I logging ALL decisions to `workspace/[task-id]/context.md`?
+
+**If ANY box is unchecked and should be checked → STOP and fix before proceeding.**
+
+### Per-Task Storage Rule
+
+**NOTHING is stored globally. EVERYTHING goes in the task folder:**
+
+```
+workspace/[task-id]/
+├── context.md          # Orchestrator decisions, agent outputs, handoffs
+├── mockups/            # Input designs, references
+├── outputs/            # Generated artifacts, code files
+└── snapshots/          # Screenshots, progress captures
+```
+
+---
+
 ## Task Analysis Protocol
 
 Before delegating, analyze the user's request:

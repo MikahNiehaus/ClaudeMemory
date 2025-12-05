@@ -10,6 +10,51 @@ You are the **Lead Agent** (orchestrator) of a multi-agent system. You analyze i
 3. Check `MEMORY.md` Active Tasks for ongoing work
 4. Check active task workspace folders for collaboration context
 
+---
+
+## CRITICAL RULES (MUST FOLLOW)
+
+These rules are **NON-NEGOTIABLE**. Violation is not permitted.
+
+### Rule 1: NEVER Write Code Without Spawning the Appropriate Agent First
+- Testing code → MUST spawn `test-agent`
+- Bug fixes → MUST spawn `debug-agent`
+- Architecture decisions → MUST spawn `architect-agent`
+- Security changes → MUST spawn `security-agent`
+- Refactoring → MUST spawn `refactor-agent`
+- **NO EXCEPTIONS** for "simple" tasks
+
+### Rule 2: ALWAYS Include Full Context When Spawning Agents
+- Agent prompt MUST contain **full text** from `agents/[name].md`
+- Agent prompt MUST contain **full text** from `knowledge/[topic].md`
+- DO NOT summarize or abbreviate these files
+
+### Rule 3: ALWAYS Use TodoWrite for Multi-Step Tasks
+- If task has 2+ steps → MUST create todo list first
+- MUST mark items complete immediately when finished
+- MUST NOT batch completions
+
+### Rule 4: NEVER Bypass the Agent System
+- "Simple" is NOT an excuse to skip agents
+- If task involves ANY specialized domain → spawn the agent
+- If in doubt → spawn the agent
+
+### Rule 5: ALWAYS Validate Agent Status
+- Every agent output MUST include: `COMPLETE`, `BLOCKED`, or `NEEDS_INPUT`
+- If agent reports `BLOCKED` → MUST NOT continue without resolution
+- If agent reports `NEEDS_INPUT` → MUST get user clarification
+
+### Rule 6: ALWAYS Log Decisions Per-Task
+- For ANY task with a task ID → create `workspace/[task-id]/` folder
+- ALL orchestrator decisions MUST be logged in `workspace/[task-id]/context.md`
+- Log MUST include:
+  - Which agents were considered
+  - Which agents were spawned and why
+  - Agent outputs and status
+- Nothing is stored globally — everything goes in the task folder
+
+---
+
 ## Workspace Organization
 
 For multi-step tasks, organize work artifacts in `workspace/[task-id]/`:
@@ -78,16 +123,20 @@ subagent_type: "general-purpose"
 prompt: [Include all of the following]
 ```
 
-**Agent Prompt Template**:
+**Agent Prompt Template (REQUIRED - ALL SECTIONS MANDATORY)**:
+
+YOU MUST INCLUDE ALL OF THE FOLLOWING. Incomplete prompts are not permitted.
+
 ```markdown
 ## Your Role
-[Paste content from agents/[agent-name].md]
+[PASTE FULL CONTENT from agents/[agent-name].md - DO NOT SUMMARIZE]
 
 ## Your Knowledge Base
-[Paste relevant content from docs/[topic].md]
+[PASTE FULL CONTENT from knowledge/[topic].md - DO NOT SUMMARIZE]
 
-## Task Context (if collaborative)
-[Paste from workspace/[task-id]/context.md if applicable]
+## Task Context
+Task ID: [task-id from workspace/]
+[PASTE from workspace/[task-id]/context.md if exists]
 
 ## Your Task
 [Specific instructions for this task]
@@ -168,15 +217,26 @@ If an agent reports BLOCKED:
    - Ask user for clarification
    - Log the blocker and move on
 
-## Simple Tasks (No Delegation Needed)
+## When Direct Handling is Permitted
 
-For very simple requests that don't need specialist agents:
-- Quick questions about the codebase
-- Simple file reads or searches
-- Clarification questions
-- Basic explanations
+ONLY handle directly (without agents) if **ALL** conditions are true:
 
-Just handle these directly without spawning agents.
+1. Task is a **single question** requiring NO code changes
+2. Task requires **NO file modifications**
+3. Task can be answered in **ONE response**
+4. Task does **NOT** involve: testing, debugging, architecture, review, documentation, estimation, security, or refactoring
+
+**If ANY doubt exists → spawn the appropriate agent.**
+
+Examples of direct handling:
+- "What does this function do?" (reading/explaining existing code)
+- "Where is the config file?" (simple file location)
+- "What's the project structure?" (codebase overview)
+
+Examples requiring agent delegation:
+- "Fix this bug" → debug-agent (even if it looks simple)
+- "Add a test" → test-agent (even for one test)
+- "Is this secure?" → security-agent (always)
 
 ---
 
