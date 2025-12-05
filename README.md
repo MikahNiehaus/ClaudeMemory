@@ -167,7 +167,8 @@ This project includes a pre-configured `.claude/settings.json` with maximum perm
 | **File Operations** | Read, Write, Edit, Glob, Grep |
 | **Development Tools** | npm, node, python, pip, cargo, go, dotnet, mvn, gradle |
 | **Testing** | pytest, jest, vitest, eslint, prettier, tsc |
-| **Git (Read-Only)** | status, diff, log, show, branch, checkout, stash, fetch, pull, merge, rebase, blame |
+| **Git (Read-Only)** | status, diff, log, show, blame, branch (list), tag (list), remote -v, ls-files, describe |
+| **GitHub CLI (Read-Only)** | issue view, pr list/view/status/checks, repo view |
 | **System** | ls, pwd, mkdir, cp, mv, cat, head, tail, diff, echo, which |
 | **Claude Tools** | Task, TodoWrite, WebSearch, WebFetch, NotebookEdit |
 
@@ -175,7 +176,10 @@ This project includes a pre-configured `.claude/settings.json` with maximum perm
 
 | Category | Why |
 |----------|-----|
-| **git add/commit/push** | Prevent accidental commits; user controls version history |
+| **All git writes** | add, commit, push, pull, fetch, merge, rebase, checkout, switch, restore, reset, revert, cherry-pick, stash, clean |
+| **Git destructive** | branch -d/-D, tag -d, rm, mv, filter-branch, gc, prune |
+| **Git config changes** | init, clone, remote add/remove, config --global/--local |
+| **GitHub CLI writes** | pr create/merge/close, issue create/close, repo create/delete, release |
 | **rm -rf, sudo** | Prevent destructive system operations |
 | **curl, wget** | Prevent data exfiltration |
 | **.env, secrets/, *.pem, *.key** | Protect sensitive credentials |
