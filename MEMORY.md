@@ -12,7 +12,7 @@
 
 Multi-agent orchestration system where Claude acts as lead agent, delegating to specialized subagents. Agents collaborate through per-task context files.
 
-**13 Specialist Agents** | **17 Knowledge Bases** | **Per-task context isolation** | **5 Slash Commands**
+**13 Specialist Agents** | **17 Knowledge Bases** | **Per-task context isolation** | **6 Slash Commands**
 
 ## Architecture
 
@@ -22,7 +22,7 @@ ClaudeMemory/
 ├── MEMORY.md              # This file - system registry (check first!)
 ├── .claude/
 │   ├── settings.json      # Permissions, hooks, sandbox config
-│   └── commands/          # 5 slash commands
+│   └── commands/          # 6 slash commands
 ├── agents/                # Agent definitions
 │   ├── _orchestrator.md   # Routing logic + collaboration matrix + conflict resolution
 │   └── [13 specialist agents]
@@ -32,8 +32,13 @@ ClaudeMemory/
 │       ├── outputs/       # Generated artifacts
 │       ├── snapshots/     # Screenshots, progress
 │       └── context.md     # Task context & agent handoffs
-└── knowledge/             # Knowledge bases
-    └── [17 documentation files]
+├── knowledge/             # Knowledge bases
+│   └── [17 documentation files]
+└── docs/                  # Auto-generated documentation (run /update-docs)
+    ├── README.md
+    ├── agents/
+    ├── knowledge/
+    └── commands/
 ```
 
 ## Agent Registry
@@ -86,6 +91,7 @@ ClaudeMemory/
 | `/list-agents` | List all available agents with expertise | 2025-12-05 |
 | `/check-task <task-id>` | Validate task folder structure | 2025-12-05 |
 | `/compact-review` | Preview critical state before compaction | 2025-12-05 |
+| `/update-docs` | Regenerate documentation in docs/ folder | 2025-12-05 |
 
 ## Active Tasks
 
@@ -169,7 +175,10 @@ ClaudeMemory/
   - **Slash Commands**: Created 5 workflow commands (spawn-agent, agent-status, list-agents, check-task, compact-review)
   - **Orchestrator**: Expanded collaboration matrix, added conflict resolution rules
   - **Templates**: Enhanced context.md with Quick Resume, Blocked Resolution, Key Files sections
-  - Total: 13 agents, 17 knowledge bases, 5 slash commands
+  - Total: 13 agents, 17 knowledge bases, 6 slash commands
+  - **Auto-Documentation**: Added docs/ folder with organized structure
+  - Created `/update-docs` command to regenerate docs
+  - Added auto-update rule to CLAUDE.md
 
 ## Notes
 

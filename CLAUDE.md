@@ -281,6 +281,18 @@ For simple documentation lookups without full agent delegation:
 2. Add to Agent Roster table above
 3. Update `agents/_orchestrator.md` routing logic
 4. Update `MEMORY.md` registry
+5. Run `/update-docs` to regenerate documentation
+
+### New Documentation
+1. Create `knowledge/[topic].md`
+2. Add to router table above
+3. Update `MEMORY.md` registry
+4. Run `/update-docs` to regenerate documentation
+
+### Documentation Auto-Update Rule
+**After ANY system change** (new agent, new knowledge base, new command):
+- Run `/update-docs` to keep docs/ folder current
+- Or manually update docs/README.md with new counts
 
 ---
 
@@ -319,25 +331,30 @@ ClaudeMemory/
 │       ├── outputs/
 │       ├── snapshots/
 │       └── context.md     # Task context & agent handoffs
-└── knowledge/             # Knowledge bases (17 files)
-    ├── testing.md
-    ├── debugging.md
-    ├── documentation.md
-    ├── workflow.md
-    ├── story-pointing.md
-    ├── architecture.md
-    ├── pr-review.md
-    ├── ui-implementation.md
-    ├── organization.md
-    ├── research.md
-    ├── security.md
-    ├── refactoring.md
-    ├── api-design.md
-    ├── code-exploration.md
-    ├── memory-management.md
-    ├── performance.md
-    ├── observability.md
-    └── error-handling.md
+├── knowledge/             # Knowledge bases (17 files)
+│   ├── testing.md
+│   ├── debugging.md
+│   ├── documentation.md
+│   ├── workflow.md
+│   ├── story-pointing.md
+│   ├── architecture.md
+│   ├── pr-review.md
+│   ├── ui-implementation.md
+│   ├── organization.md
+│   ├── research.md
+│   ├── security.md
+│   ├── refactoring.md
+│   ├── api-design.md
+│   ├── code-exploration.md
+│   ├── memory-management.md
+│   ├── performance.md
+│   ├── observability.md
+│   └── error-handling.md
+└── docs/                  # Auto-generated documentation
+    ├── README.md          # Main docs index
+    ├── agents/            # Agent documentation
+    ├── knowledge/         # Knowledge base docs
+    └── commands/          # Command documentation
 ```
 
 ---
