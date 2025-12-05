@@ -25,6 +25,7 @@ A multi-agent orchestration system where Claude automatically delegates tasks to
 | **research-agent** | Web research, verification | Deep research, fact-checking |
 | **security-agent** | Security review, OWASP | Vulnerability assessment, secure coding |
 | **refactor-agent** | Code smells, refactoring | Code cleanup, technical debt |
+| **explore-agent** | Codebase exploration | Understanding code, finding patterns |
 
 ## Delegation Patterns
 
@@ -72,7 +73,8 @@ ClaudeMemory/
 │   ├── workflow-agent.md
 │   ├── research-agent.md
 │   ├── security-agent.md
-│   └── refactor-agent.md
+│   ├── refactor-agent.md
+│   └── explore-agent.md
 ├── workspace/             # Task-organized work area
 │   └── [task-id]/         # Per-task folders
 │       ├── mockups/       # Input designs, references
@@ -92,7 +94,9 @@ ClaudeMemory/
     ├── research.md
     ├── security.md
     ├── refactoring.md
-    └── api-design.md
+    ├── api-design.md
+    ├── code-exploration.md
+    └── memory-management.md
 ```
 
 ## Workspace Organization
@@ -253,3 +257,35 @@ Before ANY response, orchestrator must verify:
 - Full knowledge base included
 - TodoWrite used for multi-step tasks
 - All decisions logged to context.md
+
+## Memory & Context Persistence
+
+This system is designed to survive Claude Code's context compaction and session resets.
+
+### What Survives Compaction
+
+| Survives | Does Not Survive |
+|----------|------------------|
+| CLAUDE.md (loaded every session) | Detailed conversation history |
+| MEMORY.md (system registry) | Working memory of file contents |
+| workspace/[task-id]/context.md | Agent's "knowledge" of topics |
+| All files on disk | Nuanced instructions from early chat |
+
+### Recovery Protocol
+
+When starting a new session or after compaction:
+
+1. **CLAUDE.md loads automatically** (orchestrator instructions)
+2. **Check MEMORY.md Active Tasks** for current work
+3. **Read workspace/[task-id]/context.md** for each active task
+4. **Resume from documented "Next Steps"**
+
+### Best Practices
+
+- Keep CLAUDE.md lean (< 500 lines)
+- Update task context.md after each milestone
+- Use MEMORY.md as an index, not a conversation log
+- Record explicit Next Steps in context.md
+- Always include file paths in notes
+
+See `knowledge/memory-management.md` for detailed strategies.

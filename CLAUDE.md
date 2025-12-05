@@ -93,6 +93,7 @@ See `knowledge/organization.md` for full guidelines.
 | `research-agent` | Web research, verification | `knowledge/research.md` | Deep research, fact-checking |
 | `security-agent` | Security review, OWASP | `knowledge/security.md` | Security audits, vulnerability review |
 | `refactor-agent` | Code smells, refactoring | `knowledge/refactoring.md` | Code cleanup, technical debt |
+| `explore-agent` | Codebase exploration | `knowledge/code-exploration.md` | Understanding code, finding patterns |
 
 ## Quick Decision Tree
 
@@ -259,6 +260,8 @@ For simple documentation lookups without full agent delegation:
 | security, OWASP, vulnerability, XSS, injection | `knowledge/security.md` |
 | refactor, code smell, technical debt, clean code | `knowledge/refactoring.md` |
 | API, REST, endpoint, HTTP, versioning | `knowledge/api-design.md` |
+| explore, codebase, understand, find, where | `knowledge/code-exploration.md` |
+| memory, context, compact, compaction, session | `knowledge/memory-management.md` |
 
 ---
 
@@ -295,14 +298,15 @@ ClaudeMemory/
 │   ├── workflow-agent.md
 │   ├── research-agent.md
 │   ├── security-agent.md
-│   └── refactor-agent.md
+│   ├── refactor-agent.md
+│   └── explore-agent.md
 ├── workspace/             # Task-organized work area
 │   └── [task-id]/         # Per-task folders
 │       ├── mockups/
 │       ├── outputs/
 │       ├── snapshots/
 │       └── context.md     # Task context & agent handoffs
-└── knowledge/             # Knowledge bases
+└── knowledge/             # Knowledge bases (14 files)
     ├── testing.md
     ├── debugging.md
     ├── documentation.md
@@ -315,7 +319,9 @@ ClaudeMemory/
     ├── research.md
     ├── security.md
     ├── refactoring.md
-    └── api-design.md
+    ├── api-design.md
+    ├── code-exploration.md
+    └── memory-management.md
 ```
 
 ---

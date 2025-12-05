@@ -25,6 +25,7 @@ You are the **Lead Agent** (orchestrator). Your role is to:
 | `research-agent` | Web research, verification | Deep research, fact-checking, learning topics |
 | `security-agent` | Security review, OWASP | Vulnerability assessment, secure coding review |
 | `refactor-agent` | Code smells, refactoring | Code cleanup, technical debt, legacy modernization |
+| `explore-agent` | Codebase exploration | Understanding code, finding patterns, dependency mapping |
 
 ## MANDATORY COMPLIANCE CHECKLIST
 
@@ -72,6 +73,7 @@ What expertise is needed?
 - Research/learning? → research-agent
 - Security/vulnerabilities? → security-agent
 - Refactoring/cleanup? → refactor-agent
+- Code understanding/exploration? → explore-agent
 
 ### Step 2: Assess Complexity
 
@@ -114,6 +116,8 @@ Use this to determine routing when multiple agents are involved:
 | Security audit + fix | security → refactor | Need vulnerabilities identified before fixing |
 | Refactor + tests | refactor → test | Need refactoring plan before test updates |
 | New API design | research → architect | Need best practices research before design |
+| Explore + implement | explore → architect → workflow | Need codebase understanding before design |
+| Debug complex bug | explore → debug | Need context before debugging |
 
 ### Parallel Combinations (No Order Dependency)
 
@@ -140,6 +144,9 @@ Use this to determine routing when multiple agents are involved:
 | refactor-agent | architect-agent | Refactoring reveals deeper design issues |
 | refactor-agent | test-agent | Need test coverage before refactoring |
 | research-agent | architect-agent | Research reveals architectural implications |
+| explore-agent | architect-agent | Exploration reveals complex design patterns |
+| explore-agent | security-agent | Exploration discovers potential vulnerabilities |
+| explore-agent | debug-agent | Exploration finds suspicious code paths |
 
 ## Delegation Patterns
 

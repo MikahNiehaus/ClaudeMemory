@@ -1,18 +1,28 @@
 # Claude Multi-Agent Orchestration System
 
+## Session Quick Start
+
+**On new session or after compaction**:
+1. This file (MEMORY.md) provides system state
+2. Check Active Tasks below for current work
+3. Read `workspace/[task-id]/context.md` for each active task
+4. Resume from documented "Next Steps"
+
 ## System Overview
 
-This is a multi-agent orchestration system where Claude acts as a lead agent that automatically delegates tasks to specialized subagents. Agents collaborate through per-task context files.
+Multi-agent orchestration system where Claude acts as lead agent, delegating to specialized subagents. Agents collaborate through per-task context files.
+
+**12 Specialist Agents** | **14 Knowledge Bases** | **Per-task context isolation**
 
 ## Architecture
 
 ```
 ClaudeMemory/
-├── CLAUDE.md              # Main orchestrator instructions
-├── MEMORY.md              # This file - system registry
+├── CLAUDE.md              # Main orchestrator instructions (loaded every session)
+├── MEMORY.md              # This file - system registry (check first!)
 ├── agents/                # Agent definitions
 │   ├── _orchestrator.md   # Routing logic + collaboration matrix
-│   └── [11 specialist agents]
+│   └── [12 specialist agents]
 ├── workspace/             # Task-organized work area
 │   └── [task-id]/         # Per-task folders
 │       ├── mockups/       # Input designs, references
@@ -20,7 +30,7 @@ ClaudeMemory/
 │       ├── snapshots/     # Screenshots, progress
 │       └── context.md     # Task context & agent handoffs
 └── knowledge/             # Knowledge bases
-    └── [13 documentation files]
+    └── [14 documentation files]
 ```
 
 ## Agent Registry
@@ -38,6 +48,7 @@ ClaudeMemory/
 | `research-agent` | Web research, verification | `knowledge/research.md` | 2025-12-04 |
 | `security-agent` | Security review, OWASP | `knowledge/security.md` | 2025-12-04 |
 | `refactor-agent` | Code smells, refactoring | `knowledge/refactoring.md` | 2025-12-04 |
+| `explore-agent` | Codebase exploration, understanding | `knowledge/code-exploration.md` | 2025-12-04 |
 
 ## Documentation Registry
 
@@ -56,6 +67,8 @@ ClaudeMemory/
 | `knowledge/security.md` | Application Security | security, OWASP, vulnerability, XSS, injection | 2025-12-04 |
 | `knowledge/refactoring.md` | Code Refactoring | refactor, code smell, technical debt, clean code | 2025-12-04 |
 | `knowledge/api-design.md` | API Design | API, REST, endpoint, HTTP, versioning | 2025-12-04 |
+| `knowledge/code-exploration.md` | Code Exploration | explore, codebase, understand, find, where, how does | 2025-12-04 |
+| `knowledge/memory-management.md` | Memory & Context | memory, context, compact, compaction, session, persist | 2025-12-04 |
 
 ## Active Tasks
 
@@ -63,7 +76,7 @@ ClaudeMemory/
 |---------|-------------|--------|-----------|---------|
 | (none)  | -           | -      | -         | -       |
 
-*Register tasks here when starting multi-step work. See `docs/organization.md` for task folder guidelines.*
+*Register tasks here when starting multi-step work. See `knowledge/organization.md` for task folder guidelines.*
 
 **Task Status Values**: ACTIVE, BLOCKED, COMPLETE
 
@@ -119,6 +132,13 @@ ClaudeMemory/
   - Added `knowledge/security.md` - vulnerability prevention, secure coding practices
   - Added `knowledge/refactoring.md` - code smells, refactoring techniques, technical debt
   - Added `knowledge/api-design.md` - REST principles, HTTP semantics, RFC 9457 errors
+
+- **2025-12-04**: Memory/Compaction System & Explore Agent
+  - Created `explore-agent` for codebase exploration and understanding
+  - Added `knowledge/code-exploration.md` - systematic exploration methodology
+  - Added `knowledge/memory-management.md` - compaction recovery, context persistence
+  - Updated MEMORY.md with "Session Quick Start" section for compaction recovery
+  - Total: 12 agents, 14 knowledge bases
 
 ## Notes
 
