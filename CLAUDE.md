@@ -266,6 +266,7 @@ For simple documentation lookups without full agent delegation:
 | performance, profiling, optimization, bottleneck, latency | `knowledge/performance.md` |
 | logging, metrics, tracing, monitoring, observability | `knowledge/observability.md` |
 | error, exception, handling, recovery, retry | `knowledge/error-handling.md` |
+| prompt, quality, better, improve, chain of thought | `knowledge/prompting-patterns.md` |
 
 ---
 
@@ -331,7 +332,7 @@ ClaudeMemory/
 │       ├── outputs/
 │       ├── snapshots/
 │       └── context.md     # Task context & agent handoffs
-├── knowledge/             # Knowledge bases (17 files)
+├── knowledge/             # Knowledge bases (18 files)
 │   ├── testing.md
 │   ├── debugging.md
 │   ├── documentation.md
@@ -349,7 +350,8 @@ ClaudeMemory/
 │   ├── memory-management.md
 │   ├── performance.md
 │   ├── observability.md
-│   └── error-handling.md
+│   ├── error-handling.md
+│   └── prompting-patterns.md
 └── docs/                  # Auto-generated documentation
     ├── README.md          # Main docs index
     ├── agents/            # Agent documentation

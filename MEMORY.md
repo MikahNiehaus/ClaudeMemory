@@ -12,7 +12,7 @@
 
 Multi-agent orchestration system where Claude acts as lead agent, delegating to specialized subagents. Agents collaborate through per-task context files.
 
-**13 Specialist Agents** | **17 Knowledge Bases** | **Per-task context isolation** | **6 Slash Commands**
+**13 Specialist Agents** | **18 Knowledge Bases** | **Per-task context isolation** | **6 Slash Commands**
 
 ## Architecture
 
@@ -33,7 +33,7 @@ ClaudeMemory/
 │       ├── snapshots/     # Screenshots, progress
 │       └── context.md     # Task context & agent handoffs
 ├── knowledge/             # Knowledge bases
-│   └── [17 documentation files]
+│   └── [18 documentation files]
 └── docs/                  # Auto-generated documentation (run /update-docs)
     ├── README.md
     ├── agents/
@@ -81,6 +81,7 @@ ClaudeMemory/
 | `knowledge/performance.md` | Performance Optimization | performance, profiling, bottleneck, latency, throughput | 2025-12-05 |
 | `knowledge/observability.md` | Observability | logging, metrics, tracing, monitoring, observability, alerts | 2025-12-05 |
 | `knowledge/error-handling.md` | Error Handling | error, exception, handling, recovery, retry, fault tolerance | 2025-12-05 |
+| `knowledge/prompting-patterns.md` | Quality Patterns | prompt, quality, better, improve, response, chain of thought | 2025-12-05 |
 
 ## Slash Commands
 
