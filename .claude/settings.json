@@ -192,7 +192,29 @@
       "Edit(./.env.*)",
       "Edit(./secrets/**)"
     ],
-    "deny": [],
+    "deny": [
+      "Bash(rm -rf /)",
+      "Bash(rm -rf /*)",
+      "Bash(rm -rf ~)",
+      "Bash(rm -rf ~/*)",
+      "Bash(mkfs:*)",
+      "Bash(dd if=/dev/zero:*)",
+      "Bash(dd if=/dev/random:*)",
+      "Bash(format c:*)",
+      "Bash(psql -c DROP:*)",
+      "Bash(psql -c TRUNCATE:*)",
+      "Bash(mysql -e DROP:*)",
+      "Bash(mysql -e TRUNCATE:*)",
+      "Bash(mongosh --eval db.dropDatabase:*)",
+      "Bash(redis-cli FLUSHALL)",
+      "Bash(redis-cli FLUSHDB)",
+      "Bash(shutdown:*)",
+      "Bash(reboot:*)",
+      "Bash(init 0)",
+      "Bash(init 6)",
+      "Bash(halt)",
+      "Bash(poweroff)"
+    ],
     "additionalDirectories": []
   },
   "sandbox": {
