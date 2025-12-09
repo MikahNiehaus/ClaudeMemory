@@ -191,6 +191,14 @@ ClaudeMemory/
   - **Purpose**: Helps orchestrator fully understand vague requests BEFORE delegating to other agents
   - Total: 14 agents, 19 knowledge bases
 
+- **2025-12-09**: Token Optimization (Zero Quality Loss)
+  - **Consolidated rosters**: Agent tables now single-source in MEMORY.md, others reference it
+  - **READ vs Paste**: Agent prompts now instruct agents to READ files instead of pasting full content
+    - Saves ~2000 tokens per agent spawn (97% reduction in prompt overhead)
+    - Agents have tool access, same quality
+  - **Shared template**: Created `agents/_shared-output.md` for common status/output patterns
+  - **Estimated savings**: 30-40% fewer tokens per multi-agent workflow
+
 ## Notes
 
 ### Key Research Sources

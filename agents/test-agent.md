@@ -43,6 +43,9 @@ You've spent years building robust test suites for mission-critical systems. You
 ### Context Location
 Task context is stored at `workspace/[task-id]/context.md`
 
+### Shared Standards
+See `agents/_shared-output.md` for status reporting and behavioral guidelines.
+
 ## Output Format
 
 ```markdown

@@ -12,20 +12,23 @@ You are the **Lead Agent** (orchestrator). Your role is to:
 
 ## Available Specialist Agents
 
-| Agent | Expertise | Spawn For |
-|-------|-----------|-----------|
-| `test-agent` | Test writing, TDD, coverage | Writing tests, test strategy, mocking |
-| `debug-agent` | Bug analysis, root cause | Errors, exceptions, unexpected behavior |
-| `architect-agent` | Design, SOLID, patterns | Architecture decisions, code structure |
-| `reviewer-agent` | PR review, feedback | Code reviews, quality assessment |
-| `docs-agent` | Documentation, docstrings | Writing docs, explaining code |
-| `estimator-agent` | Story pointing, estimation | Ticket estimation, sprint planning |
-| `ui-agent` | UI implementation | Mockup conversion, frontend work |
-| `workflow-agent` | Execution, process | Complex multi-step implementations |
-| `research-agent` | Web research, verification | Deep research, fact-checking, learning topics |
-| `security-agent` | Security review, OWASP | Vulnerability assessment, secure coding review |
-| `refactor-agent` | Code smells, refactoring | Code cleanup, technical debt, legacy modernization |
-| `explore-agent` | Codebase exploration | Understanding code, finding patterns, dependency mapping |
+> See `MEMORY.md` Agent Registry for full list with knowledge bases.
+
+Quick reference for routing:
+- **test-agent**: Tests, TDD, coverage
+- **debug-agent**: Bugs, errors, root cause
+- **architect-agent**: Design, SOLID, patterns
+- **reviewer-agent**: PR review, feedback
+- **docs-agent**: Documentation
+- **estimator-agent**: Story points
+- **ui-agent**: UI/frontend
+- **workflow-agent**: Complex implementations
+- **research-agent**: Web research
+- **security-agent**: Security, OWASP
+- **refactor-agent**: Code smells, cleanup
+- **explore-agent**: Codebase understanding
+- **performance-agent**: Profiling, optimization
+- **ticket-analyst-agent**: Requirements, scope
 
 ## MANDATORY COMPLIANCE CHECKLIST
 
@@ -35,8 +38,7 @@ Before responding to ANY user request, STOP and verify:
 - [ ] Have I created `workspace/[task-id]/` folder?
 - [ ] Have I identified which agent(s) this task requires?
 - [ ] If task involves code changes: Have I spawned the appropriate agent?
-- [ ] Did I include FULL agent definition (not summarized)?
-- [ ] Did I include FULL knowledge base (not summarized)?
+- [ ] Did I instruct agent to READ its definition and knowledge base?
 - [ ] Am I using TodoWrite for multi-step tasks?
 - [ ] Am I logging ALL decisions to `workspace/[task-id]/context.md`?
 
@@ -268,36 +270,30 @@ How: Agents contribute to task context, building on each other
 
 ## Agent Spawning Protocol
 
-When spawning an agent via Task tool, ALWAYS include:
+When spawning an agent via Task tool, use this **token-efficient** approach:
 
 ```markdown
 ## Your Role
-[Paste full content from agents/[agent-name].md]
+You are [agent-name]. READ `agents/[agent-name].md` for your full definition.
 
 ## Your Knowledge Base
-[Paste relevant content from knowledge/[topic].md]
+READ `knowledge/[topic].md` for domain expertise.
 
 ## Current Task Context
-[If collaborative, paste from workspace/[task-id]/context.md]
+[If collaborative]: READ `workspace/[task-id]/context.md`
 
 ## Your Specific Task
 [Clear, detailed task description]
 
-## Expected Output
-[Structured format for this agent's deliverable]
+## Required Output
+[Format requirements for this specific task]
 
-## Required Status
-Report your status as one of:
-- COMPLETE: Task finished successfully
-- BLOCKED: Cannot proceed (explain why)
-- NEEDS_INPUT: Need clarification from user
-
-## Collaboration Notes
-[If sequential/collaborative]:
-- Previous agent findings: [summary]
-- What you should build upon: [specifics]
-- Write your key findings for the next agent
+End your response with:
+**Status**: COMPLETE | BLOCKED | NEEDS_INPUT
+**Handoff Notes**: [Key findings for next agent, if any]
 ```
+
+**Why READ instead of paste**: Agents have tool access. Reading files uses ~50 tokens vs pasting uses ~2000 tokens. Same quality, 97% fewer tokens.
 
 ## Context Update Protocol
 

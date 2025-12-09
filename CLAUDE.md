@@ -24,10 +24,11 @@ These rules are **NON-NEGOTIABLE**. Violation is not permitted.
 - Refactoring → MUST spawn `refactor-agent`
 - **NO EXCEPTIONS** for "simple" tasks
 
-### Rule 2: ALWAYS Include Full Context When Spawning Agents
-- Agent prompt MUST contain **full text** from `agents/[name].md`
-- Agent prompt MUST contain **full text** from `knowledge/[topic].md`
-- DO NOT summarize or abbreviate these files
+### Rule 2: Agents READ Their Own Context (Token Efficient)
+- Agent prompt tells agent to READ `agents/[name].md` (not paste)
+- Agent prompt tells agent to READ `knowledge/[topic].md` (not paste)
+- Agents have tool access - they read files themselves
+- **Saves ~2000 tokens per agent spawn with identical quality**
 
 ### Rule 3: ALWAYS Use TodoWrite for Multi-Step Tasks
 - If task has 2+ steps → MUST create todo list first
@@ -80,22 +81,24 @@ See `knowledge/organization.md` for full guidelines.
 
 ## Agent Roster
 
-| Agent | Expertise | Knowledge Base | Spawn For |
-|-------|-----------|----------------|-----------|
-| `test-agent` | Testing, TDD, coverage | `knowledge/testing.md` | Writing tests, test strategy |
-| `debug-agent` | Bug analysis, root cause | `knowledge/debugging.md` | Errors, debugging |
-| `architect-agent` | Design, SOLID, patterns | `knowledge/architecture.md` | Architecture decisions |
-| `reviewer-agent` | PR review, feedback | `knowledge/pr-review.md` | Code reviews |
-| `docs-agent` | Documentation | `knowledge/documentation.md` | Writing docs |
-| `estimator-agent` | Story points, estimation | `knowledge/story-pointing.md` | Ticket estimation |
-| `ui-agent` | UI implementation | `knowledge/ui-implementation.md` | Frontend, mockups |
-| `workflow-agent` | Execution, process | `knowledge/workflow.md` | Complex implementations |
-| `research-agent` | Web research, verification | `knowledge/research.md` | Deep research, fact-checking |
-| `security-agent` | Security review, OWASP | `knowledge/security.md` | Security audits, vulnerability review |
-| `refactor-agent` | Code smells, refactoring | `knowledge/refactoring.md` | Code cleanup, technical debt |
-| `explore-agent` | Codebase exploration | `knowledge/code-exploration.md` | Understanding code, finding patterns |
-| `performance-agent` | Profiling, optimization | `knowledge/performance.md` | Performance issues, bottlenecks, load testing |
-| `ticket-analyst-agent` | Requirements, clarification | `knowledge/ticket-understanding.md` | Vague requests, scope definition, task decomposition |
+> Full registry with dates: see `MEMORY.md` Agent Registry
+
+| Agent | Spawn For |
+|-------|-----------|
+| `test-agent` | Tests, TDD, coverage |
+| `debug-agent` | Bugs, errors, root cause |
+| `architect-agent` | Design, architecture |
+| `reviewer-agent` | Code reviews |
+| `docs-agent` | Documentation |
+| `estimator-agent` | Story points |
+| `ui-agent` | Frontend, mockups |
+| `workflow-agent` | Complex implementations |
+| `research-agent` | Web research |
+| `security-agent` | Security audits |
+| `refactor-agent` | Code cleanup |
+| `explore-agent` | Code understanding |
+| `performance-agent` | Profiling, optimization |
+| `ticket-analyst-agent` | Requirements, scope |
 
 ## Quick Decision Tree
 
@@ -126,30 +129,31 @@ subagent_type: "general-purpose"
 prompt: [Include all of the following]
 ```
 
-**Agent Prompt Template (REQUIRED - ALL SECTIONS MANDATORY)**:
-
-YOU MUST INCLUDE ALL OF THE FOLLOWING. Incomplete prompts are not permitted.
+**Agent Prompt Template (Token-Efficient)**:
 
 ```markdown
 ## Your Role
-[PASTE FULL CONTENT from agents/[agent-name].md - DO NOT SUMMARIZE]
+You are [agent-name]. READ `agents/[agent-name].md` for your full definition.
 
 ## Your Knowledge Base
-[PASTE FULL CONTENT from knowledge/[topic].md - DO NOT SUMMARIZE]
+READ `knowledge/[topic].md` for domain expertise.
 
 ## Task Context
-Task ID: [task-id from workspace/]
-[PASTE from workspace/[task-id]/context.md if exists]
+Task ID: [task-id]
+[If collaborative]: READ `workspace/[task-id]/context.md`
 
 ## Your Task
 [Specific instructions for this task]
 
-## Expected Output
+## Required Output
 [Format requirements]
 
-## Output Status (REQUIRED)
-Report one of: COMPLETE / BLOCKED / NEEDS_INPUT
+End with:
+**Status**: COMPLETE | BLOCKED | NEEDS_INPUT
+**Handoff Notes**: [Key findings for next agent]
 ```
+
+**Why READ**: Agents have tool access. ~50 tokens to instruct vs ~2000 to paste.
 
 ### Step 3: Coordinate Results
 
