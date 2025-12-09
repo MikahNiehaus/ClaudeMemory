@@ -95,6 +95,7 @@ See `knowledge/organization.md` for full guidelines.
 | `refactor-agent` | Code smells, refactoring | `knowledge/refactoring.md` | Code cleanup, technical debt |
 | `explore-agent` | Codebase exploration | `knowledge/code-exploration.md` | Understanding code, finding patterns |
 | `performance-agent` | Profiling, optimization | `knowledge/performance.md` | Performance issues, bottlenecks, load testing |
+| `ticket-analyst-agent` | Requirements, clarification | `knowledge/ticket-understanding.md` | Vague requests, scope definition, task decomposition |
 
 ## Quick Decision Tree
 
@@ -267,6 +268,7 @@ For simple documentation lookups without full agent delegation:
 | logging, metrics, tracing, monitoring, observability | `knowledge/observability.md` |
 | error, exception, handling, recovery, retry | `knowledge/error-handling.md` |
 | prompt, quality, better, improve, chain of thought | `knowledge/prompting-patterns.md` |
+| ticket, requirement, scope, acceptance criteria, clarify, decompose | `knowledge/ticket-understanding.md` |
 
 ---
 
@@ -311,7 +313,7 @@ ClaudeMemory/
 │       ├── list-agents.md
 │       ├── check-task.md
 │       └── compact-review.md
-├── agents/                # Agent definitions (13 agents)
+├── agents/                # Agent definitions (14 agents)
 │   ├── _orchestrator.md   # Detailed routing logic
 │   ├── test-agent.md
 │   ├── debug-agent.md
@@ -325,14 +327,15 @@ ClaudeMemory/
 │   ├── security-agent.md
 │   ├── refactor-agent.md
 │   ├── explore-agent.md
-│   └── performance-agent.md
+│   ├── performance-agent.md
+│   └── ticket-analyst-agent.md
 ├── workspace/             # Task-organized work area
 │   └── [task-id]/         # Per-task folders
 │       ├── mockups/
 │       ├── outputs/
 │       ├── snapshots/
 │       └── context.md     # Task context & agent handoffs
-├── knowledge/             # Knowledge bases (18 files)
+├── knowledge/             # Knowledge bases (19 files)
 │   ├── testing.md
 │   ├── debugging.md
 │   ├── documentation.md
@@ -351,7 +354,8 @@ ClaudeMemory/
 │   ├── performance.md
 │   ├── observability.md
 │   ├── error-handling.md
-│   └── prompting-patterns.md
+│   ├── prompting-patterns.md
+│   └── ticket-understanding.md
 └── docs/                  # Auto-generated documentation
     ├── README.md          # Main docs index
     ├── agents/            # Agent documentation

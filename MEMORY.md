@@ -12,7 +12,7 @@
 
 Multi-agent orchestration system where Claude acts as lead agent, delegating to specialized subagents. Agents collaborate through per-task context files.
 
-**13 Specialist Agents** | **18 Knowledge Bases** | **Per-task context isolation** | **6 Slash Commands**
+**14 Specialist Agents** | **19 Knowledge Bases** | **Per-task context isolation** | **6 Slash Commands**
 
 ## Architecture
 
@@ -25,7 +25,7 @@ ClaudeMemory/
 │   └── commands/          # 6 slash commands
 ├── agents/                # Agent definitions
 │   ├── _orchestrator.md   # Routing logic + collaboration matrix + conflict resolution
-│   └── [13 specialist agents]
+│   └── [14 specialist agents]
 ├── workspace/             # Task-organized work area
 │   └── [task-id]/         # Per-task folders
 │       ├── mockups/       # Input designs, references
@@ -33,7 +33,7 @@ ClaudeMemory/
 │       ├── snapshots/     # Screenshots, progress
 │       └── context.md     # Task context & agent handoffs
 ├── knowledge/             # Knowledge bases
-│   └── [18 documentation files]
+│   └── [19 documentation files]
 └── docs/                  # Auto-generated documentation (run /update-docs)
     ├── README.md
     ├── agents/
@@ -58,6 +58,7 @@ ClaudeMemory/
 | `refactor-agent` | Code smells, refactoring | `knowledge/refactoring.md` | 2025-12-04 |
 | `explore-agent` | Codebase exploration, understanding | `knowledge/code-exploration.md` | 2025-12-04 |
 | `performance-agent` | Profiling, optimization, bottleneck analysis | `knowledge/performance.md` | 2025-12-05 |
+| `ticket-analyst-agent` | Requirements analysis, task clarification, scope definition | `knowledge/ticket-understanding.md` | 2025-12-09 |
 
 ## Documentation Registry
 
@@ -82,6 +83,7 @@ ClaudeMemory/
 | `knowledge/observability.md` | Observability | logging, metrics, tracing, monitoring, observability, alerts | 2025-12-05 |
 | `knowledge/error-handling.md` | Error Handling | error, exception, handling, recovery, retry, fault tolerance | 2025-12-05 |
 | `knowledge/prompting-patterns.md` | Quality Patterns | prompt, quality, better, improve, response, chain of thought | 2025-12-05 |
+| `knowledge/ticket-understanding.md` | Ticket Analysis | ticket, requirement, scope, acceptance criteria, clarify, understand, decompose | 2025-12-09 |
 
 ## Slash Commands
 
@@ -180,6 +182,14 @@ ClaudeMemory/
   - **Auto-Documentation**: Added docs/ folder with organized structure
   - Created `/update-docs` command to regenerate docs
   - Added auto-update rule to CLAUDE.md
+
+- **2025-12-09**: Ticket Analyst Agent
+  - **New Agent**: Created `ticket-analyst-agent` for requirements analysis, task clarification, scope definition
+  - **New Knowledge Base**: `knowledge/ticket-understanding.md` - comprehensive ticket analysis methodology
+  - **Research-backed**: Web research on LLM prompt engineering, requirements elicitation, INVEST criteria, Five Whys, scope creep prevention
+  - **Capabilities**: Chain-of-thought analysis, acceptance criteria definition (Given-When-Then), task decomposition, scope boundary definition
+  - **Purpose**: Helps orchestrator fully understand vague requests BEFORE delegating to other agents
+  - Total: 14 agents, 19 knowledge bases
 
 ## Notes
 
