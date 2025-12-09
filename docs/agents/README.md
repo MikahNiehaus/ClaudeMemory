@@ -55,7 +55,16 @@ All agents report one of:
 
 Use `/spawn-agent <agent-name> <task-id>` or delegate through the orchestrator naturally.
 
-Agents receive:
-1. Full agent definition from `agents/[name].md`
-2. Full knowledge base from `knowledge/[topic].md`
+Agents are instructed to READ (not paste):
+1. Their definition from `agents/[name].md`
+2. Their knowledge base from `knowledge/[topic].md`
 3. Task context from `workspace/[task-id]/context.md`
+
+This token-efficient approach saves ~2000 tokens per spawn.
+
+## Shared Standards
+
+All agents follow `agents/_shared-output.md` for:
+- Status reporting (COMPLETE/BLOCKED/NEEDS_INPUT)
+- Handoff notes format
+- Common behavioral guidelines

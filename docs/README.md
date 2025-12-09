@@ -8,6 +8,9 @@
 
 Multi-agent orchestration system where Claude acts as lead agent, delegating to specialized subagents. Agents collaborate through per-task context files.
 
+### Token-Efficient Design
+Agents READ their own definitions instead of receiving pasted content. This saves ~2000 tokens per agent spawn with identical quality.
+
 | Component | Count |
 |-----------|-------|
 | Specialist Agents | 14 |
