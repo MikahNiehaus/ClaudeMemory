@@ -360,11 +360,7 @@ ClaudeMemory/
 │   ├── error-handling.md
 │   ├── prompting-patterns.md
 │   └── ticket-understanding.md
-└── docs/                  # Auto-generated documentation
-    ├── README.md          # Main docs index
-    ├── agents/            # Agent documentation
-    ├── knowledge/         # Knowledge base docs
-    └── commands/          # Command documentation
+└── docs/                  # Auto-generated (gitignored, run /update-docs to create)
 ```
 
 ---

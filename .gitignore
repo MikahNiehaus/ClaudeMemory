@@ -1,0 +1,18 @@
+# Auto-generated documentation (created by /update-docs command)
+docs/
+
+# Environment and secrets
+.env
+.env.*
+*.pem
+*.key
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo

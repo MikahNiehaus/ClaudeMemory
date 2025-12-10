@@ -34,11 +34,7 @@ ClaudeMemory/
 │       └── context.md     # Task context & agent handoffs
 ├── knowledge/             # Knowledge bases
 │   └── [19 documentation files]
-└── docs/                  # Auto-generated documentation (run /update-docs)
-    ├── README.md
-    ├── agents/
-    ├── knowledge/
-    └── commands/
+└── docs/                  # Auto-generated (gitignored, run /update-docs to create)
 ```
 
 ## Agent Registry
