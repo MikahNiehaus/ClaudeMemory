@@ -47,9 +47,11 @@ Instead of Claude handling everything itself, this toolkit makes it:
 | `performance-agent` | Profiling | Optimization |
 | `ticket-analyst-agent` | Requirements | Clarifying vague requests |
 
-## Per-Issue Context Tracking
+## Memory & Documentation Flow
 
-Every task gets its own isolated folder:
+### While Working → `workspace/`
+
+All active notes, discoveries, and context go in issue folders:
 
 ```
 workspace/
@@ -60,17 +62,41 @@ workspace/
 │   └── snapshots/              # Screenshots, progress
 │
 └── 2025-12-10-fix-login/       # Or date-based for ad-hoc tasks
-    └── ...
+    └── context.md
 ```
 
-### context.md tracks:
+**context.md tracks:**
 - Task status (ACTIVE/BLOCKED/COMPLETE)
-- Notes and findings
-- Which agents contributed what
+- Notes and findings as I work
+- What I've discovered, what's next
+- Agent contributions and handoffs
 - Open questions
-- Next steps for resuming
 
-This survives session resets and context compaction.
+This is my working memory. It survives session resets and context compaction.
+
+### When Done → `docs/`
+
+After work is complete, run `/update-docs` to generate polished project documentation:
+
+```
+docs/
+├── README.md           # Project overview
+├── architecture.md     # How it's designed
+├── api.md              # API reference
+└── ...                 # Whatever the project needs
+```
+
+**docs/ describes the finished project** - clean, organized, for humans to read.
+
+### The Flow
+
+```
+Working on issue    →    workspace/[issue]/context.md (scratchpad)
+                              ↓
+Work complete       →    /update-docs
+                              ↓
+                         docs/ (polished documentation)
+```
 
 ## How Delegation Works
 

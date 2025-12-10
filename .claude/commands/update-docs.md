@@ -1,55 +1,59 @@
 ---
-description: Regenerate documentation in docs/ folder
-allowed-tools: Read, Write, Glob, Bash
+description: Generate project documentation in docs/ folder
+allowed-tools: Read, Write, Glob, Bash, Grep
 ---
 
 # Update Documentation
 
-Regenerate all documentation in the `docs/` folder to reflect current system state.
+Generate polished documentation for the PROJECT (not the toolkit) in the `docs/` folder.
 
-**Note**: The docs/ folder is gitignored (auto-generated). This command creates it fresh each time.
+**Note**: docs/ is gitignored. Run this command to create/update documentation when work is complete.
+
+## When to Use
+
+- After completing a feature or milestone
+- When project documentation needs updating
+- To create clean, organized docs from workspace notes
 
 ## Instructions
 
-1. **Create docs/ folder structure** (if it doesn't exist):
+1. **Create docs/ folder** (if it doesn't exist):
    ```
-   mkdir -p docs/agents docs/knowledge docs/commands
+   mkdir -p docs
    ```
 
-2. **Read current state** from MEMORY.md:
-   - Agent count and list
-   - Knowledge base count and list
-   - Slash command list
-   - Recent session history
+2. **Review completed work** in workspace/:
+   - Read context.md files from completed tasks
+   - Identify what's been built/changed
+   - Gather key findings and decisions
 
-3. **Update docs/README.md**:
-   - Update counts
-   - Update date
-   - Sync with MEMORY.md
+3. **Explore the project codebase**:
+   - Identify main components and structure
+   - Find API endpoints, key functions, architecture
+   - Note important patterns and conventions
 
-4. **Update docs/agents/README.md**:
-   - List all agents from agents/ folder
-   - Update agent table
-   - Update decision guide
+4. **Generate documentation**:
+   - `docs/README.md` - Project overview, getting started
+   - `docs/architecture.md` - System design, components (if applicable)
+   - `docs/api.md` - API reference (if applicable)
+   - Other docs as appropriate for the project
 
-5. **Update docs/knowledge/README.md**:
-   - List all knowledge bases from knowledge/ folder
-   - Update triggers table
+5. **Structure should reflect the PROJECT**, not the toolkit:
+   - What does this project do?
+   - How is it organized?
+   - How do you use it?
+   - Key concepts and patterns
 
-6. **Update docs/commands/README.md**:
-   - List all commands from .claude/commands/
-   - Update usage examples
+## Documentation Style
 
-7. **Create individual doc files** (if missing):
-   - For each agent: docs/agents/[name].md
-   - For each knowledge base: docs/knowledge/[name].md
+- Clear and concise
+- Code examples where helpful
+- Organized by topic/component
+- Written for someone new to the project
 
 ## After Update
 
 Report:
-- Files updated
-- New files created
-- Current counts (agents, knowledge bases, commands)
-- Last updated timestamp
-
-@MEMORY.md
+- What documentation was created/updated
+- Key sections covered
+- Any gaps that need manual attention
