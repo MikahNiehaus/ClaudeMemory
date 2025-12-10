@@ -1,291 +1,179 @@
-# Claude Multi-Agent Orchestration System
+# Claude Multi-Agent Orchestration Toolkit
 
-A multi-agent orchestration system where Claude automatically delegates tasks to specialized AI agents that can collaborate with each other.
+A plug-and-play toolkit that supercharges Claude Code with specialized AI agents. Copy this into any project to get automatic task delegation, rich context management, and multi-agent collaboration.
 
-## How It Works
+## Quick Start
 
-1. **User Request** → Main Claude (orchestrator) analyzes the task
-2. **LLM Routing** → Orchestrator decides which specialist agent(s) to spawn
-3. **Delegation** → Agents receive role definition + knowledge base + task
-4. **Collaboration** → Agents share context through `workspace/[task-id]/context.md`
-5. **Synthesis** → Orchestrator combines results into unified response
+1. **Copy into your project**:
+   ```bash
+   # Clone or copy these folders into your project root:
+   # - .claude/          (settings, commands)
+   # - agents/           (agent definitions)
+   # - knowledge/        (domain expertise)
+   # - workspace/        (task tracking)
+   # - CLAUDE.md         (orchestrator instructions)
+   # - MEMORY.md         (system registry)
+   ```
 
-## Available Agents
+2. **Start Claude Code** in your project - the system loads automatically
 
-| Agent | Expertise | Use For |
-|-------|-----------|---------|
-| **test-agent** | Testing, TDD, coverage | Writing tests, test strategy |
-| **debug-agent** | Bug analysis, root cause | Errors, debugging issues |
-| **architect-agent** | Design, SOLID, patterns | Architecture decisions |
-| **reviewer-agent** | Code review, feedback | PR reviews |
-| **docs-agent** | Documentation | Writing docs, docstrings |
-| **estimator-agent** | Story pointing | Ticket estimation |
-| **ui-agent** | UI implementation | Frontend, mockups |
-| **workflow-agent** | Execution planning | Complex implementations |
-| **research-agent** | Web research, verification | Deep research, fact-checking |
-| **security-agent** | Security review, OWASP | Vulnerability assessment, secure coding |
-| **refactor-agent** | Code smells, refactoring | Code cleanup, technical debt |
-| **explore-agent** | Codebase exploration | Understanding code, finding patterns |
+3. **Work normally** - Claude will delegate to specialists as needed
 
-## Delegation Patterns
+## What This Does
+
+Instead of Claude handling everything itself, this toolkit makes it:
+
+- **Spawn specialist agents** for testing, debugging, architecture, security, etc.
+- **Track each issue/task** in its own folder with context and notes
+- **Coordinate multi-agent workflows** (debug → test → review)
+- **Survive context compaction** by persisting state to files
+
+## The 14 Specialist Agents
+
+| Agent | Expertise | Spawned For |
+|-------|-----------|-------------|
+| `test-agent` | TDD, coverage | Writing tests |
+| `debug-agent` | Root cause analysis | Bug fixing |
+| `architect-agent` | SOLID, patterns | Design decisions |
+| `reviewer-agent` | Code quality | PR reviews |
+| `docs-agent` | Documentation | Writing docs |
+| `estimator-agent` | Story points | Ticket estimation |
+| `ui-agent` | Frontend | UI implementation |
+| `workflow-agent` | Execution | Complex implementations |
+| `research-agent` | Web research | Fact-checking, learning |
+| `security-agent` | OWASP, vulnerabilities | Security audits |
+| `refactor-agent` | Code smells | Technical debt cleanup |
+| `explore-agent` | Codebase understanding | Finding patterns |
+| `performance-agent` | Profiling | Optimization |
+| `ticket-analyst-agent` | Requirements | Clarifying vague requests |
+
+## Per-Issue Context Tracking
+
+Every task gets its own isolated folder:
+
+```
+workspace/
+├── ASC-914/                    # Ticket number as folder name
+│   ├── context.md              # Notes, findings, agent handoffs
+│   ├── mockups/                # Input designs, references
+│   ├── outputs/                # Generated artifacts
+│   └── snapshots/              # Screenshots, progress
+│
+└── 2025-12-10-fix-login/       # Or date-based for ad-hoc tasks
+    └── ...
+```
+
+### context.md tracks:
+- Task status (ACTIVE/BLOCKED/COMPLETE)
+- Notes and findings
+- Which agents contributed what
+- Open questions
+- Next steps for resuming
+
+This survives session resets and context compaction.
+
+## How Delegation Works
 
 ### Single Agent
-Simple, single-domain tasks spawn one specialist.
 ```
-"Write tests for this function" → test-agent
+"Write tests for the auth module"
+→ test-agent handles it
 ```
 
-### Sequential (Dependent Tasks)
-Tasks build on each other through per-task context.
+### Sequential (Dependent)
 ```
 "Fix this bug and add tests"
 → debug-agent (finds root cause)
-→ workspace/[task-id]/context.md (stores findings)
+→ saves findings to context.md
 → test-agent (writes regression tests)
 ```
 
-### Parallel (Independent Tasks)
-Multiple analyses run simultaneously.
+### Parallel (Independent)
 ```
-"Review this PR"
-→ reviewer-agent (code quality)
-→ test-agent (coverage)      } parallel
-→ architect-agent (design)
-→ merged feedback
+"Review this PR comprehensively"
+→ reviewer-agent  ─┐
+→ test-agent      ├─→ merged feedback
+→ security-agent  ─┘
 ```
 
 ## File Structure
 
 ```
-ClaudeMemory/
-├── CLAUDE.md              # Orchestrator instructions
+your-project/
+├── .claude/
+│   ├── settings.json      # Permissions (pre-configured)
+│   └── commands/          # Slash commands (/spawn-agent, /update-docs, etc.)
+├── agents/
+│   ├── _orchestrator.md   # Routing logic
+│   ├── _shared-output.md  # Common output format
+│   └── [14 agent files]
+├── knowledge/             # 19 domain expertise files
+├── workspace/             # Your task folders go here
+├── CLAUDE.md              # Orchestrator instructions (loaded every session)
 ├── MEMORY.md              # System registry
-├── README.md              # This file
-├── agents/                # Agent definitions
-│   ├── _orchestrator.md   # Routing logic + collaboration matrix
-│   ├── test-agent.md
-│   ├── debug-agent.md
-│   ├── architect-agent.md
-│   ├── reviewer-agent.md
-│   ├── docs-agent.md
-│   ├── estimator-agent.md
-│   ├── ui-agent.md
-│   ├── workflow-agent.md
-│   ├── research-agent.md
-│   ├── security-agent.md
-│   ├── refactor-agent.md
-│   └── explore-agent.md
-├── workspace/             # Task-organized work area
-│   └── [task-id]/         # Per-task folders
-│       ├── mockups/       # Input designs, references
-│       ├── outputs/       # Generated artifacts
-│       ├── snapshots/     # Screenshots, progress
-│       └── context.md     # Task context & agent handoffs
-└── knowledge/             # Knowledge bases
-    ├── testing.md
-    ├── debugging.md
-    ├── documentation.md
-    ├── workflow.md
-    ├── story-pointing.md
-    ├── architecture.md
-    ├── pr-review.md
-    ├── ui-implementation.md
-    ├── organization.md
-    ├── research.md
-    ├── security.md
-    ├── refactoring.md
-    ├── api-design.md
-    ├── code-exploration.md
-    └── memory-management.md
+└── [your project files]
 ```
 
-## Workspace Organization
+## Token Efficiency
 
-Task artifacts are organized in `workspace/[task-id]/` folders:
+This toolkit is optimized to minimize token usage:
 
-- **Task ID**: Use ticket number (`ASC-914`) or generate `YYYY-MM-DD-description`
-- **mockups/**: Input designs, reference images, specifications
-- **outputs/**: Generated artifacts, final deliverables
-- **snapshots/**: Screenshots, progress captures
-- **context.md**: Task context, notes, agent contributions, handoffs
+- **Agents READ files** instead of receiving pasted content (~97% reduction)
+- **Single source of truth** - no duplicated rosters
+- **Lazy loading** - knowledge bases loaded only when needed
 
-See `knowledge/organization.md` for full guidelines.
+## Pre-Configured Permissions
 
-## Agent Status System
+### Auto-Allowed (No Prompts)
+- File operations (Read, Write, Edit, Glob, Grep)
+- Development tools (npm, node, python, cargo, go, etc.)
+- Git workflow (add, commit, push, pull, fetch, merge, checkout)
+- GitHub CLI (pr create, issue create)
 
-Agents report status to enable clear coordination:
+### Requires Approval
+- Destructive git (reset, clean, force push)
+- System commands (sudo, curl, wget)
+- Sensitive files (.env, secrets, credentials)
 
-| Status | Meaning | Orchestrator Action |
-|--------|---------|---------------------|
-| **COMPLETE** | Task finished | Continue to next agent or synthesize |
-| **BLOCKED** | Cannot proceed | Route to another agent or ask user |
-| **NEEDS_INPUT** | Need clarification | Ask user, then resume |
+### Blocked
+- `rm -rf /`, disk formatting, database drops
+- System shutdown commands
 
-## Adding New Agents
+Edit `.claude/settings.json` to customize.
 
-1. Create `agents/[name]-agent.md` with:
-   - Role, Goal, Backstory
-   - Capabilities
-   - Knowledge Base reference
-   - Collaboration Protocol (include Context Location)
-   - Output Format (include Status field)
+## Slash Commands
 
-2. Add to `CLAUDE.md` Agent Roster
+| Command | Description |
+|---------|-------------|
+| `/spawn-agent <name> <task-id>` | Manually spawn an agent |
+| `/list-agents` | Show all available agents |
+| `/agent-status <task-id>` | Check task progress |
+| `/check-task <task-id>` | Validate task folder |
+| `/update-docs` | Generate documentation |
+| `/compact-review` | Review state before compaction |
 
-3. Update `agents/_orchestrator.md` routing
+## Adding to the System
 
-4. Update `MEMORY.md` registry
+### New Agent
+1. Create `agents/[name]-agent.md`
+2. Add to `MEMORY.md` Agent Registry
+3. Update `CLAUDE.md` Agent Roster
 
-## Adding New Knowledge
-
+### New Knowledge Base
 1. Create `knowledge/[topic].md`
-2. Add to `CLAUDE.md` documentation router
-3. Update `MEMORY.md` documentation registry
-4. Optionally create a matching agent
+2. Add to `MEMORY.md` Documentation Registry
+3. Add to `CLAUDE.md` router table
 
-## Research Sources
+## Design Sources
 
-This system was designed based on:
-- [Anthropic's Multi-Agent Research System](https://www.anthropic.com/engineering/multi-agent-research-system)
-- [wshobson/agents Architecture](https://github.com/wshobson/agents)
+- [Anthropic Multi-Agent Research](https://www.anthropic.com/engineering/multi-agent-research-system)
 - [CrewAI Agent Patterns](https://docs.crewai.com/en/concepts/agents)
 - [Model Context Protocol](https://www.anthropic.com/news/model-context-protocol)
 
-## Key Design Principles
+## Key Principles
 
-1. **LLM-based routing**: Claude analyzes requests and decides delegation dynamically
-2. **Per-task context**: Each task has isolated collaboration context
-3. **Token efficiency**: Only load agent definitions and docs when needed
-4. **Rich context**: Agents receive full role/goal/backstory for better performance
-5. **Status-driven handoffs**: Agents report COMPLETE/BLOCKED/NEEDS_INPUT for coordination
-6. **Graceful failure**: If agents fail, orchestrator summarizes and asks for guidance
-
-## Permissions & Safety Configuration
-
-This project includes a pre-configured `.claude/settings.json` with maximum permissions and safety guardrails.
-
-### What's Allowed
-
-| Category | Permissions |
-|----------|-------------|
-| **File Operations** | Read, Write, Edit, Glob, Grep |
-| **Development Tools** | npm, node, python, pip, cargo, go, dotnet, mvn, gradle |
-| **Testing** | pytest, jest, vitest, eslint, prettier, tsc |
-| **Git (Read-Only)** | status, diff, log, show, blame, branch (list), tag (list), remote -v, ls-files, describe |
-| **GitHub CLI (Read-Only)** | issue view, pr list/view/status/checks, repo view |
-| **System** | ls, pwd, mkdir, cp, mv, cat, head, tail, diff, echo, which |
-| **Claude Tools** | Task, TodoWrite, WebSearch, WebFetch, NotebookEdit |
-
-### What's Blocked
-
-| Category | Why |
-|----------|-----|
-| **All git writes** | add, commit, push, pull, fetch, merge, rebase, checkout, switch, restore, reset, revert, cherry-pick, stash, clean |
-| **Git destructive** | branch -d/-D, tag -d, rm, mv, filter-branch, gc, prune |
-| **Git config changes** | init, clone, remote add/remove, config --global/--local |
-| **GitHub CLI writes** | pr create/merge/close, issue create/close, repo create/delete, release |
-| **rm -rf, sudo** | Prevent destructive system operations |
-| **curl, wget** | Prevent data exfiltration |
-| **.env, secrets/, *.pem, *.key** | Protect sensitive credentials |
-| **~/.ssh, ~/.aws, ~/.config/gcloud** | Protect cloud/SSH credentials |
-
-### Sandbox Mode
-
-The configuration enables Claude Code's sandbox with:
-- **Filesystem isolation**: Write access limited to project directory
-- **Network isolation**: Prevents unauthorized external connections
-- **Auto-allow bash**: Safe commands run without prompts inside sandbox
-
-### Customizing Permissions
-
-Edit `.claude/settings.json` to adjust. Key patterns:
-
-```json
-{
-  "permissions": {
-    "allow": ["Bash(your-command:*)"],
-    "deny": ["Read(./sensitive-path/**)"]
-  }
-}
-```
-
-See [Claude Code Settings Documentation](https://code.claude.com/docs/en/settings) for full reference.
-
-## Instruction Enforcement System
-
-This project includes mechanisms to ensure Claude consistently follows the defined rules.
-
-### Critical Rules (in CLAUDE.md)
-
-Non-negotiable rules enforced at the top of CLAUDE.md:
-
-1. **NEVER write code without spawning the appropriate agent first**
-2. **ALWAYS include full knowledge base when spawning agents**
-3. **ALWAYS use TodoWrite for multi-step tasks**
-4. **NEVER bypass the agent system** (even for "simple" tasks)
-5. **ALWAYS validate agent status** (COMPLETE/BLOCKED/NEEDS_INPUT)
-6. **ALWAYS log decisions per-task** in `workspace/[task-id]/context.md`
-
-### Per-Task Storage
-
-**Everything is stored per-task.** No global state.
-
-```
-workspace/[task-id]/
-├── context.md      # Orchestrator decisions, agent outputs, handoffs
-├── mockups/        # Input designs, references
-├── outputs/        # Generated artifacts
-└── snapshots/      # Screenshots, progress
-```
-
-### Enforcement Hooks
-
-LLM-based hooks validate compliance before file operations:
-
-- **Edit hook**: Verifies appropriate agent was consulted before code changes
-- **Write hook**: Verifies appropriate agent was consulted before creating files
-
-Hooks add ~5-10 seconds per operation but ensure agent system is not bypassed.
-
-### Compliance Checklist (in _orchestrator.md)
-
-Before ANY response, orchestrator must verify:
-- Task ID identified
-- Task folder created
-- Appropriate agent(s) spawned
-- Full agent definition included
-- Full knowledge base included
-- TodoWrite used for multi-step tasks
-- All decisions logged to context.md
-
-## Memory & Context Persistence
-
-This system is designed to survive Claude Code's context compaction and session resets.
-
-### What Survives Compaction
-
-| Survives | Does Not Survive |
-|----------|------------------|
-| CLAUDE.md (loaded every session) | Detailed conversation history |
-| MEMORY.md (system registry) | Working memory of file contents |
-| workspace/[task-id]/context.md | Agent's "knowledge" of topics |
-| All files on disk | Nuanced instructions from early chat |
-
-### Recovery Protocol
-
-When starting a new session or after compaction:
-
-1. **CLAUDE.md loads automatically** (orchestrator instructions)
-2. **Check MEMORY.md Active Tasks** for current work
-3. **Read workspace/[task-id]/context.md** for each active task
-4. **Resume from documented "Next Steps"**
-
-### Best Practices
-
-- Keep CLAUDE.md lean (< 500 lines)
-- Update task context.md after each milestone
-- Use MEMORY.md as an index, not a conversation log
-- Record explicit Next Steps in context.md
-- Always include file paths in notes
-
-See `knowledge/memory-management.md` for detailed strategies.
+1. **Agents for everything** - Even "simple" tasks get proper specialists
+2. **Per-task isolation** - Each issue has its own context
+3. **Status-driven** - Agents report COMPLETE/BLOCKED/NEEDS_INPUT
+4. **Survives compaction** - State persists in files, not memory
+5. **Token efficient** - Minimal overhead, maximum capability
