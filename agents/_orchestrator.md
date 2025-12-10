@@ -279,8 +279,10 @@ You are [agent-name]. READ `agents/[agent-name].md` for your full definition.
 ## Your Knowledge Base
 READ `knowledge/[topic].md` for domain expertise.
 
-## Current Task Context
-[If collaborative]: READ `workspace/[task-id]/context.md`
+## Task Context (MANDATORY)
+Task ID: [task-id]
+READ `workspace/[task-id]/context.md` BEFORE starting any work.
+You MUST report what you found in your Context Acknowledgment section.
 
 ## Your Specific Task
 [Clear, detailed task description]
@@ -289,11 +291,29 @@ READ `knowledge/[topic].md` for domain expertise.
 [Format requirements for this specific task]
 
 End your response with:
-**Status**: COMPLETE | BLOCKED | NEEDS_INPUT
-**Handoff Notes**: [Key findings for next agent, if any]
+1. **Context Acknowledgment** (see agents/_shared-output.md)
+2. **Status**: COMPLETE | BLOCKED | NEEDS_INPUT
+3. **Handoff Notes**: [Key findings for next agent, if any]
 ```
 
 **Why READ instead of paste**: Agents have tool access. Reading files uses ~50 tokens vs pasting uses ~2000 tokens. Same quality, 97% fewer tokens.
+
+### Parallel Agent Protocol
+
+When spawning multiple agents simultaneously (Pattern 3):
+
+1. **Before spawning**: Ensure `workspace/[task-id]/context.md` exists with "Parallel Findings" section
+2. **In spawn prompt**: Add this instruction:
+   ```
+   You are being spawned IN PARALLEL with other agents.
+   BEFORE completing your work:
+   1. READ context.md to see if other agents have added findings
+   2. Check the "Parallel Findings" section for discoveries that affect your work
+   AFTER completing your work:
+   3. ADD your key finding to the "Parallel Findings" table in context.md
+   4. Format: | [your-agent-name] | [finding] | [impact] | [timestamp] |
+   ```
+3. **After all complete**: Orchestrator synthesizes all parallel findings
 
 ## Context Update Protocol
 

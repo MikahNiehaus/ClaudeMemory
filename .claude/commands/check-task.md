@@ -39,19 +39,36 @@ For each agent contribution in context.md:
 - [ ] Status field present (COMPLETE/BLOCKED/NEEDS_INPUT)
 - [ ] If BLOCKED, blocker is documented
 - [ ] Handoff notes present for sequential agents
+- [ ] Context Acknowledgment present (for agents after first)
+
+### 5. Content Validation (CRITICAL)
+Verify context.md sections are actually populated (not just headers):
+- [ ] **Status.State** has value (ACTIVE/BLOCKED/COMPLETE) - not empty
+- [ ] **Quick Resume** is current (mentions last agent that contributed)
+- [ ] **Next Steps** has at least one item defined
+- [ ] **Key Files** lists at least one relevant file
+- [ ] If BLOCKED: **Blocked Resolution** section is filled out
+
+### 6. Context Health Check
+- [ ] File size < 30 KB (check with file stats)
+- [ ] Agent Contributions < 10 (if more, suggest archiving)
+- [ ] Quick Resume matches last Agent Contribution timestamp
 
 ## Output Format
 
 ```
 Task: $1
 ─────────────────────────────
-Structure:     [PASS/FAIL] - [details]
-Context.md:    [PASS/FAIL] - [missing sections]
-MEMORY.md:     [PASS/FAIL] - [registration status]
-Agent Outputs: [PASS/FAIL] - [compliance issues]
+Structure:      [PASS/FAIL] - [details]
+Context.md:     [PASS/FAIL] - [missing sections]
+Content:        [PASS/FAIL] - [empty/stale fields]
+MEMORY.md:      [PASS/FAIL] - [registration status]
+Agent Outputs:  [PASS/FAIL] - [compliance issues]
+Context Health: [PASS/WARN/FAIL] - [size/staleness issues]
 ─────────────────────────────
-Overall:       [VALID/INVALID]
-Issues:        [list of issues to fix]
+Overall:        [VALID/INVALID]
+Issues:         [list of issues to fix]
+Warnings:       [non-blocking concerns]
 ```
 
 ## Task Files

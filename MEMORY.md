@@ -195,6 +195,15 @@ ClaudeMemory/
   - **Shared template**: Created `agents/_shared-output.md` for common status/output patterns
   - **Estimated savings**: 30-40% fewer tokens per multi-agent workflow
 
+- **2025-12-10**: Context Consistency Improvements
+  - **Context Acknowledgment**: Agents MUST confirm they read context.md (verifiable handoffs)
+  - **Parallel Findings Table**: New section for concurrent agents to share discoveries in real-time
+  - **Mandatory Context Reading**: Spawn template now requires context reading, not optional
+  - **Context Size Limits**: Guidelines for 30KB max, archiving process documented
+  - **Quick Resume Auto-Update**: Mandatory protocol to keep Quick Resume current after every agent
+  - **Enhanced /check-task**: Now validates content (not just structure), checks for stale Quick Resume
+  - **Parallel Agent Protocol**: Added explicit instructions for agents spawned simultaneously
+
 ## Notes
 
 ### Key Research Sources

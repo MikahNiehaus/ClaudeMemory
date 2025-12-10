@@ -114,6 +114,15 @@ Example: "Implementing auth refactor. debug-agent found root cause in token.ts:4
 - **Output**: What was produced (or path to outputs/ folder)
 - **Handoff Notes**: What next agent needs to know
 
+## Parallel Findings (Updated by concurrent agents)
+
+> When agents run in parallel, they add findings here so other agents can see discoveries in real-time.
+
+| Agent | Finding | Impact | Timestamp |
+|-------|---------|--------|-----------|
+| - | - | - | - |
+<!-- Parallel agents: Add your row IMMEDIATELY when you discover something significant -->
+
 ## Handoff Queue
 | Next Agent | Reason | Priority |
 |------------|--------|----------|
@@ -269,3 +278,82 @@ When agents collaborate on a task:
 3. Agent contributions are logged with timestamps
 4. Artifacts are accessible to all collaborating agents
 5. Orchestrator updates context after each agent completes
+
+---
+
+## Context Size Management
+
+Keep context.md files manageable for efficient agent collaboration.
+
+### Size Limits
+
+| Metric | Target | Warning | Action |
+|--------|--------|---------|--------|
+| File size | < 30 KB | > 30 KB | Archive old contributions |
+| Agent contributions | < 10 active | > 10 | Move resolved to archive |
+| Parallel findings | < 20 rows | > 20 | Consolidate into summary |
+
+### What to Keep (Active)
+- Current task status and blockers
+- Unresolved open questions
+- Recent agent contributions (last 3-5)
+- Next steps
+- Key files list
+
+### What to Archive
+- Resolved agent contributions (move to `outputs/archive/context-history.md`)
+- Completed parallel findings (consolidate to summary)
+- Old session history entries
+
+### Archiving Process
+When context.md exceeds 30 KB:
+1. Create `outputs/archive/` if it doesn't exist
+2. Move resolved Agent Contributions to `outputs/archive/context-history.md`
+3. Keep only last 3-5 contributions in main context.md
+4. Add summary line: "See `outputs/archive/` for [N] prior agent contributions"
+
+---
+
+## Quick Resume Auto-Update Protocol
+
+The Quick Resume section MUST always reflect current state for compaction recovery.
+
+### Update Rule (MANDATORY)
+
+**After EVERY agent completes**, orchestrator MUST update Quick Resume:
+
+```markdown
+## Quick Resume
+[agent-name] completed [task] at [HH:MM]. Next: [immediate next action].
+```
+
+### Examples
+
+```markdown
+## Quick Resume
+debug-agent completed root cause analysis at 14:30. Next: spawn test-agent for regression tests.
+```
+
+```markdown
+## Quick Resume
+security-agent + reviewer-agent completed parallel review at 15:45. Next: synthesize findings for user.
+```
+
+```markdown
+## Quick Resume
+BLOCKED: test-agent needs user input on test framework preference. Waiting for user response.
+```
+
+### Validation
+
+- Quick Resume should NEVER be more than 1 agent behind
+- If compaction occurs, Quick Resume is the first thing read
+- Stale Quick Resume = confused recovery = wasted tokens
+
+### Auto-Update Trigger
+
+Orchestrator updates Quick Resume:
+1. Immediately after receiving agent status
+2. Before spawning next agent
+3. Before any user-facing response
+4. When status changes to BLOCKED

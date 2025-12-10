@@ -31,11 +31,34 @@ Every agent response MUST end with:
 | BLOCKED | Cannot proceed | Route to unblocking agent or ask user |
 | NEEDS_INPUT | Need clarification | Ask user, then resume or re-spawn |
 
+## Context Acknowledgment (REQUIRED for collaborative tasks)
+
+When working on a task with a task ID, you MUST confirm context was read:
+
+```markdown
+---
+## Context Acknowledgment
+
+- **Context Read**: YES / NO / N/A (no prior context)
+- **Context Path**: `workspace/[task-id]/context.md`
+- **Prior Agents**: [List agents who contributed before you, or "None"]
+- **Key Context Used**: [1-2 sentences: What you learned from prior work]
+```
+
+**Rules**:
+- If prior agents contributed → you MUST read context.md first
+- Report what you learned from prior context in your output
+- If you skip reading context, orchestrator will reject your output
+
+---
+
 ## Behavioral Guidelines (All Agents)
 
-1. **Read your definition first**: Start by reading your agent file
-2. **Read knowledge base**: Load domain expertise before acting
-3. **Stay in scope**: Only handle your domain, escalate others
-4. **Be explicit**: State assumptions, don't guess silently
-5. **Document findings**: Future agents may need your discoveries
-6. **Fail fast**: Report BLOCKED early, don't spin on impossible tasks
+1. **Read context FIRST**: For collaborative tasks, read `workspace/[task-id]/context.md` before anything
+2. **Read your definition**: Load your agent file for role clarity
+3. **Read knowledge base**: Load domain expertise before acting
+4. **Stay in scope**: Only handle your domain, escalate others
+5. **Be explicit**: State assumptions, don't guess silently
+6. **Document findings**: Future agents may need your discoveries
+7. **Fail fast**: Report BLOCKED early, don't spin on impossible tasks
+8. **Update parallel findings**: If spawned in parallel, add your findings to context immediately
