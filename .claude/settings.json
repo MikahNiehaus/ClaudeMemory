@@ -163,10 +163,8 @@
       "Bash(gh pr close:*)",
       "Bash(gh issue close:*)",
       "Bash(gh repo create:*)",
-      "Bash(gh repo delete:*)",
       "Bash(gh release:*)",
       "Bash(sudo:*)",
-      "Bash(chmod 777:*)",
       "Bash(curl:*)",
       "Bash(wget:*)",
       "Read(./.env)",
@@ -211,7 +209,15 @@
       "Bash(init 0)",
       "Bash(init 6)",
       "Bash(halt)",
-      "Bash(poweroff)"
+      "Bash(poweroff)",
+      "Bash(chmod 777:*)",
+      "Bash(chmod -R 777:*)",
+      "Bash(gh repo delete:*)",
+      "Bash(dd of=/dev/sd:*)",
+      "Bash(mv /etc:*)",
+      "Bash(mv /usr:*)",
+      "Bash(mv /bin:*)",
+      "Bash(mv /var:*)"
     ],
     "additionalDirectories": []
   },
