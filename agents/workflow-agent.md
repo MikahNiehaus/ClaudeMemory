@@ -19,7 +19,6 @@ You've led countless feature implementations and learned that skipping steps cau
 - Create rollback plans
 - Manage technical debt decisions
 - Organize task artifacts in `workspace/[task-id]/` folders
-- Register active tasks in `MEMORY.md`
 
 ## Knowledge Base
 **Primary**: Read `knowledge/workflow.md` for comprehensive execution best practices

@@ -7,8 +7,8 @@ You are the **Lead Agent** (orchestrator) of a multi-agent system. You analyze i
 **At session start**:
 1. Read this file (orchestrator instructions)
 2. Read `agents/_orchestrator.md` for detailed routing logic
-3. Check `MEMORY.md` Active Tasks for ongoing work
-4. Check active task workspace folders for collaboration context
+3. List `workspace/` folders to find active tasks
+4. Read `workspace/[task-id]/context.md` for each active task
 
 ---
 
@@ -54,6 +54,14 @@ These rules are **NON-NEGOTIABLE**. Violation is not permitted.
   - Agent outputs and status
 - Nothing is stored globally — everything goes in the task folder
 
+### Rule 7: ALWAYS Execute Planning Phase Before Agent Delegation
+- For ANY task requiring agent delegation → MUST complete Planning Phase first
+- Planning Phase MUST populate the "Plan" section in `workspace/[task-id]/context.md`
+- Plan MUST use the Planning Checklist to determine required activities
+- If plan mode active → MUST get user approval before execution
+- If plan mode inactive → auto-execute after planning
+- **NEVER skip planning** for "simple" or "obvious" tasks
+
 ---
 
 ## Workspace Organization
@@ -74,10 +82,75 @@ workspace/
 **When starting a task**:
 1. Create task folder if multi-step work
 2. Create `context.md` from template (see `knowledge/organization.md`)
-3. Register in `MEMORY.md` Active Tasks with workspace path
-4. Store inputs in `mockups/`, outputs in `outputs/`
+3. Store inputs in `mockups/`, outputs in `outputs/`
 
 See `knowledge/organization.md` for full guidelines.
+
+---
+
+## Planning Phase Protocol
+
+Every task requiring agent delegation MUST go through a mandatory planning phase BEFORE execution.
+
+### When to Plan
+
+Planning is **REQUIRED** when:
+- Any agent will be spawned
+- Task involves code changes
+- Task has 2+ steps
+- Multiple domains are involved
+
+Planning is **SKIPPED** only for:
+- Pure read-only questions (no code changes)
+- Single direct answers (no agents needed)
+- Codebase navigation questions
+
+### Planning Phase Steps
+
+#### Step 1: Create Task Workspace
+1. Generate task ID (ticket number or `YYYY-MM-DD-description`)
+2. Create `workspace/[task-id]/` folder structure
+3. Initialize `context.md` from template (include Plan section)
+
+#### Step 2: Run Planning Checklist
+Evaluate each domain against the task using criteria from knowledge bases:
+
+| Domain | Criteria (YES if any match) | Knowledge Base | Agent |
+|--------|----------------------------|----------------|-------|
+| **Testing** | New code, behavior changes, bug fixes, core functionality, user requests tests | `knowledge/testing.md` | test-agent |
+| **Documentation** | New API, API changes, config changes, user features, user requests docs | `knowledge/documentation.md` | docs-agent |
+| **Security** | Auth, user input, sensitive data, DB queries, HTTP requests, file ops, payments | `knowledge/security.md` | security-agent |
+| **Architecture** | New component, boundary changes, design decisions, integrations, unclear scope | `knowledge/architecture.md` | architect-agent |
+| **Performance** | Large loops, DB queries, caching, hot paths, async ops, latency requirements | `knowledge/performance.md` | performance-agent |
+| **Review** | Code changes ready for merge, user requests review | `knowledge/pr-review.md` | reviewer-agent |
+| **Clarity** | Vague request, missing acceptance criteria, unclear scope | `knowledge/ticket-understanding.md` | ticket-analyst-agent |
+
+#### Step 3: Generate Plan
+Populate the "Plan" section in `context.md` with:
+- Checklist results (which domains needed)
+- Decomposed subtasks following three principles:
+  - **Solvability**: Each subtask achievable by a single agent
+  - **Completeness**: All subtasks together fully address the request
+  - **Non-Redundancy**: No overlap between subtasks
+- Agent assignments and execution sequence
+- Success criteria per subtask
+
+#### Step 4: Approval Gate
+- **Plan Mode Active**: Present plan to user, wait for approval
+- **Plan Mode Inactive** (default): Auto-proceed to execution
+
+### Plan Mode Toggle
+
+Users can enable/disable plan approval:
+- Enable: "enable plan mode", "I want to approve plans"
+- Disable: "disable plan mode", "auto-execute"
+
+When plan mode is **ACTIVE**:
+- Present plan after generation
+- Wait for: "approve", "proceed", "execute"
+- Allow modifications before approval
+
+---
 
 ## Agent Roster
 
@@ -105,13 +178,21 @@ See `knowledge/organization.md` for full guidelines.
 ```
 User Request
     │
-    ├─ Simple, single domain? ─────────► Spawn 1 agent
+    ├─ Read-only question? ─────────────────► Direct answer (no agents)
     │
-    ├─ Multiple domains, dependent? ───► Sequential agents (A → task context → B)
-    │
-    ├─ Multiple domains, independent? ─► Parallel agents (merge results)
-    │
-    └─ Complex, iterative? ────────────► Collaborative loop (task context)
+    └─ Requires action/code/agents? ────────► PLANNING PHASE (mandatory)
+            │
+            ├─ Step 1: Create task workspace
+            ├─ Step 2: Run Planning Checklist
+            ├─ Step 3: Generate plan in context.md
+            ├─ Step 4: Approval gate (if plan mode active)
+            │
+            └─ EXECUTION PHASE
+                 │
+                 ├─ Simple, single domain? ─────────► Spawn 1 agent
+                 ├─ Multiple domains, dependent? ───► Sequential agents
+                 ├─ Multiple domains, independent? ─► Parallel agents
+                 └─ Complex, iterative? ────────────► Collaborative loop
 ```
 
 ## How to Delegate

@@ -73,11 +73,40 @@ Every task folder should have a `context.md` file:
 Example: "Implementing auth refactor. debug-agent found root cause in token.ts:45, waiting for test-agent to write regression tests."
 
 ## Status
-- **State**: [ACTIVE/BLOCKED/COMPLETE]
-- **Current Phase**: [Phase name or description]
+- **State**: [PLANNING/ACTIVE/BLOCKED/COMPLETE]
+- **Current Phase**: [Planning | Execution | Review]
 - **Last Agent**: [Most recent agent that contributed]
 - **Created**: [YYYY-MM-DD]
 - **Updated**: [YYYY-MM-DD]
+
+## Plan (Populated by Planning Phase)
+
+### Planning Checklist Results
+| Domain | Needed? | Criteria Met | Agent |
+|--------|---------|--------------|-------|
+| Testing | [Yes/No] | [Specific criteria that triggered this] | test-agent |
+| Documentation | [Yes/No] | [Specific criteria] | docs-agent |
+| Security | [Yes/No] | [Specific criteria] | security-agent |
+| Architecture | [Yes/No] | [Specific criteria] | architect-agent |
+| Performance | [Yes/No] | [Specific criteria] | performance-agent |
+| Review | [Yes/No] | [Specific criteria] | reviewer-agent |
+| Clarity | [Yes/No] | [Specific criteria] | ticket-analyst-agent |
+
+### Subtasks
+| # | Subtask | Agent | Dependencies | Status |
+|---|---------|-------|--------------|--------|
+| 1 | [Name] | [agent] | None | [pending/in_progress/complete] |
+| 2 | [Name] | [agent] | Task 1 | [pending/in_progress/complete] |
+
+### Execution Strategy
+- **Pattern**: [Sequential | Parallel | Hybrid]
+- **Rationale**: [Why this pattern was chosen]
+
+### Approval Status
+- **Plan Mode**: [Active/Inactive]
+- **Approved**: [Yes/No/Pending]
+- **Approved By**: [User/Auto]
+- **Modifications**: [Any changes requested before approval]
 
 ## Blocked Resolution (if BLOCKED)
 - **Blocked By**: [Specific blocker description]
@@ -149,7 +178,8 @@ Example: "Implementing auth refactor. debug-agent found root cause in token.ts:4
 
 | Status | Meaning | Actions |
 |--------|---------|---------|
-| **ACTIVE** | Work in progress | Continue with next steps |
+| **PLANNING** | Planning phase in progress | Complete checklist, generate plan |
+| **ACTIVE** | Execution in progress | Continue with next steps |
 | **BLOCKED** | Cannot proceed | Check "Blocked Resolution" section |
 | **COMPLETE** | Task finished | Archive or clean up |
 
@@ -179,7 +209,8 @@ Update after:
 
 ### State Transitions
 ```
-ACTIVE → Working on task, agents can contribute
+PLANNING → Running Planning Checklist, generating plan
+ACTIVE → Executing plan, agents contributing
 BLOCKED → Cannot proceed, see "Blocked By" field
 COMPLETE → Task finished, final summary in Notes
 ```
@@ -213,21 +244,18 @@ COMPLETE → Task finished, final summary in Notes
 1. Determine task ID (ticket number or generate one)
 2. Create `workspace/[task-id]/` folder structure
 3. Create `context.md` from template
-4. Register task in `MEMORY.md` Active Tasks table
-5. Store any input materials in `mockups/`
+4. Store any input materials in `mockups/`
 
 ### During Work
 1. Save screenshots to `snapshots/`
 2. Update `context.md` with findings and agent contributions
 3. Store generated artifacts in `outputs/`
-4. Update task status in `MEMORY.md`
 
 ### After Completion
 1. Ensure all artifacts are in proper folders
 2. Update `context.md` state to COMPLETE
 3. Add final summary to Notes & Findings
-4. Mark task complete in `MEMORY.md`
-5. Clean up any temporary files
+4. Clean up any temporary files
 
 ## Cleanup Guidelines
 

@@ -3,8 +3,8 @@
 ## Session Quick Start
 
 **On new session or after compaction**:
-1. This file (MEMORY.md) provides system state
-2. Check Active Tasks below for current work
+1. This file (MEMORY.md) provides system registry
+2. List `workspace/` folders to find active tasks
 3. Read `workspace/[task-id]/context.md` for each active task
 4. Resume from documented "Next Steps"
 
@@ -12,7 +12,7 @@
 
 Multi-agent orchestration system where Claude acts as lead agent, delegating to specialized subagents. Agents collaborate through per-task context files.
 
-**14 Specialist Agents** | **19 Knowledge Bases** | **Per-task context isolation** | **6 Slash Commands**
+**14 Specialist Agents** | **19 Knowledge Bases** | **Per-task context isolation** | **7 Slash Commands**
 
 ## Architecture
 
@@ -22,7 +22,7 @@ ClaudeMemory/
 ├── MEMORY.md              # This file - system registry (check first!)
 ├── .claude/
 │   ├── settings.json      # Permissions, hooks, sandbox config
-│   └── commands/          # 6 slash commands
+│   └── commands/          # 7 slash commands
 ├── agents/                # Agent definitions
 │   ├── _orchestrator.md   # Routing logic + collaboration matrix + conflict resolution
 │   └── [14 specialist agents]
@@ -91,16 +91,23 @@ ClaudeMemory/
 | `/check-task <task-id>` | Validate task folder structure | 2025-12-05 |
 | `/compact-review` | Preview critical state before compaction | 2025-12-05 |
 | `/update-docs` | Regenerate documentation in docs/ folder | 2025-12-05 |
+| `/plan-task <task-id> <description>` | Execute planning phase only (without execution) | 2025-12-11 |
 
-## Active Tasks
+## Finding Active Tasks
 
-| Task ID | Description | Status | Workspace | Created |
-|---------|-------------|--------|-----------|---------|
-| (none)  | -           | -      | -         | -       |
+Active tasks are tracked in their workspace folders, not here. To find active tasks:
 
-*Register tasks here when starting multi-step work. See `knowledge/organization.md` for task folder guidelines.*
+```bash
+ls workspace/
+```
 
-**Task Status Values**: ACTIVE, BLOCKED, COMPLETE
+Each task has its own `workspace/[task-id]/context.md` with:
+- Status (PLANNING/ACTIVE/BLOCKED/COMPLETE)
+- Plan and checklist results
+- Agent contributions
+- Next steps
+
+See `knowledge/organization.md` for task folder guidelines.
 
 ## Adding New Components
 
@@ -203,6 +210,29 @@ ClaudeMemory/
   - **Quick Resume Auto-Update**: Mandatory protocol to keep Quick Resume current after every agent
   - **Enhanced /check-task**: Now validates content (not just structure), checks for stale Quick Resume
   - **Parallel Agent Protocol**: Added explicit instructions for agents spawned simultaneously
+
+- **2025-12-11**: Mandatory Planning Phase
+  - **New Rule 7**: "ALWAYS Execute Planning Phase Before Agent Delegation"
+  - **Planning Protocol**: Mandatory analysis phase runs BEFORE any agent execution
+  - **Planning Checklist**: Dynamic evaluation of 7 domains (testing, documentation, security, architecture, performance, review, clarity) using criteria from knowledge bases
+  - **Three Principles**: Solvability, Completeness, Non-Redundancy for task decomposition
+  - **Plan in context.md**: New "Plan" section with checklist results, subtasks, execution strategy
+  - **New Status**: Added PLANNING state to task lifecycle
+  - **Plan Mode**: Optional user approval gate (default: auto-execute)
+  - **New Command**: `/plan-task` - execute planning phase without execution (for review)
+  - **Research-backed**: IBM AI Agent Planning, Anthropic Multi-Agent System, Task Decomposition best practices
+  - **Purpose**: Dynamically determine what each task needs (tests? docs? security?) instead of forgetting steps
+  - Total: 14 agents, 19 knowledge bases, 7 slash commands
+
+- **2025-12-11**: Simplified MEMORY.md (Removed Active Tasks Table)
+  - **Removed**: Active Tasks table (was redundant with workspace/ folders)
+  - **Added**: "Finding Active Tasks" section pointing to workspace/
+  - **Rationale**: Per research on multi-agent state management:
+    - Hybrid approach is best (centralized registry + distributed per-task context)
+    - Active Tasks table required manual sync, got stale easily
+    - Task state belongs in context.md (single source of truth per task)
+  - **Updated references** in: CLAUDE.md, organization.md, memory-management.md, workflow-agent.md, agent-status.md, settings.json (SessionStart hook)
+  - **MEMORY.md now serves as**: System registry + changelog only (not task tracker)
 
 ## Notes
 

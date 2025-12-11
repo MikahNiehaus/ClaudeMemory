@@ -231,7 +231,7 @@
         "hooks": [
           {
             "type": "prompt",
-            "prompt": "SESSION INITIALIZATION: Read MEMORY.md and check the Active Tasks table. If any tasks have status ACTIVE or BLOCKED, summarize them briefly (task ID, description, current status). Identify which task should be resumed first based on priority. Also remind that CLAUDE.md contains orchestrator instructions.",
+            "prompt": "SESSION INITIALIZATION: Read MEMORY.md for system registry. List workspace/ folders to find active tasks. For each task folder, read context.md and check Status. If any tasks are PLANNING, ACTIVE, or BLOCKED, summarize them briefly (task ID, status, next steps). Also remind that CLAUDE.md contains orchestrator instructions.",
             "statusMessage": "Loading session state...",
             "timeout": 20
           }

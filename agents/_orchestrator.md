@@ -44,6 +44,88 @@ Before responding to ANY user request, STOP and verify:
 
 **If ANY box is unchecked and should be checked → STOP and fix before proceeding.**
 
+---
+
+## MANDATORY PLANNING PROTOCOL
+
+Before spawning ANY agent, the orchestrator MUST complete the planning phase.
+
+### Planning Phase Compliance Checklist
+
+Before any agent execution, STOP and verify:
+
+- [ ] Have I created `workspace/[task-id]/context.md`?
+- [ ] Have I run the Planning Checklist against this task?
+- [ ] Have I populated the "Plan" section in context.md?
+- [ ] Is each subtask specific with clear success criteria?
+- [ ] Have I identified all required agents?
+- [ ] Have I determined execution sequence (parallel vs sequential)?
+- [ ] If plan mode active: Have I received user approval?
+
+**If ANY box is unchecked → STOP and complete planning before proceeding.**
+
+### Planning Checklist Execution
+
+For EVERY task, evaluate by reading the relevant knowledge base:
+
+| Domain | Trigger Criteria | Knowledge Base | Agent |
+|--------|-----------------|----------------|-------|
+| Testing | Code changes, bug fixes, behavior modifications | `knowledge/testing.md` | `test-agent` |
+| Documentation | New APIs, config changes, user features | `knowledge/documentation.md` | `docs-agent` |
+| Security | Auth, user input, sensitive data, DB queries | `knowledge/security.md` | `security-agent` |
+| Architecture | New components, design decisions, integrations | `knowledge/architecture.md` | `architect-agent` |
+| Performance | Loops, DB queries, caching, hot paths | `knowledge/performance.md` | `performance-agent` |
+| Review | Code ready for merge | `knowledge/pr-review.md` | `reviewer-agent` |
+| Clarity | Vague/unclear requirements | `knowledge/ticket-understanding.md` | `ticket-analyst-agent` |
+
+### Subtask Definition Requirements
+
+Each subtask in the plan MUST include:
+
+1. **Objective**: Clear statement of what this subtask accomplishes
+2. **Output Format**: What the agent should produce
+3. **Tool Guidance**: Which tools/approaches to use
+4. **Clear Boundaries**: What is IN scope and OUT of scope
+5. **Success Criteria**: How to verify completion
+6. **Dependencies**: What must be done first
+
+### Three Principles for Task Decomposition
+
+Apply these to ensure quality decomposition:
+
+1. **Solvability**: Each subtask achievable by a single agent in one pass
+2. **Completeness**: All subtasks together fully address the original request
+3. **Non-Redundancy**: No overlap between subtasks; each does unique work
+
+### Planning to Execution Flow
+
+```
+┌─ PLANNING PHASE ────────────────────────────────────────┐
+│ 1. Create workspace/[task-id]/context.md                │
+│ 2. Run Planning Checklist (evaluate each domain)        │
+│ 3. Decompose into subtasks with requirements above      │
+│ 4. Determine agent sequence (sequential/parallel)       │
+│ 5. Populate Plan section in context.md                  │
+│ 6. IF plan mode active:                                 │
+│    - Present plan to user                               │
+│    - Wait for approval/modifications                    │
+│ 7. IF plan mode inactive OR approved:                   │
+│    - Proceed to execution                               │
+└─────────────────────────────────────────────────────────┘
+           │
+           ▼
+┌─ EXECUTION PHASE ───────────────────────────────────────┐
+│ For each subtask in plan:                               │
+│ 1. Spawn assigned agent with full context               │
+│ 2. Update context.md with agent contribution            │
+│ 3. Check agent status (COMPLETE/BLOCKED/NEEDS_INPUT)    │
+│ 4. Handle status appropriately                          │
+│ 5. Proceed to next subtask or synthesize results        │
+└─────────────────────────────────────────────────────────┘
+```
+
+---
+
 ### Per-Task Storage Rule
 
 **NOTHING is stored globally. EVERYTHING goes in the task folder:**

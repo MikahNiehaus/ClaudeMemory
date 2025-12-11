@@ -125,12 +125,11 @@ Claude Code loads memories in order of precedence:
 
 **After each significant milestone**:
 1. Update task context.md with current state
-2. Update MEMORY.md Active Tasks table
-3. Ensure Next Steps are current
+2. Ensure Next Steps are current
 
 **This ensures that after compaction, you can**:
 1. Read CLAUDE.md (always loaded)
-2. Check MEMORY.md Active Tasks
+2. List workspace/ folders for active tasks
 3. Read relevant task context.md
 4. Resume with full understanding
 
@@ -231,7 +230,7 @@ Runs when session starts or resumes:
 When recovering from compaction or new session:
 
 - [ ] CLAUDE.md loads automatically
-- [ ] Check MEMORY.md Active Tasks table
+- [ ] List workspace/ folders to find active tasks
 - [ ] Read context.md for each active task
 - [ ] Re-read files mentioned in Key Files
 - [ ] Review Next Steps for each task

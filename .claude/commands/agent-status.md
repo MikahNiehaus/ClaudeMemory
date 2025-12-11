@@ -21,8 +21,6 @@ Display the current status of task `$1` by reading:
    - outputs/ - Generated artifacts
    - snapshots/ - Progress screenshots
 
-3. **MEMORY.md Entry**: Check if task is registered in Active Tasks table
-
 ## Summary Format
 
 ```
