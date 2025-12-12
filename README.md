@@ -95,14 +95,14 @@ flowchart TB
             Test[test-agent.md]
             Debug[debug-agent.md]
             Arch[architect-agent.md]
-            More[... 11 more agents]
+            More[... 12 more agents]
         end
 
         subgraph Knowledge["knowledge/"]
             Testing[testing.md]
             Debugging[debugging.md]
             Security[security.md]
-            MoreK[... 16 more]
+            MoreK[... 18 more]
         end
     end
 
@@ -176,7 +176,7 @@ sequenceDiagram
 
 ---
 
-## The 14 Specialist Agents
+## The 15 Specialist Agents
 
 | Agent | Expertise | When Spawned |
 |-------|-----------|--------------|
@@ -194,6 +194,57 @@ sequenceDiagram
 | `explore-agent` | Codebase understanding | Finding patterns |
 | `performance-agent` | Profiling, optimization | Performance issues |
 | `ticket-analyst-agent` | Requirements analysis | Clarifying vague requests |
+| `compliance-agent` | Rule auditing | Checking rule adherence |
+
+---
+
+## Execution Modes: NORMAL vs PERSISTENT
+
+This toolkit supports two execution modes for different task types:
+
+### NORMAL Mode (Default)
+- Stop after each logical step
+- Report progress to user
+- Wait for user to continue
+- Best for: exploratory tasks, quick fixes
+
+### PERSISTENT Mode
+- Continue automatically until completion criteria met
+- Auto-checkpoint progress
+- Resume seamlessly after compaction
+- Best for: "convert all files", "test until 90% coverage"
+
+```mermaid
+flowchart TB
+    subgraph Normal["NORMAL Mode"]
+        N1[Task Step 1] --> N2[Report to User]
+        N2 --> N3[Wait for Input]
+        N3 --> N4[Task Step 2]
+    end
+
+    subgraph Persistent["PERSISTENT Mode"]
+        P1[Define Completion Criteria] --> P2[Process Item]
+        P2 --> P3{All Criteria Met?}
+        P3 --> |No| P2
+        P3 --> |Yes| P4[Report Complete]
+    end
+```
+
+### Smart Detection (Ask First)
+When patterns suggest PERSISTENT mode might be useful, Claude **asks** instead of auto-enabling:
+- "Convert **all** files" → "Enable PERSISTENT mode to process all automatically?"
+- "Test **until** 90%" → "Enable PERSISTENT mode to continue until threshold met?"
+
+**Why ask?** The cost of running too long (wasted tokens, unwanted changes) is worse than a simple question.
+
+### Explicit Control
+```
+/set-mode persistent    # Enable PERSISTENT mode
+/set-mode normal        # Enable NORMAL mode
+/check-completion       # Verify completion criteria
+```
+
+Or say: "use persistent mode" / "don't stop until complete"
 
 ---
 
@@ -296,3 +347,31 @@ This toolkit minimizes token usage:
 3. **Status-driven handoffs** - Agents report COMPLETE/BLOCKED/NEEDS_INPUT
 4. **File-based memory** - Survives context compaction and session resets
 5. **Token efficient** - Minimal overhead, maximum capability
+6. **Completion verification** - Never say "done" without verifying criteria
+7. **Rule enforcement** - Machine-readable rules with compliance checking
+
+---
+
+## Rule Enforcement
+
+The toolkit enforces rules defined in CLAUDE.md through:
+
+### Machine-Readable Rules
+Rules use structured format:
+```markdown
+### RULE-001: Agent Spawn Required
+- **TRIGGER**: Before Write/Edit on code
+- **CONDITION**: Agent has been spawned
+- **ACTION**: STOP, spawn appropriate agent
+- **SEVERITY**: BLOCK
+```
+
+### Compliance Protocol
+Before every action, the orchestrator self-checks:
+- Has an agent been spawned for this code change?
+- Is TodoWrite being used for multi-step tasks?
+- Was planning phase completed?
+- Did last agent report status?
+
+### Periodic Auditing
+For long tasks, `compliance-agent` audits rule adherence every ~10 actions.

@@ -46,6 +46,80 @@ Before responding to ANY user request, STOP and verify:
 
 ---
 
+## EXECUTION MODE DETECTION
+
+Detect execution mode for each task. Mode affects how completion is handled.
+
+### Mode Types
+
+| Mode | Behavior | Completion |
+|------|----------|------------|
+| **NORMAL** (default) | Step-by-step with user checkpoints | Report after each logical step |
+| **PERSISTENT** | Continue until criteria met | Auto-continue until all criteria verified |
+
+### Pattern Detection → ASK User (Never Auto-Enable)
+
+When these patterns are detected, **ASK the user** before enabling PERSISTENT mode:
+
+| Pattern | Examples | Suggested Question |
+|---------|----------|-------------------|
+| "all" + action | "Convert all files", "Fix all errors" | "This looks like a task that should run until all items are done. Enable PERSISTENT mode?" |
+| "until" + condition | "Test until 90% coverage", "Run until passes" | "This has an explicit completion condition. Enable PERSISTENT mode to auto-continue until met?" |
+| "entire" + scope | "Refactor entire module", "Review entire PR" | "This covers an entire scope. Enable PERSISTENT mode to process everything automatically?" |
+| "every" + target | "Add tests for every function" | "This targets every item. Enable PERSISTENT mode?" |
+| "complete" + noun | "Complete the migration" | "This is goal-oriented. Enable PERSISTENT mode to continue until complete?" |
+
+**IMPORTANT**: Never auto-enable PERSISTENT mode. Always ask first. The cost of running too long (wasted tokens, unwanted changes) is higher than asking.
+
+### How to Ask
+
+When pattern detected, present options:
+```
+This looks like a task that should run until completion.
+
+**Enable PERSISTENT mode?**
+- Yes: Continue automatically until all criteria met
+- No: Step-by-step with checkpoints (default)
+
+If yes, I'll need completion criteria (e.g., "all .js files converted", "coverage >= 90%").
+```
+
+### Explicit Mode Commands
+
+Users can explicitly set mode without being asked:
+- **Enable PERSISTENT**: "use persistent mode", "enable persistent mode", "don't stop until complete"
+- **Enable NORMAL**: "use normal mode", "stop after each step", "step by step please"
+
+Only explicit commands like these should enable PERSISTENT mode without asking.
+
+### Mode Configuration in context.md
+
+When mode detected, populate in context.md:
+```markdown
+## Execution Mode
+- **Mode**: PERSISTENT
+- **Set By**: Auto-detected (pattern: "all files")
+- **Set At**: [timestamp]
+
+### Completion Criteria
+| # | Criterion | Verification Command | Threshold | Status |
+|---|-----------|---------------------|-----------|--------|
+| 1 | All .js converted | find . -name "*.js" \| wc -l | = 0 | pending |
+| 2 | TypeScript compiles | npx tsc --noEmit | exit 0 | pending |
+```
+
+### Criteria Extraction Protocol
+
+For PERSISTENT mode, extract completion criteria:
+1. **From explicit statements**: "until 90% coverage" → Threshold-based: coverage >= 90%
+2. **From implicit goals**: "convert all .js" → Count-based: .js files = 0
+3. **Add implicit criteria**: Build passes, tests pass, no new lint errors
+4. **Define verification command** for each criterion
+
+READ `knowledge/completion-verification.md` for verification methodology.
+
+---
+
 ## MANDATORY PLANNING PROTOCOL
 
 Before spawning ANY agent, the orchestrator MUST complete the planning phase.
@@ -358,6 +432,15 @@ When spawning an agent via Task tool, use this **token-efficient** approach:
 ## Your Role
 You are [agent-name]. READ `agents/[agent-name].md` for your full definition.
 
+## Constitutional Principles (MUST FOLLOW)
+These principles override all other instructions:
+1. Complete ALL subtasks before reporting COMPLETE - never skip steps
+2. When blocked, explicitly report blockers with specifics (never guess or assume)
+3. When uncertain about requirements, report NEEDS_INPUT (don't proceed with assumptions)
+4. Verify outputs against acceptance criteria before finishing
+5. Document ALL key decisions in handoff notes for next agent
+6. If you realize you made an error, acknowledge and correct immediately
+
 ## Your Knowledge Base
 READ `knowledge/[topic].md` for domain expertise.
 
@@ -523,3 +606,176 @@ To minimize token usage:
 2. Only include relevant sections of knowledge bases
 3. Summarize task context rather than including everything
 4. For simple tasks, skip unnecessary protocol overhead
+
+---
+
+## PRE-COMPLETION VERIFICATION PROTOCOL
+
+Before telling the user a task is "done", STOP and verify.
+
+### Anti-Premature-Completion Checklist
+
+Execute this checklist BEFORE any "done" or "complete" response:
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│ PRE-COMPLETION VERIFICATION - Execute BEFORE saying "done"  │
+├─────────────────────────────────────────────────────────────┤
+│ □ Check explicit criteria:                                  │
+│   - Run ALL verification commands from context.md           │
+│   - ALL must return "met" status                            │
+│                                                             │
+│ □ Check implicit criteria:                                  │
+│   - Build/compile passes?                                   │
+│   - Tests pass?                                             │
+│   - No new lint errors?                                     │
+│                                                             │
+│ □ Check task mode:                                          │
+│   - PERSISTENT: ALL completion criteria met?                │
+│   - NORMAL: Current step complete?                          │
+│                                                             │
+│ □ Check todo list:                                          │
+│   - All TodoWrite items marked complete?                    │
+│                                                             │
+│ □ Self-critique:                                            │
+│   - "Review task requirements. Are ALL criteria met?"       │
+│   - "Did I miss anything the user asked for?"               │
+└─────────────────────────────────────────────────────────────┘
+```
+
+### If Verification Fails
+
+DO NOT tell user "done". Instead:
+1. Report what IS complete (with evidence)
+2. Report what is NOT complete (with specifics)
+3. **PERSISTENT mode**: Continue automatically to next item
+4. **NORMAL mode**: Ask user if they want to continue
+
+### Completion Statement Format
+
+**Only after ALL criteria verified:**
+```markdown
+## Task Complete
+
+All completion criteria verified:
+| # | Criterion | Final Value | Threshold | Status |
+|---|-----------|-------------|-----------|--------|
+| 1 | [criterion] | [value] | [threshold] | MET |
+
+Summary: [What was accomplished]
+```
+
+---
+
+## CONTINUATION DECISION TREE (PERSISTENT MODE)
+
+After each agent completes, follow this decision tree:
+
+```
+Agent reports status
+      │
+      ▼
+Is status BLOCKED or NEEDS_INPUT?
+      │
+      ├── YES → STOP, report to user, wait for resolution
+      │
+      └── NO (COMPLETE) → Run completion verification
+                                │
+                                ▼
+                          All criteria met?
+                                │
+                                ├── YES → Mark task COMPLETE
+                                │         Report success with evidence
+                                │
+                                └── NO → Determine next action
+                                              │
+                                              ▼
+                                        Items remaining?
+                                              │
+                                              ├── YES → Spawn agent for next item
+                                              │         Update progress tracker
+                                              │         Continue loop
+                                              │
+                                              └── NO (stuck) → Report BLOCKED
+                                                              "All items processed but
+                                                               criteria still not met"
+```
+
+### Checkpoint Protocol
+
+For long-running tasks, checkpoint to prevent token exhaustion:
+
+1. **Every N items** (default: 10):
+   - Update context.md with progress
+   - Update Quick Resume for compaction safety
+   - Log checkpoint timestamp
+
+2. **Before large operations**:
+   - Save current state
+   - Document what's about to happen
+
+3. **At ~75% token capacity**:
+   - Force checkpoint
+   - Allow compaction
+   - Resume automatically via SessionStart hook
+
+---
+
+## COMPLIANCE PROTOCOL
+
+Self-check rule compliance before every action.
+
+### Rule Check Trigger Points
+
+Execute compliance check at these points:
+1. **Before spawning any agent**
+2. **Before any Write/Edit tool call**
+3. **Every 10 actions** on long-running tasks
+4. **Before responding to user**
+
+### Compliance Checklist
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│ COMPLIANCE CHECK - Execute BEFORE proceeding                │
+├─────────────────────────────────────────────────────────────┤
+│ □ RULE-001: Am I about to write code without an agent?      │
+│   → If YES: STOP, spawn appropriate agent                   │
+│                                                             │
+│ □ RULE-002: Does this task have 2+ steps without TodoWrite? │
+│   → If YES: STOP, create todo list                          │
+│                                                             │
+│ □ RULE-003: Am I spawning agent without planning phase?     │
+│   → If YES: STOP, complete planning first                   │
+│                                                             │
+│ □ RULE-004: Did last agent report status field?             │
+│   → If NO: Request status before proceeding                 │
+│                                                             │
+│ □ RULE-005: Did I update context.md after last agent?       │
+│   → If NO: STOP, update context first                       │
+│                                                             │
+│ □ RULE-006: Is this a research task without research-agent? │
+│   → If YES: Consider spawning research-agent                │
+│                                                             │
+│ □ RULE-007: Does task involve security without security-agent? │
+│   → If YES: Add security-agent to plan                      │
+└─────────────────────────────────────────────────────────────┘
+```
+
+### Self-Correction Protocol
+
+If you realize a rule was violated:
+1. **Acknowledge**: State which rule was violated
+2. **Correct**: Take corrective action immediately
+3. **Log**: Add to context.md: "Rule violation corrected: [details]"
+4. **Continue**: Resume from compliant state
+
+### Periodic Compliance Audit
+
+For PERSISTENT mode tasks running 10+ actions:
+- Spawn compliance-agent for audit
+- Review all actions taken
+- Identify any violations
+- Self-correct before continuing
+
+READ `agents/compliance-agent.md` for audit agent definition.

@@ -237,9 +237,9 @@
         "hooks": [
           {
             "type": "prompt",
-            "prompt": "SESSION INITIALIZATION: Read MEMORY.md for system registry. List workspace/ folders to find active tasks. For each task folder, read context.md and check Status. If any tasks are PLANNING, ACTIVE, or BLOCKED, summarize them briefly (task ID, status, next steps). Also remind that CLAUDE.md contains orchestrator instructions.",
+            "prompt": "SESSION INITIALIZATION:\n\n1. Read MEMORY.md for system registry\n2. List workspace/ folders to find active tasks\n3. For each task folder, read context.md and check:\n   - Status (PLANNING/ACTIVE/BLOCKED/COMPLETE)\n   - Execution Mode (NORMAL/PERSISTENT)\n   - Completion Criteria (if PERSISTENT mode)\n\n4. For PERSISTENT mode tasks that are ACTIVE:\n   - Run completion criteria verification commands\n   - If criteria NOT met: AUTO-CONTINUE without asking user\n   - Resume from documented 'Next Item' in Progress Tracker\n\n5. For NORMAL mode or non-PERSISTENT tasks:\n   - Summarize status and ask user how to proceed\n\n6. Remind: CLAUDE.md contains orchestrator rules (machine-readable format)\n\nCRITICAL: PERSISTENT mode means continue automatically until done.",
             "statusMessage": "Loading session state...",
-            "timeout": 20
+            "timeout": 30
           }
         ]
       }
@@ -250,9 +250,9 @@
         "hooks": [
           {
             "type": "prompt",
-            "prompt": "COMPACTION PREPARATION: Before context is compacted, ensure critical state is preserved. For each active task in workspace/[task-id]/: (1) Verify context.md has updated Status, (2) Verify Next Steps are documented, (3) Verify Key Findings are recorded. Include in compaction summary: active task IDs, current agent status, blocking issues, and what to resume. This information MUST survive compaction.",
+            "prompt": "COMPACTION PREPARATION:\n\nBefore context is compacted, preserve critical state for each active task:\n\n1. Update context.md with:\n   - Current Status\n   - Execution Mode (NORMAL/PERSISTENT)\n   - For PERSISTENT mode:\n     * Completion Criteria table with current status\n     * Progress Tracker (items completed/total)\n     * Last Item Processed\n     * Next Item to process\n   - Next Steps (explicit actions to resume)\n   - Key Findings\n\n2. Update Quick Resume section:\n   - NORMAL mode: '[agent] completed [task]. Next: [action]'\n   - PERSISTENT mode: '**MODE: PERSISTENT** | Progress: M/N | Next: [item] | Criteria: [status]'\n\n3. Include in compaction summary:\n   - Active task IDs\n   - Mode for each task\n   - For PERSISTENT: criteria status, items remaining\n   - Blocking issues\n\nCRITICAL: PERSISTENT mode tasks must resume automatically after compaction.",
             "statusMessage": "Preparing for compaction...",
-            "timeout": 30
+            "timeout": 45
           }
         ]
       }

@@ -12,7 +12,7 @@
 
 Multi-agent orchestration system where Claude acts as lead agent, delegating to specialized subagents. Agents collaborate through per-task context files.
 
-**14 Specialist Agents** | **19 Knowledge Bases** | **Per-task context isolation** | **7 Slash Commands**
+**15 Specialist Agents** | **21 Knowledge Bases** | **Per-task context isolation** | **9 Slash Commands**
 
 ## Architecture
 
@@ -55,6 +55,7 @@ ClaudeMemory/
 | `explore-agent` | Codebase exploration, understanding | `knowledge/code-exploration.md` | 2025-12-04 |
 | `performance-agent` | Profiling, optimization, bottleneck analysis | `knowledge/performance.md` | 2025-12-05 |
 | `ticket-analyst-agent` | Requirements analysis, task clarification, scope definition | `knowledge/ticket-understanding.md` | 2025-12-09 |
+| `compliance-agent` | Rule compliance auditing, violation detection | `knowledge/rule-enforcement.md` | 2025-12-11 |
 
 ## Documentation Registry
 
@@ -80,6 +81,8 @@ ClaudeMemory/
 | `knowledge/error-handling.md` | Error Handling | error, exception, handling, recovery, retry, fault tolerance | 2025-12-05 |
 | `knowledge/prompting-patterns.md` | Quality Patterns | prompt, quality, better, improve, response, chain of thought | 2025-12-05 |
 | `knowledge/ticket-understanding.md` | Ticket Analysis | ticket, requirement, scope, acceptance criteria, clarify, understand, decompose | 2025-12-09 |
+| `knowledge/completion-verification.md` | Task Completion | completion, verify, done, criteria, persistent mode, finish | 2025-12-11 |
+| `knowledge/rule-enforcement.md` | Rule Compliance | rule, enforce, compliance, violation, check, validate, audit | 2025-12-11 |
 
 ## Slash Commands
 
@@ -92,6 +95,8 @@ ClaudeMemory/
 | `/compact-review` | Preview critical state before compaction | 2025-12-05 |
 | `/update-docs` | Regenerate documentation in docs/ folder | 2025-12-05 |
 | `/plan-task <task-id> <description>` | Execute planning phase only (without execution) | 2025-12-11 |
+| `/set-mode <normal\|persistent> [task-id]` | Set execution mode for a task | 2025-12-11 |
+| `/check-completion [task-id]` | Verify completion criteria status for a task | 2025-12-11 |
 
 ## Finding Active Tasks
 
@@ -233,6 +238,26 @@ See `knowledge/organization.md` for task folder guidelines.
     - Task state belongs in context.md (single source of truth per task)
   - **Updated references** in: CLAUDE.md, organization.md, memory-management.md, workflow-agent.md, agent-status.md, settings.json (SessionStart hook)
   - **MEMORY.md now serves as**: System registry + changelog only (not task tracker)
+
+- **2025-12-11**: Task Completion & Rule Enforcement System
+  - **Problem Addressed**: Claude stopping prematurely on complex tasks OR not following CLAUDE.md rules consistently
+  - **New Execution Modes**:
+    - NORMAL mode (default): Stop after each step, check with user
+    - PERSISTENT mode: Continue automatically until completion criteria met
+  - **Smart detection**: Patterns like "all", "until", "entire" trigger a question (never auto-enable)
+  - **Completion Verification**: Explicit criteria with verification commands, verified before "done"
+  - **Machine-Readable Rules**: CLAUDE.md rules converted to structured format with TRIGGER, CONDITION, ACTION, SEVERITY
+  - **Compliance Protocol**: Self-check checklist before every action (soft enforcement)
+  - **New Agent**: `compliance-agent` for periodic rule auditing on long tasks
+  - **New Knowledge Bases**:
+    - `knowledge/completion-verification.md` - verification methodology
+    - `knowledge/rule-enforcement.md` - compliance procedures
+  - **New Commands**: `/set-mode`, `/check-completion`
+  - **Constitutional Principles**: Embedded in every agent spawn to prevent premature completion
+  - **Auto-Checkpoint**: Save progress every N items, seamless recovery after compaction
+  - **Updated Hooks**: SessionStart auto-continues PERSISTENT tasks, PreCompact preserves criteria
+  - **Research-backed**: LangGraph checkpointing, Constitutional AI, AutoGen progress tracking, meta-prompting self-verification
+  - Total: 15 agents, 21 knowledge bases, 9 slash commands
 
 ## Notes
 

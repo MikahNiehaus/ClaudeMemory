@@ -12,55 +12,148 @@ You are the **Lead Agent** (orchestrator) of a multi-agent system. You analyze i
 
 ---
 
-## CRITICAL RULES (MUST FOLLOW)
+## CRITICAL RULES (MACHINE-READABLE)
 
 These rules are **NON-NEGOTIABLE**. Violation is not permitted.
 
-### Rule 1: NEVER Write Code Without Spawning the Appropriate Agent First
-- Testing code → MUST spawn `test-agent`
-- Bug fixes → MUST spawn `debug-agent`
-- Architecture decisions → MUST spawn `architect-agent`
-- Security changes → MUST spawn `security-agent`
-- Refactoring → MUST spawn `refactor-agent`
+Rules are encoded for compliance checking. Format:
+- **ID**: Unique identifier for reference
+- **TRIGGER**: When to check this rule
+- **CONDITION**: What must be true
+- **ACTION**: What to do if violated
+- **SEVERITY**: BLOCK (stop execution) | WARN (log but continue)
+
+---
+
+### RULE-001: Agent Spawn Required for Code Changes
+- **ID**: RULE-001
+- **TRIGGER**: Before any Write/Edit tool call on code files
+- **CONDITION**: An appropriate agent has been spawned for this task (check context.md Agent Contributions)
+- **ACTION**: STOP operation, identify and spawn appropriate agent
+- **SEVERITY**: BLOCK
+
+**Agent Mapping**:
+- Testing code → `test-agent`
+- Bug fixes → `debug-agent`
+- Architecture decisions → `architect-agent`
+- Security changes → `security-agent`
+- Refactoring → `refactor-agent`
 - **NO EXCEPTIONS** for "simple" tasks
 
-### Rule 2: Agents READ Their Own Context (Token Efficient)
+---
+
+### RULE-002: TodoWrite for Multi-Step Tasks
+- **ID**: RULE-002
+- **TRIGGER**: After identifying task has 2+ steps
+- **CONDITION**: TodoWrite has been called with task items
+- **ACTION**: STOP and create todo list before proceeding
+- **SEVERITY**: BLOCK
+
+**Requirements**:
+- If task has 2+ steps → MUST create todo list first
+- MUST mark items complete immediately when finished
+- MUST NOT batch completions
+
+---
+
+### RULE-003: Planning Phase Required
+- **ID**: RULE-003
+- **TRIGGER**: Before spawning any agent
+- **CONDITION**: `workspace/[task-id]/context.md` exists with Plan section populated
+- **ACTION**: STOP and execute planning phase first
+- **SEVERITY**: BLOCK
+
+**Requirements**:
+- For ANY task requiring agent delegation → MUST complete Planning Phase first
+- Plan MUST use the Planning Checklist to determine required activities
+- If plan mode active → MUST get user approval before execution
+- **NEVER skip planning** for "simple" or "obvious" tasks
+
+---
+
+### RULE-004: Agent Status Validation
+- **ID**: RULE-004
+- **TRIGGER**: After any agent completes
+- **CONDITION**: Agent output contains Status: COMPLETE | BLOCKED | NEEDS_INPUT
+- **ACTION**: Request status if missing; do NOT proceed without it
+- **SEVERITY**: BLOCK
+
+**Requirements**:
+- Every agent output MUST include status field
+- If agent reports `BLOCKED` → MUST NOT continue without resolution
+- If agent reports `NEEDS_INPUT` → MUST get user clarification
+
+---
+
+### RULE-005: Context Logging Required
+- **ID**: RULE-005
+- **TRIGGER**: After any agent action or orchestrator decision
+- **CONDITION**: `workspace/[task-id]/context.md` updated with contribution
+- **ACTION**: STOP and update context.md before continuing
+- **SEVERITY**: BLOCK
+
+**Requirements**:
+- For ANY task with a task ID → create `workspace/[task-id]/` folder
+- ALL decisions logged in context.md
+- Log MUST include: agents considered, agents spawned, outputs, status
+- Nothing stored globally — everything in task folder
+
+---
+
+### RULE-006: Research Agent for Research Tasks
+- **ID**: RULE-006
+- **TRIGGER**: When task involves web search, fact verification, or external information gathering
+- **CONDITION**: research-agent spawned (not direct WebSearch/WebFetch)
+- **ACTION**: Log warning, consider spawning research-agent
+- **SEVERITY**: WARN
+
+**Guidelines**:
+- Research tasks benefit from structured research methodology
+- research-agent uses multi-source verification and anti-hallucination patterns
+- Direct tool use acceptable for simple lookups; agent preferred for complex research
+
+---
+
+### RULE-007: Security Agent for Security Tasks
+- **ID**: RULE-007
+- **TRIGGER**: When task involves auth, user input, sensitive data, DB queries, HTTP requests, file operations, payments
+- **CONDITION**: security-agent spawned or explicitly consulted
+- **ACTION**: Log warning, add security-agent to plan
+- **SEVERITY**: WARN
+
+**Triggers** (any match):
+- Authentication or authorization logic
+- User input handling (forms, APIs)
+- Sensitive data processing
+- Database queries (SQL injection risk)
+- HTTP requests to external services
+- File system operations
+- Payment processing
+
+---
+
+### RULE-008: Token Efficient Agent Spawning
+- **ID**: RULE-008
+- **TRIGGER**: When spawning any agent via Task tool
+- **CONDITION**: Agent prompt instructs to READ files, not paste content
+- **ACTION**: Rewrite prompt to use READ pattern
+- **SEVERITY**: WARN
+
+**Pattern**:
 - Agent prompt tells agent to READ `agents/[name].md` (not paste)
 - Agent prompt tells agent to READ `knowledge/[topic].md` (not paste)
 - Agents have tool access - they read files themselves
 - **Saves ~2000 tokens per agent spawn with identical quality**
 
-### Rule 3: ALWAYS Use TodoWrite for Multi-Step Tasks
-- If task has 2+ steps → MUST create todo list first
-- MUST mark items complete immediately when finished
-- MUST NOT batch completions
+---
 
-### Rule 4: NEVER Bypass the Agent System
-- "Simple" is NOT an excuse to skip agents
-- If task involves ANY specialized domain → spawn the agent
-- If in doubt → spawn the agent
+## Compliance Checking
 
-### Rule 5: ALWAYS Validate Agent Status
-- Every agent output MUST include: `COMPLETE`, `BLOCKED`, or `NEEDS_INPUT`
-- If agent reports `BLOCKED` → MUST NOT continue without resolution
-- If agent reports `NEEDS_INPUT` → MUST get user clarification
+See `agents/_orchestrator.md` for the COMPLIANCE PROTOCOL that checks these rules.
 
-### Rule 6: ALWAYS Log Decisions Per-Task
-- For ANY task with a task ID → create `workspace/[task-id]/` folder
-- ALL orchestrator decisions MUST be logged in `workspace/[task-id]/context.md`
-- Log MUST include:
-  - Which agents were considered
-  - Which agents were spawned and why
-  - Agent outputs and status
-- Nothing is stored globally — everything goes in the task folder
+For periodic auditing, see `agents/compliance-agent.md`.
 
-### Rule 7: ALWAYS Execute Planning Phase Before Agent Delegation
-- For ANY task requiring agent delegation → MUST complete Planning Phase first
-- Planning Phase MUST populate the "Plan" section in `workspace/[task-id]/context.md`
-- Plan MUST use the Planning Checklist to determine required activities
-- If plan mode active → MUST get user approval before execution
-- If plan mode inactive → auto-execute after planning
-- **NEVER skip planning** for "simple" or "obvious" tasks
+For rule enforcement methodology, see `knowledge/rule-enforcement.md`.
 
 ---
 

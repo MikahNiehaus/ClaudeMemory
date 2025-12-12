@@ -236,6 +236,141 @@ When recovering from compaction or new session:
 - [ ] Review Next Steps for each task
 - [ ] Continue from documented state
 
+---
+
+## PERSISTENT Mode Compaction Protocol
+
+PERSISTENT mode tasks have special requirements to ensure they continue automatically after compaction.
+
+### What is PERSISTENT Mode?
+
+PERSISTENT mode is for tasks that should continue until explicit completion criteria are met:
+- "Convert all files to TypeScript"
+- "Test until 90% coverage"
+- "Refactor entire module"
+
+Unlike NORMAL mode (stop and check with user), PERSISTENT mode auto-continues.
+
+### Auto-Checkpoint Protocol
+
+To prevent token exhaustion and enable seamless compaction recovery:
+
+#### When to Checkpoint
+
+1. **Every N items** (default: 10 files/functions/tests)
+2. **Before large operations** (>5K estimated tokens)
+3. **At ~75% token capacity** (force checkpoint before compaction)
+4. **After completing a logical phase**
+
+#### What to Save at Checkpoint
+
+Update context.md with:
+
+```markdown
+## Execution Mode
+- **Mode**: PERSISTENT
+- **Set By**: [source]
+- **Set At**: [timestamp]
+
+### Completion Criteria
+| # | Criterion | Verification Command | Threshold | Status |
+|---|-----------|---------------------|-----------|--------|
+| 1 | [criterion] | [command] | [threshold] | [pending/met] |
+
+### Progress Tracker
+- **Items Total**: 45
+- **Items Completed**: 23
+- **Completion %**: 51%
+- **Last Checkpoint**: [timestamp]
+- **Last Item Processed**: src/utils/auth.js
+- **Next Item**: src/utils/crypto.js
+
+### Checkpoint History
+| Time | Progress | Criteria Status |
+|------|----------|-----------------|
+| 14:30 | 10/45 | [1] 35 remaining |
+| 15:15 | 23/45 | [1] 22 remaining |
+```
+
+#### Quick Resume Format for PERSISTENT Mode
+
+The Quick Resume section MUST follow this format:
+
+```markdown
+## Quick Resume
+**MODE: PERSISTENT** | Progress: 23/45 files | Next: Convert src/utils/crypto.js
+Criteria: [1] All .js -> .ts [NOT MET: 22 remaining] [2] tsc passes [NOT MET]
+```
+
+This format enables immediate recognition of:
+- Mode (PERSISTENT = auto-continue)
+- Progress (how far along)
+- Next action (exactly what to do)
+- Criteria status (what's left)
+
+### Compaction Recovery for PERSISTENT Mode
+
+When SessionStart hook detects a PERSISTENT mode task that is ACTIVE:
+
+1. **DO NOT ask user** whether to continue
+2. **Read Quick Resume** for current state
+3. **Run verification commands** to validate stored progress
+4. **Compare actual vs stored**:
+   - If actual > stored: Something changed externally, investigate
+   - If actual < stored: Something reverted, investigate
+   - If actual = stored: Resume normally
+5. **Continue from Next Item** automatically
+
+### Example Recovery Flow
+
+```
+Session starts
+    │
+    ▼
+List workspace/ folders
+    │
+    ▼
+Read context.md for each task
+    │
+    ▼
+Check Execution Mode
+    │
+    ├── NORMAL → Summarize, ask user
+    │
+    └── PERSISTENT + ACTIVE → Auto-continue
+              │
+              ▼
+        Read Quick Resume
+        "MODE: PERSISTENT | Progress: 23/45 | Next: crypto.js"
+              │
+              ▼
+        Run verification: find . -name "*.js" | wc -l
+        Result: 22 (matches stored)
+              │
+              ▼
+        Resume: "Converting src/utils/crypto.js..."
+```
+
+### Safeguards
+
+#### Infinite Loop Prevention
+If same item processed 3+ times:
+1. Mark as BLOCKED
+2. Log in context.md
+3. Wait for user guidance
+
+#### Progress Stall Detection
+If 10+ iterations with no progress toward criteria:
+1. Report current state
+2. Ask user: "Progress stalled. Continue or adjust threshold?"
+
+#### Max Iterations per Session
+Optional limit to prevent runaway execution:
+- Set in context.md: `Max Iterations: 100`
+- After limit reached, checkpoint and pause
+
+---
+
 ## Compaction Warning Signs
 
 Take action when you notice:

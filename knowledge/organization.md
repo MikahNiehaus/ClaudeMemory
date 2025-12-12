@@ -70,7 +70,10 @@ Every task folder should have a `context.md` file:
 
 ## Quick Resume
 [1-2 sentences: Current state for session recovery after compaction]
-Example: "Implementing auth refactor. debug-agent found root cause in token.ts:45, waiting for test-agent to write regression tests."
+
+**NORMAL mode example**: "Implementing auth refactor. debug-agent found root cause in token.ts:45, waiting for test-agent to write regression tests."
+
+**PERSISTENT mode example**: "**MODE: PERSISTENT** | Progress: 23/45 files | Next: Convert src/services/auth.js | Criteria: [1] All .js -> .ts [NOT MET: 22 remaining] [2] tsc passes [NOT MET]"
 
 ## Status
 - **State**: [PLANNING/ACTIVE/BLOCKED/COMPLETE]
@@ -78,6 +81,33 @@ Example: "Implementing auth refactor. debug-agent found root cause in token.ts:4
 - **Last Agent**: [Most recent agent that contributed]
 - **Created**: [YYYY-MM-DD]
 - **Updated**: [YYYY-MM-DD]
+
+## Execution Mode
+
+### Mode Configuration
+- **Mode**: [NORMAL/PERSISTENT]
+- **Set By**: [User request / Auto-detected from patterns: "all", "until", "entire", "every", "complete"]
+- **Set At**: [Timestamp]
+
+### Completion Criteria (PERSISTENT mode only)
+| # | Criterion | Verification Command | Threshold | Status |
+|---|-----------|---------------------|-----------|--------|
+| 1 | [e.g., All .js files converted to .ts] | [find . -name "*.js" \| wc -l] | [= 0] | [pending/met/failed] |
+| 2 | [e.g., Test coverage >= 90%] | [npm run coverage --json] | [>= 90] | [pending/met/failed] |
+| 3 | [e.g., No TypeScript errors] | [npx tsc --noEmit; echo $?] | [= 0] | [pending/met/failed] |
+
+### Progress Tracker (PERSISTENT mode only)
+- **Items Total**: [N or "counting..."]
+- **Items Completed**: [M]
+- **Completion %**: [M/N * 100]%
+- **Last Checkpoint**: [Timestamp]
+- **Last Item Processed**: [e.g., src/utils/auth.js]
+- **Next Item**: [e.g., src/utils/crypto.js]
+
+### Continuation Protocol
+- **Continue If**: All criteria NOT met AND status not BLOCKED
+- **Stop If**: All criteria met OR BLOCKED OR user interrupts
+- **Checkpoint Frequency**: Every [N] items (default: 10)
 
 ## Plan (Populated by Planning Phase)
 
