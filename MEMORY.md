@@ -12,7 +12,7 @@
 
 Multi-agent orchestration system where Claude acts as lead agent, delegating to specialized subagents. Agents collaborate through per-task context files.
 
-**15 Specialist Agents** | **21 Knowledge Bases** | **Per-task context isolation** | **9 Slash Commands**
+**16 Specialist Agents** | **22 Knowledge Bases** | **Per-task context isolation** | **9 Slash Commands**
 
 ## Architecture
 
@@ -56,6 +56,7 @@ ClaudeMemory/
 | `performance-agent` | Profiling, optimization, bottleneck analysis | `knowledge/performance.md` | 2025-12-05 |
 | `ticket-analyst-agent` | Requirements analysis, task clarification, scope definition | `knowledge/ticket-understanding.md` | 2025-12-09 |
 | `compliance-agent` | Rule compliance auditing, violation detection | `knowledge/rule-enforcement.md` | 2025-12-11 |
+| `browser-agent` | Interactive browser testing via Playwright MCP | `knowledge/browser-testing.md` | 2025-12-12 |
 
 ## Documentation Registry
 
@@ -83,6 +84,7 @@ ClaudeMemory/
 | `knowledge/ticket-understanding.md` | Ticket Analysis | ticket, requirement, scope, acceptance criteria, clarify, understand, decompose | 2025-12-09 |
 | `knowledge/completion-verification.md` | Task Completion | completion, verify, done, criteria, persistent mode, finish | 2025-12-11 |
 | `knowledge/rule-enforcement.md` | Rule Compliance | rule, enforce, compliance, violation, check, validate, audit | 2025-12-11 |
+| `knowledge/browser-testing.md` | Browser Testing | browser, playwright, interactive, e2e, click, navigate, test app | 2025-12-12 |
 
 ## Slash Commands
 

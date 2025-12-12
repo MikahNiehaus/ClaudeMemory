@@ -29,6 +29,7 @@ Quick reference for routing:
 - **explore-agent**: Codebase understanding
 - **performance-agent**: Profiling, optimization
 - **ticket-analyst-agent**: Requirements, scope
+- **browser-agent**: Interactive browser testing, Playwright MCP
 
 ## MANDATORY COMPLIANCE CHECKLIST
 
@@ -151,6 +152,7 @@ For EVERY task, evaluate by reading the relevant knowledge base:
 | Performance | Loops, DB queries, caching, hot paths | `knowledge/performance.md` | `performance-agent` |
 | Review | Code ready for merge | `knowledge/pr-review.md` | `reviewer-agent` |
 | Clarity | Vague/unclear requirements | `knowledge/ticket-understanding.md` | `ticket-analyst-agent` |
+| Browser Testing | Interactive UI testing, click-through, visual verification | `knowledge/browser-testing.md` | `browser-agent` |
 
 ### Subtask Definition Requirements
 
@@ -232,6 +234,7 @@ What expertise is needed?
 - Security/vulnerabilities? → security-agent
 - Refactoring/cleanup? → refactor-agent
 - Code understanding/exploration? → explore-agent
+- Interactive browser testing? → browser-agent
 
 ### Step 2: Assess Complexity
 

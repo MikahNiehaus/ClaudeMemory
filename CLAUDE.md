@@ -147,6 +147,50 @@ Rules are encoded for compliance checking. Format:
 
 ---
 
+### RULE-009: Browser URL Access Policy
+- **ID**: RULE-009
+- **TRIGGER**: Before any browser navigation via Playwright MCP
+- **CONDITION**: URL matches access policy
+- **ACTION**:
+  - Localhost/127.0.0.1: AUTO-ALLOW
+  - OAuth providers: AUTO-ALLOW
+  - Other external URLs: ASK user before navigating
+  - User explicitly allowed: ALLOW
+- **SEVERITY**: WARN (ask, don't block)
+
+**Auto-Allowed URLs**:
+- `localhost:*`, `127.0.0.1:*`, `*.localhost`, `[::1]`
+- OAuth: `*.b2clogin.com`, `login.microsoftonline.com`, `accounts.google.com`
+- OAuth: `*.auth0.com`, `*.okta.com`, `github.com/login/oauth`
+
+**Requires Permission**:
+- Any production URL
+- Any other external domain
+- Public websites (unless user explicitly allows)
+
+---
+
+### RULE-010: Playwright MCP Tool Usage Required
+- **ID**: RULE-010
+- **TRIGGER**: When using Playwright for browser interaction
+- **CONDITION**: Using `mcp__playwright_*` tools directly (NOT writing code)
+- **ACTION**: STOP, use MCP tools instead of writing Playwright code
+- **SEVERITY**: BLOCK
+
+**Required Approach**:
+- Use `mcp__playwright_browser_navigate` for navigation
+- Use `mcp__playwright_browser_click` for clicks
+- Use `mcp__playwright_browser_type` for input
+- Use `mcp__playwright_browser_snapshot` for state
+
+**Blocked Approach**:
+- Writing `.spec.ts` or test files
+- Using Bash to run `npx playwright` commands
+- Creating automation scripts
+- Generating Playwright code when asked to "test"
+
+---
+
 ## Compliance Checking
 
 See `agents/_orchestrator.md` for the COMPLIANCE PROTOCOL that checks these rules.
@@ -265,6 +309,7 @@ When plan mode is **ACTIVE**:
 | `explore-agent` | Code understanding |
 | `performance-agent` | Profiling, optimization |
 | `ticket-analyst-agent` | Requirements, scope |
+| `browser-agent` | Interactive browser testing, Playwright MCP |
 
 ## Quick Decision Tree
 
@@ -447,6 +492,7 @@ For simple documentation lookups without full agent delegation:
 | error, exception, handling, recovery, retry | `knowledge/error-handling.md` |
 | prompt, quality, better, improve, chain of thought | `knowledge/prompting-patterns.md` |
 | ticket, requirement, scope, acceptance criteria, clarify, decompose | `knowledge/ticket-understanding.md` |
+| browser, playwright, interactive, e2e, click, navigate, test app | `knowledge/browser-testing.md` |
 
 ---
 
@@ -491,7 +537,7 @@ ClaudeMemory/
 │       ├── list-agents.md
 │       ├── check-task.md
 │       └── compact-review.md
-├── agents/                # Agent definitions (14 agents)
+├── agents/                # Agent definitions (16 agents)
 │   ├── _orchestrator.md   # Detailed routing logic
 │   ├── test-agent.md
 │   ├── debug-agent.md
@@ -513,7 +559,7 @@ ClaudeMemory/
 │       ├── outputs/
 │       ├── snapshots/
 │       └── context.md     # Task context & agent handoffs
-├── knowledge/             # Knowledge bases (19 files)
+├── knowledge/             # Knowledge bases (22 files)
 │   ├── testing.md
 │   ├── debugging.md
 │   ├── documentation.md
