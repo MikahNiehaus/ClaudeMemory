@@ -254,7 +254,15 @@
       "Bash(mv /etc:*)",
       "Bash(mv /usr:*)",
       "Bash(mv /bin:*)",
-      "Bash(mv /var:*)"
+      "Bash(mv /var:*)",
+      "Bash(find / -exec:*)",
+      "Bash(find / -delete:*)",
+      "Bash(find . -delete:*)",
+      "Bash(find . -exec rm:*)",
+      "Bash(find -exec rm:*)",
+      "Bash(find -delete:*)",
+      "Bash(xargs rm:*)",
+      "Bash(xargs chmod 777:*)"
     ],
     "additionalDirectories": []
   },
