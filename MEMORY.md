@@ -12,7 +12,7 @@
 
 Multi-agent orchestration system where Claude acts as lead agent, delegating to specialized subagents. Agents collaborate through per-task context files.
 
-**16 Specialist Agents** | **22 Knowledge Bases** | **Per-task context isolation** | **9 Slash Commands**
+**16 Specialist Agents** | **23 Knowledge Bases** | **Per-task context isolation** | **9 Slash Commands**
 
 ## Architecture
 
@@ -22,10 +22,10 @@ ClaudeMemory/
 ├── MEMORY.md              # This file - system registry (check first!)
 ├── .claude/
 │   ├── settings.json      # Permissions, hooks, sandbox config
-│   └── commands/          # 7 slash commands
+│   └── commands/          # 9 slash commands
 ├── agents/                # Agent definitions
 │   ├── _orchestrator.md   # Routing logic + collaboration matrix + conflict resolution
-│   └── [14 specialist agents]
+│   └── [16 specialist agents]
 ├── workspace/             # Task-organized work area
 │   └── [task-id]/         # Per-task folders
 │       ├── mockups/       # Input designs, references
@@ -33,7 +33,7 @@ ClaudeMemory/
 │       ├── snapshots/     # Screenshots, progress
 │       └── context.md     # Task context & agent handoffs
 ├── knowledge/             # Knowledge bases
-│   └── [19 documentation files]
+│   └── [23 documentation files]
 └── docs/                  # Auto-generated (gitignored, run /update-docs to create)
 ```
 
@@ -56,7 +56,7 @@ ClaudeMemory/
 | `performance-agent` | Profiling, optimization, bottleneck analysis | `knowledge/performance.md` | 2025-12-05 |
 | `ticket-analyst-agent` | Requirements analysis, task clarification, scope definition | `knowledge/ticket-understanding.md` | 2025-12-09 |
 | `compliance-agent` | Rule compliance auditing, violation detection | `knowledge/rule-enforcement.md` | 2025-12-11 |
-| `browser-agent` | Interactive browser testing via Playwright MCP | `knowledge/browser-testing.md` | 2025-12-12 |
+| `browser-agent` | Interactive browser testing via Playwright MCP | `knowledge/playwright.md` | 2025-12-12 |
 
 ## Documentation Registry
 
@@ -84,7 +84,7 @@ ClaudeMemory/
 | `knowledge/ticket-understanding.md` | Ticket Analysis | ticket, requirement, scope, acceptance criteria, clarify, understand, decompose | 2025-12-09 |
 | `knowledge/completion-verification.md` | Task Completion | completion, verify, done, criteria, persistent mode, finish | 2025-12-11 |
 | `knowledge/rule-enforcement.md` | Rule Compliance | rule, enforce, compliance, violation, check, validate, audit | 2025-12-11 |
-| `knowledge/browser-testing.md` | Browser Testing | browser, playwright, interactive, e2e, click, navigate, test app | 2025-12-12 |
+| `knowledge/playwright.md` | Playwright MCP | browser, playwright, interactive, e2e, click, navigate, test app | 2025-12-12 |
 
 ## Slash Commands
 
@@ -260,6 +260,16 @@ See `knowledge/organization.md` for task folder guidelines.
   - **Updated Hooks**: SessionStart auto-continues PERSISTENT tasks, PreCompact preserves criteria
   - **Research-backed**: LangGraph checkpointing, Constitutional AI, AutoGen progress tracking, meta-prompting self-verification
   - Total: 15 agents, 21 knowledge bases, 9 slash commands
+
+- **2025-12-12**: Browser Testing Agent
+  - **New Agent**: Created `browser-agent` for interactive browser testing via Playwright MCP
+  - **New Knowledge Base**: `knowledge/playwright.md` - Playwright MCP installation, usage, troubleshooting
+  - **New Rules**: RULE-009 (Browser URL Access Policy), RULE-010 (Playwright MCP Tool Usage Required)
+  - **Known Failures Documented**: Wrong package name (@anthropic-ai/mcp-playwright doesn't exist, correct is @playwright/mcp)
+  - **URL Access Policy**: Auto-allow localhost/OAuth, ask for external URLs
+  - **Session Lifecycle**: Defined start/during/end patterns for browser testing
+  - **Integration**: Handoff patterns to debug-agent, test-agent, security-agent, ui-agent, performance-agent
+  - Total: 16 agents, 23 knowledge bases, 9 slash commands
 
 ## Notes
 

@@ -36,7 +36,7 @@ You've spent years doing exploratory testing, understanding that interactive bro
 - **WHY**: Testing should stay on localhost; OAuth redirects are expected; production requires permission
 
 ## Knowledge Base
-**Primary**: Read `knowledge/browser-testing.md` for Playwright MCP patterns, URL policy, and tool usage
+**Primary**: Read `knowledge/playwright.md` for Playwright MCP setup, patterns, URL policy, and tool usage
 **Secondary**: May reference `knowledge/testing.md` for general test methodology
 
 ## Collaboration Protocol

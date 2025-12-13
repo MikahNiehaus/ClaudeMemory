@@ -309,6 +309,7 @@ When plan mode is **ACTIVE**:
 | `explore-agent` | Code understanding |
 | `performance-agent` | Profiling, optimization |
 | `ticket-analyst-agent` | Requirements, scope |
+| `compliance-agent` | Rule auditing |
 | `browser-agent` | Interactive browser testing, Playwright MCP |
 
 ## Quick Decision Tree
@@ -492,7 +493,7 @@ For simple documentation lookups without full agent delegation:
 | error, exception, handling, recovery, retry | `knowledge/error-handling.md` |
 | prompt, quality, better, improve, chain of thought | `knowledge/prompting-patterns.md` |
 | ticket, requirement, scope, acceptance criteria, clarify, decompose | `knowledge/ticket-understanding.md` |
-| browser, playwright, interactive, e2e, click, navigate, test app | `knowledge/browser-testing.md` |
+| browser, playwright, interactive, e2e, click, navigate, test app | `knowledge/playwright.md` |
 
 ---
 
@@ -531,12 +532,16 @@ ClaudeMemory/
 ├── MEMORY.md              # System state & registry
 ├── .claude/
 │   ├── settings.json      # Permissions, hooks, sandbox config
-│   └── commands/          # Slash commands
+│   └── commands/          # Slash commands (9 commands)
 │       ├── spawn-agent.md
 │       ├── agent-status.md
 │       ├── list-agents.md
 │       ├── check-task.md
-│       └── compact-review.md
+│       ├── compact-review.md
+│       ├── update-docs.md
+│       ├── plan-task.md
+│       ├── set-mode.md
+│       └── check-completion.md
 ├── agents/                # Agent definitions (16 agents)
 │   ├── _orchestrator.md   # Detailed routing logic
 │   ├── test-agent.md
@@ -552,14 +557,16 @@ ClaudeMemory/
 │   ├── refactor-agent.md
 │   ├── explore-agent.md
 │   ├── performance-agent.md
-│   └── ticket-analyst-agent.md
+│   ├── ticket-analyst-agent.md
+│   ├── compliance-agent.md
+│   └── browser-agent.md
 ├── workspace/             # Task-organized work area
 │   └── [task-id]/         # Per-task folders
 │       ├── mockups/
 │       ├── outputs/
 │       ├── snapshots/
 │       └── context.md     # Task context & agent handoffs
-├── knowledge/             # Knowledge bases (22 files)
+├── knowledge/             # Knowledge bases (23 files)
 │   ├── testing.md
 │   ├── debugging.md
 │   ├── documentation.md
@@ -579,7 +586,10 @@ ClaudeMemory/
 │   ├── observability.md
 │   ├── error-handling.md
 │   ├── prompting-patterns.md
-│   └── ticket-understanding.md
+│   ├── ticket-understanding.md
+│   ├── completion-verification.md
+│   ├── rule-enforcement.md
+│   └── playwright.md
 └── docs/                  # Auto-generated (gitignored, run /update-docs to create)
 ```
 

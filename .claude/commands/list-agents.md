@@ -28,7 +28,11 @@ List all agent files from `agents/` directory (excluding `_orchestrator.md`) and
 | `research-agent` | Web research, verification | `knowledge/research.md` | Deep research, fact-checking |
 | `security-agent` | Security review, OWASP | `knowledge/security.md` | Security audits, vulnerability review |
 | `refactor-agent` | Code smells, refactoring | `knowledge/refactoring.md` | Code cleanup, technical debt |
+| `explore-agent` | Codebase exploration | `knowledge/code-exploration.md` | Understanding codebases |
 | `performance-agent` | Profiling, optimization | `knowledge/performance.md` | Performance issues, bottlenecks |
+| `ticket-analyst-agent` | Requirements analysis | `knowledge/ticket-understanding.md` | Clarifying vague requests |
+| `compliance-agent` | Rule auditing | `knowledge/rule-enforcement.md` | Checking rule adherence |
+| `browser-agent` | Interactive browser testing | `knowledge/playwright.md` | Playwright MCP, e2e testing |
 
 ## Quick Decision Guide
 
@@ -46,7 +50,11 @@ Plan complex implementation         → workflow-agent
 Research external topics            → research-agent
 Security audit or review            → security-agent
 Clean up / refactor code            → refactor-agent
+Understand a codebase               → explore-agent
 Optimize performance                → performance-agent
+Clarify requirements                → ticket-analyst-agent
+Audit rule compliance               → compliance-agent
+Interactive browser testing         → browser-agent
 ```
 
 ## Usage

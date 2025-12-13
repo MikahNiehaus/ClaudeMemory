@@ -29,19 +29,14 @@ Check that context.md contains required sections:
 - [ ] **Key Findings** section
 - [ ] **Next Steps** section
 
-### 3. MEMORY.md Registration
-- [ ] Task is listed in Active Tasks table
-- [ ] Status matches context.md status
-- [ ] Workspace path is correct
-
-### 4. Agent Output Compliance
+### 3. Agent Output Compliance
 For each agent contribution in context.md:
 - [ ] Status field present (COMPLETE/BLOCKED/NEEDS_INPUT)
 - [ ] If BLOCKED, blocker is documented
 - [ ] Handoff notes present for sequential agents
 - [ ] Context Acknowledgment present (for agents after first)
 
-### 5. Content Validation (CRITICAL)
+### 4. Content Validation (CRITICAL)
 Verify context.md sections are actually populated (not just headers):
 - [ ] **Status.State** has value (ACTIVE/BLOCKED/COMPLETE) - not empty
 - [ ] **Quick Resume** is current (mentions last agent that contributed)
@@ -49,7 +44,7 @@ Verify context.md sections are actually populated (not just headers):
 - [ ] **Key Files** lists at least one relevant file
 - [ ] If BLOCKED: **Blocked Resolution** section is filled out
 
-### 6. Context Health Check
+### 5. Context Health Check
 - [ ] File size < 30 KB (check with file stats)
 - [ ] Agent Contributions < 10 (if more, suggest archiving)
 - [ ] Quick Resume matches last Agent Contribution timestamp
@@ -62,7 +57,6 @@ Task: $1
 Structure:      [PASS/FAIL] - [details]
 Context.md:     [PASS/FAIL] - [missing sections]
 Content:        [PASS/FAIL] - [empty/stale fields]
-MEMORY.md:      [PASS/FAIL] - [registration status]
 Agent Outputs:  [PASS/FAIL] - [compliance issues]
 Context Health: [PASS/WARN/FAIL] - [size/staleness issues]
 ─────────────────────────────

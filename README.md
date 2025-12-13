@@ -102,7 +102,7 @@ flowchart TB
         subgraph Knowledge["knowledge/ (23 bases)"]
             Testing[testing.md]
             Debugging[debugging.md]
-            BrowserTest[browser-testing.md]
+            Playwright[playwright.md]
             MoreK[... 20 more]
         end
 
@@ -432,7 +432,7 @@ ClaudeMemory/
 ├── knowledge/             # 23 knowledge bases
 │   ├── testing.md
 │   ├── debugging.md
-│   ├── browser-testing.md
+│   ├── playwright.md
 │   └── ... (20 more)
 ├── workspace/             # Task-organized work
 │   └── [task-id]/

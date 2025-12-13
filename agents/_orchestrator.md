@@ -152,7 +152,7 @@ For EVERY task, evaluate by reading the relevant knowledge base:
 | Performance | Loops, DB queries, caching, hot paths | `knowledge/performance.md` | `performance-agent` |
 | Review | Code ready for merge | `knowledge/pr-review.md` | `reviewer-agent` |
 | Clarity | Vague/unclear requirements | `knowledge/ticket-understanding.md` | `ticket-analyst-agent` |
-| Browser Testing | Interactive UI testing, click-through, visual verification | `knowledge/browser-testing.md` | `browser-agent` |
+| Browser Testing | Interactive UI testing, click-through, visual verification | `knowledge/playwright.md` | `browser-agent` |
 
 ### Subtask Definition Requirements
 

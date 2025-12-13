@@ -12,7 +12,7 @@ Before context compaction occurs, review and summarize all critical state that m
 ## Critical State to Preserve
 
 ### 1. Active Tasks
-Read `MEMORY.md` and list all tasks with status ACTIVE or BLOCKED:
+List `workspace/` folders and read each `context.md` to find tasks with status ACTIVE or BLOCKED:
 
 | Task ID | Description | Status | Workspace |
 |---------|-------------|--------|-----------|
@@ -59,6 +59,5 @@ List any NEEDS_INPUT items awaiting user response
 ```
 
 ## Files to Review
-@MEMORY.md
 
-Then glob for all context.md files in workspace/*/ and read each one.
+Glob for all context.md files in workspace/*/ and read each one to find active tasks.
