@@ -12,7 +12,7 @@
 
 Multi-agent orchestration system where Claude acts as lead agent, delegating to specialized subagents. Agents collaborate through per-task context files.
 
-**16 Specialist Agents** | **23 Knowledge Bases** | **Per-task context isolation** | **9 Slash Commands**
+**16 Specialist Agents** | **25 Knowledge Bases** | **13 Rules** | **Per-task context isolation** | **9 Slash Commands**
 
 ## Architecture
 
@@ -85,6 +85,8 @@ ClaudeMemory/
 | `knowledge/completion-verification.md` | Task Completion | completion, verify, done, criteria, persistent mode, finish | 2025-12-11 |
 | `knowledge/rule-enforcement.md` | Rule Compliance | rule, enforce, compliance, violation, check, validate, audit | 2025-12-11 |
 | `knowledge/playwright.md` | Playwright MCP | browser, playwright, interactive, e2e, click, navigate, test app | 2025-12-12 |
+| `knowledge/self-reflection.md` | Agent Self-Reflection | reflection, confidence, verify, check output, hallucination, accuracy | 2025-12-12 |
+| `knowledge/file-editing-windows.md` | Windows File Editing | file edit, write file, unexpectedly modified, edit error, windows | 2025-12-12 |
 
 ## Slash Commands
 
@@ -270,6 +272,24 @@ See `knowledge/organization.md` for task folder guidelines.
   - **Session Lifecycle**: Defined start/during/end patterns for browser testing
   - **Integration**: Handoff patterns to debug-agent, test-agent, security-agent, ui-agent, performance-agent
   - Total: 16 agents, 23 knowledge bases, 9 slash commands
+
+- **2025-12-12**: System-Wide Improvement Analysis (Research-Driven)
+  - **Deep Research**: Conducted comprehensive web research on AI agent orchestration, prompt engineering, and Claude-specific optimizations
+  - **Research Sources**: Anthropic Multi-Agent System, Claude Code Best Practices, LangGraph/AutoGen memory patterns, Self-Reflection research
+  - **New Knowledge Bases**:
+    - `knowledge/self-reflection.md` - Mandatory self-reflection protocol for all agents (anti-hallucination)
+    - `knowledge/file-editing-windows.md` - Windows "unexpectedly modified" bug workarounds
+  - **New Rules**:
+    - RULE-011: Windows File Edit Resilience (relative paths, Bash fallback)
+    - RULE-012: Self-Reflection Required (BLOCK severity - accuracy focus)
+    - RULE-013: Model Selection for Agents (opus/sonnet/haiku guidance)
+  - **Updated _shared-output.md**:
+    - Added confidence level requirement to all agent status reports
+    - Added self-reflection reference
+    - Added model selection reference
+  - **Key Finding**: Self-reflection improves LLM agent performance across all tested models (arXiv research)
+  - **User Preference**: Accuracy > Speed > Token Cost (documented in RULE-013)
+  - Total: 16 agents, 25 knowledge bases, 13 rules, 9 slash commands
 
 ## Notes
 

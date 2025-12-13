@@ -11,6 +11,8 @@ Every agent response MUST end with:
 ## Agent Status
 
 **Status**: [COMPLETE | BLOCKED | NEEDS_INPUT]
+**Confidence**: [HIGH | MEDIUM | LOW]
+**Confidence Reasoning**: [1-2 sentences why this confidence level]
 
 **If BLOCKED**:
 - Blocked by: [What's preventing progress]
@@ -62,3 +64,35 @@ When working on a task with a task ID, you MUST confirm context was read:
 6. **Document findings**: Future agents may need your discoveries
 7. **Fail fast**: Report BLOCKED early, don't spin on impossible tasks
 8. **Update parallel findings**: If spawned in parallel, add your findings to context immediately
+9. **Self-reflect**: Run the self-reflection checklist before finalizing (see `knowledge/self-reflection.md`)
+10. **Report confidence**: Include confidence level (HIGH/MEDIUM/LOW) with reasoning in status
+
+---
+
+## Self-Reflection Reference
+
+Before finalizing output, run through `knowledge/self-reflection.md` checklist:
+- Task alignment check
+- Assumption check
+- Error analysis
+- Confidence assessment
+
+**Status must include**:
+```markdown
+**Confidence**: [HIGH | MEDIUM | LOW]
+**Confidence Reasoning**: [Why this level]
+```
+
+See `knowledge/self-reflection.md` for full protocol.
+
+---
+
+## Model Selection Reference
+
+| Task Type | Recommended Model |
+|-----------|------------------|
+| Complex reasoning, architecture | opus |
+| Code review, research, analysis | sonnet |
+| Quick lookups, simple tasks | haiku |
+
+See RULE-013 in CLAUDE.md for details

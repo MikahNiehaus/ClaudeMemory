@@ -191,6 +191,61 @@ Rules are encoded for compliance checking. Format:
 
 ---
 
+### RULE-011: Windows File Edit Resilience
+- **ID**: RULE-011
+- **TRIGGER**: When Edit/Write tool fails with "unexpectedly modified" error
+- **CONDITION**: On Windows platform
+- **ACTION**:
+  1. Retry with relative path (./path/file.ext instead of C:/...)
+  2. If fails, use Bash/sed workaround
+  3. If fails, create new file + rename
+- **SEVERITY**: WARN
+
+**Workaround Priority**:
+1. Use relative paths (./path/file.ext)
+2. Read immediately before edit, don't batch reads
+3. Fall back to Bash commands for edits
+4. Create new file + rename pattern
+
+See `knowledge/file-editing-windows.md` for full workaround details.
+
+---
+
+### RULE-012: Self-Reflection Required
+- **ID**: RULE-012
+- **TRIGGER**: Before any agent reports COMPLETE status
+- **CONDITION**: Agent has performed self-reflection checklist
+- **ACTION**: Run self-reflection, include confidence level and reasoning
+- **SEVERITY**: BLOCK
+
+**Requirements**:
+- Every agent MUST self-reflect before finalizing output
+- Output MUST include confidence level (HIGH/MEDIUM/LOW)
+- Output MUST include reasoning for confidence level
+- LOW confidence + critical task → Report NEEDS_INPUT instead
+
+See `knowledge/self-reflection.md` for full protocol.
+
+---
+
+### RULE-013: Model Selection for Agents
+- **ID**: RULE-013
+- **TRIGGER**: When spawning any agent via Task tool
+- **CONDITION**: Appropriate model selected for task complexity
+- **ACTION**: Select model based on task requirements
+- **SEVERITY**: WARN
+
+**Model Selection Guide**:
+| Task Type | Model | Rationale |
+|-----------|-------|-----------|
+| Architecture, complex reasoning | opus | Highest capability |
+| Code review, research, analysis | sonnet | Good balance |
+| Quick lookups, simple exploration | haiku | Speed, lower cost |
+
+**Priority**: Accuracy > Speed > Token Cost (per user preference)
+
+---
+
 ## Compliance Checking
 
 See `agents/_orchestrator.md` for the COMPLIANCE PROTOCOL that checks these rules.
@@ -494,6 +549,8 @@ For simple documentation lookups without full agent delegation:
 | prompt, quality, better, improve, chain of thought | `knowledge/prompting-patterns.md` |
 | ticket, requirement, scope, acceptance criteria, clarify, decompose | `knowledge/ticket-understanding.md` |
 | browser, playwright, interactive, e2e, click, navigate, test app | `knowledge/playwright.md` |
+| reflection, confidence, verify, check output, hallucination | `knowledge/self-reflection.md` |
+| file edit, write file, unexpectedly modified, windows error | `knowledge/file-editing-windows.md` |
 
 ---
 
@@ -566,7 +623,7 @@ ClaudeMemory/
 │       ├── outputs/
 │       ├── snapshots/
 │       └── context.md     # Task context & agent handoffs
-├── knowledge/             # Knowledge bases (23 files)
+├── knowledge/             # Knowledge bases (25 files)
 │   ├── testing.md
 │   ├── debugging.md
 │   ├── documentation.md
@@ -589,7 +646,9 @@ ClaudeMemory/
 │   ├── ticket-understanding.md
 │   ├── completion-verification.md
 │   ├── rule-enforcement.md
-│   └── playwright.md
+│   ├── playwright.md
+│   ├── self-reflection.md
+│   └── file-editing-windows.md
 └── docs/                  # Auto-generated (gitignored, run /update-docs to create)
 ```
 
