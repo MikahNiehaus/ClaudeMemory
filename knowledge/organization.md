@@ -204,7 +204,7 @@ Every task folder should have a `context.md` file:
 
 ## Status Definitions
 
-### Task Status (in MEMORY.md / context.md)
+### Task Status (in context.md)
 
 | Status | Meaning | Actions |
 |--------|---------|---------|

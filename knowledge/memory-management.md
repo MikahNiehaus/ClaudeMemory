@@ -26,7 +26,6 @@ Claude Code has limited context windows. When approaching capacity (~95%), auto-
 
 ### What Survives Compaction
 - CLAUDE.md files (loaded fresh each session)
-- MEMORY.md (your task registry)
 - workspace/[task-id]/context.md (task-specific state)
 - Git history
 - All files on disk
@@ -76,30 +75,7 @@ Claude Code loads memories in order of precedence:
 - Don't include code examples (put in knowledge/)
 - Don't include conversation history
 
-### 2. MEMORY.md Structure
-
-**Essential sections that aid context recovery**:
-
-```markdown
-# System Memory
-
-## Active Tasks
-[What's currently being worked on - updated constantly]
-
-## Agent Registry
-[Quick lookup of all agents]
-
-## Documentation Registry
-[Quick lookup of all knowledge files]
-
-## Session Summary
-[Updated after significant milestones]
-
-## Last Updated
-[Timestamp for staleness detection]
-```
-
-### 3. Per-Task Context (workspace/[task-id]/context.md)
+### 2. Per-Task Context (workspace/[task-id]/context.md)
 
 **Critical for compaction recovery**:
 
@@ -121,7 +97,7 @@ Claude Code loads memories in order of precedence:
 [What to do when resuming]
 ```
 
-### 4. Compaction-Friendly Updates
+### 3. Compaction-Friendly Updates
 
 **After each significant milestone**:
 1. Update task context.md with current state
@@ -150,7 +126,7 @@ When starting a new session or recovering from compaction:
 
 ```
 1. Read CLAUDE.md (automatic)
-2. Read MEMORY.md to find active tasks
+2. List workspace/ folders to find active tasks
 3. For each active task:
    - Read workspace/[task-id]/context.md
    - Re-read key files mentioned
@@ -184,7 +160,7 @@ Runs before compaction happens:
 **Use cases**:
 - Log compaction events
 - Backup current state
-- Ensure MEMORY.md is current
+- Update task context files
 
 ### SessionStart Hook
 
@@ -213,10 +189,10 @@ Runs when session starts or resumes:
 ### DO
 1. Keep CLAUDE.md lean (< 500 lines)
 2. Update task context.md after each milestone
-3. Use MEMORY.md as an index, not a log
-4. Structure context.md for quick resume
-5. Record Next Steps explicitly
-6. Include file paths in all notes
+3. Structure context.md for quick resume
+4. Record Next Steps explicitly
+5. Include file paths in all notes
+6. Use workspace/ folders for task isolation
 
 ### DON'T
 1. Store conversation history in files

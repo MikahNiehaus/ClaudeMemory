@@ -14,10 +14,10 @@ The Claude Multi-Agent Orchestration System implements a hierarchical multi-agen
                                ▼
 ┌─────────────────────────────────────────────────────────────────┐
 │                     Lead Agent (Orchestrator)                    │
-│  ┌─────────────┐  ┌─────────────┐  ┌─────────────────────────┐  │
-│  │  CLAUDE.md  │  │  MEMORY.md  │  │  agents/_orchestrator   │  │
-│  │  (rules)    │  │  (registry) │  │  (routing logic)        │  │
-│  └─────────────┘  └─────────────┘  └─────────────────────────┘  │
+│  ┌─────────────┐  ┌─────────────────────────┐                   │
+│  │  CLAUDE.md  │  │  agents/_orchestrator   │                   │
+│  │  (rules)    │  │  (routing logic)        │                   │
+│  └─────────────┘  └─────────────────────────┘                   │
 └─────────────────────────────────────────────────────────────────┘
                                │
            ┌───────────────────┼───────────────────┐
@@ -49,15 +49,15 @@ The orchestrator is defined in `CLAUDE.md` and loaded every session. It:
 **Key files**:
 - `CLAUDE.md` - Main instructions, rules, quick reference
 - `agents/_orchestrator.md` - Detailed routing logic, collaboration matrix
-- `MEMORY.md` - System registry, session history
 
 ### 2. Specialist Agents
 
-16 agents with domain expertise:
+18 agents with domain expertise:
 
 | Category | Agents |
 |----------|--------|
-| Code Quality | test-agent, debug-agent, reviewer-agent, refactor-agent |
+| Code Quality | test-agent, debug-agent, reviewer-agent, refactor-agent, evaluator-agent |
+| Learning | teacher-agent |
 | Design | architect-agent, ui-agent |
 | Security | security-agent |
 | Documentation | docs-agent |
@@ -69,7 +69,7 @@ The orchestrator is defined in `CLAUDE.md` and loaded every session. It:
 
 ### 3. Knowledge Bases
 
-25 markdown files in `knowledge/` providing domain expertise:
+30 markdown files in `knowledge/` providing domain expertise:
 - Agents read these for best practices
 - Organized by topic with TRIGGER keywords
 - Include checklists, examples, anti-patterns
@@ -157,8 +157,8 @@ Key rules:
 ## State Management
 
 ### Session State
-- `MEMORY.md` - System registry, component counts
-- `workspace/` folders - Active task list
+- `CLAUDE.md` - Rules, agent roster, routing
+- `workspace/` folders - Active task list (full task isolation)
 
 ### Task State
 - `workspace/[task-id]/context.md` - Per-task state

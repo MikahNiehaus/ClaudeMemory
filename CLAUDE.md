@@ -401,8 +401,6 @@ When plan mode is **ACTIVE**:
 
 ## Agent Roster
 
-> Full registry with dates: see `MEMORY.md` Agent Registry
-
 | Agent | Spawn For |
 |-------|-----------|
 | `test-agent` | Tests, TDD, coverage |
@@ -422,6 +420,7 @@ When plan mode is **ACTIVE**:
 | `compliance-agent` | Rule auditing |
 | `browser-agent` | Interactive browser testing, Playwright MCP |
 | `evaluator-agent` | Output verification, quality gate |
+| `teacher-agent` | Learning assistance, explain why/how, Socratic tutoring |
 
 ## Quick Decision Tree
 
@@ -611,28 +610,22 @@ For simple documentation lookups without full agent delegation:
 | context, token, attention, memory, scratchpad, write, select, compress, isolate | `knowledge/context-engineering.md` |
 | multi-agent, failure, cascade, coordination, misalignment, handoff | `knowledge/multi-agent-failures.md` |
 | tool, MCP, tool definition, API, function, parameter, tool use | `knowledge/tool-design.md` |
+| teach, learn, explain, understand, why, how, Socratic, scaffold, tutor | `knowledge/teaching.md` |
 
 ---
 
 ## Adding to the System
 
-### New Documentation
-1. Create `knowledge/[topic].md`
-2. Add to router table above
-3. Update `MEMORY.md` registry
-
 ### New Agent
 1. Create `agents/[name]-agent.md` following existing format
 2. Add to Agent Roster table above
 3. Update `agents/_orchestrator.md` routing logic
-4. Update `MEMORY.md` registry
-5. Run `/update-docs` to regenerate documentation
-
-### New Documentation
-1. Create `knowledge/[topic].md`
-2. Add to router table above
-3. Update `MEMORY.md` registry
 4. Run `/update-docs` to regenerate documentation
+
+### New Knowledge Base
+1. Create `knowledge/[topic].md`
+2. Add to Documentation Router table above
+3. Run `/update-docs` to regenerate documentation
 
 ### Documentation Auto-Update Rule
 **After ANY system change** (new agent, new knowledge base, new command):
@@ -646,7 +639,6 @@ For simple documentation lookups without full agent delegation:
 ```
 ClaudeMemory/
 ├── CLAUDE.md              # This file (orchestrator)
-├── MEMORY.md              # System state & registry
 ├── .claude/
 │   ├── settings.json      # Permissions, hooks, sandbox config
 │   └── commands/          # Slash commands (9 commands)
@@ -659,7 +651,7 @@ ClaudeMemory/
 │       ├── plan-task.md
 │       ├── set-mode.md
 │       └── check-completion.md
-├── agents/                # Agent definitions (16 agents)
+├── agents/                # Agent definitions (18 agents)
 │   ├── _orchestrator.md   # Detailed routing logic
 │   ├── test-agent.md
 │   ├── debug-agent.md
@@ -676,14 +668,16 @@ ClaudeMemory/
 │   ├── performance-agent.md
 │   ├── ticket-analyst-agent.md
 │   ├── compliance-agent.md
-│   └── browser-agent.md
+│   ├── browser-agent.md
+│   ├── evaluator-agent.md
+│   └── teacher-agent.md
 ├── workspace/             # Task-organized work area
 │   └── [task-id]/         # Per-task folders
 │       ├── mockups/
 │       ├── outputs/
 │       ├── snapshots/
 │       └── context.md     # Task context & agent handoffs
-├── knowledge/             # Knowledge bases (25 files)
+├── knowledge/             # Knowledge bases (30 files)
 │   ├── testing.md
 │   ├── debugging.md
 │   ├── documentation.md

@@ -295,7 +295,7 @@
         "hooks": [
           {
             "type": "prompt",
-            "prompt": "SESSION INITIALIZATION:\n\n1. Read MEMORY.md for system registry\n2. List workspace/ folders to find active tasks\n3. For each task folder, read context.md and check:\n   - Status (PLANNING/ACTIVE/BLOCKED/COMPLETE)\n   - Execution Mode (NORMAL/PERSISTENT)\n   - Completion Criteria (if PERSISTENT mode)\n\n4. For PERSISTENT mode tasks that are ACTIVE:\n   - Run completion criteria verification commands\n   - If criteria NOT met: AUTO-CONTINUE without asking user\n   - Resume from documented 'Next Item' in Progress Tracker\n\n5. For NORMAL mode or non-PERSISTENT tasks:\n   - Summarize status and ask user how to proceed\n\n6. Remind: CLAUDE.md contains orchestrator rules (machine-readable format)\n\nCRITICAL: PERSISTENT mode means continue automatically until done.",
+            "prompt": "SESSION INITIALIZATION:\n\n1. List workspace/ folders to find active tasks\n2. For each task folder, read context.md and check:\n   - Status (PLANNING/ACTIVE/BLOCKED/COMPLETE)\n   - Execution Mode (NORMAL/PERSISTENT)\n   - Completion Criteria (if PERSISTENT mode)\n\n3. For PERSISTENT mode tasks that are ACTIVE:\n   - Run completion criteria verification commands\n   - If criteria NOT met: AUTO-CONTINUE without asking user\n   - Resume from documented 'Next Item' in Progress Tracker\n\n4. For NORMAL mode or non-PERSISTENT tasks:\n   - Summarize status and ask user how to proceed\n\n5. CLAUDE.md contains orchestrator rules, agents, and routing logic\n\nCRITICAL: PERSISTENT mode means continue automatically until done.",
             "statusMessage": "Loading session state...",
             "timeout": 30
           }

@@ -2,7 +2,7 @@
 
 ## Overview
 
-The system includes 16 specialist agents, each expert in a specific domain. Agents are spawned by the orchestrator via the Task tool and coordinate through per-task context files.
+The system includes 18 specialist agents, each expert in a specific domain. Agents are spawned by the orchestrator via the Task tool and coordinate through per-task context files.
 
 ## Agent List
 
@@ -211,6 +211,32 @@ The system includes 16 specialist agents, each expert in a specific domain. Agen
 - Flow testing
 
 **Knowledge base**: `knowledge/playwright.md`
+
+---
+
+### evaluator-agent
+**Domain**: Output verification, quality gate
+
+**When to spawn**:
+- Verifying agent output quality
+- Planner-Worker-Evaluator patterns
+- Quality scoring
+- Output validation
+
+**Knowledge bases**: `knowledge/self-reflection.md`, `knowledge/error-recovery.md`
+
+---
+
+### teacher-agent
+**Domain**: Learning assistance, Socratic tutoring
+
+**When to spawn**:
+- User asks to understand "why" or "how"
+- Explaining complex decisions
+- After agent work, to help user learn
+- User wants guided learning, not just answers
+
+**Knowledge base**: `knowledge/teaching.md`
 
 ---
 

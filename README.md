@@ -5,7 +5,7 @@ A plug-and-play toolkit that supercharges Claude Code with specialized AI agents
 ## System Overview
 
 ```
-17 Specialist Agents | 29 Knowledge Bases | 14 Enforcement Rules | 9 Slash Commands
+18 Specialist Agents | 30 Knowledge Bases | 14 Enforcement Rules | 9 Slash Commands
 ```
 
 ---
@@ -89,9 +89,8 @@ flowchart LR
 flowchart TB
     subgraph Toolkit["Toolkit (copy to your project)"]
         CLAUDE[CLAUDE.md<br/>Orchestrator + 14 Rules]
-        MEMORY[MEMORY.md<br/>System Registry]
 
-        subgraph Agents["agents/ (17 specialists)"]
+        subgraph Agents["agents/ (18 specialists)"]
             Orch[_orchestrator.md]
             Test[test-agent]
             Debug[debug-agent]
@@ -132,7 +131,7 @@ flowchart TB
 
 ---
 
-## The 17 Specialist Agents
+## The 18 Specialist Agents
 
 | Agent | Expertise | When Spawned |
 |-------|-----------|--------------|
@@ -153,6 +152,7 @@ flowchart TB
 | `compliance-agent` | Rule auditing | Checking rule adherence |
 | `browser-agent` | Playwright MCP | Interactive browser testing |
 | `evaluator-agent` | Quality gate | Output verification before completion |
+| `teacher-agent` | Socratic tutoring | Learning, understanding "why" and "how" |
 
 ---
 
@@ -440,9 +440,8 @@ Run `/update-docs` after completing work to generate clean project docs.
    .claude/       # Settings, commands
    agents/        # Agent definitions
    knowledge/     # Domain expertise
-   workspace/     # Task tracking (starts empty)
+   workspace/     # Task tracking (per-task isolation)
    CLAUDE.md      # Orchestrator instructions
-   MEMORY.md      # System registry
    ```
 
 2. **Start Claude Code** in your project
@@ -456,11 +455,10 @@ Run `/update-docs` after completing work to generate clean project docs.
 ```
 ClaudeMemory/
 ├── CLAUDE.md              # Orchestrator + 14 rules
-├── MEMORY.md              # System registry
 ├── .claude/
 │   ├── settings.json      # Permissions, hooks, sandbox
 │   └── commands/          # 9 slash commands
-├── agents/                # 17 specialist agents
+├── agents/                # 18 specialist agents
 │   ├── _orchestrator.md   # Detailed routing
 │   ├── _shared-output.md  # Common output format
 │   ├── test-agent.md
@@ -468,7 +466,7 @@ ClaudeMemory/
 │   ├── browser-agent.md
 │   ├── evaluator-agent.md # NEW: Quality gate
 │   └── ... (12 more)
-├── knowledge/             # 29 knowledge bases
+├── knowledge/             # 30 knowledge bases
 │   ├── testing.md
 │   ├── debugging.md
 │   ├── playwright.md

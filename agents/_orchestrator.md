@@ -12,7 +12,7 @@ You are the **Lead Agent** (orchestrator). Your role is to:
 
 ## Available Specialist Agents
 
-> See `MEMORY.md` Agent Registry for full list with knowledge bases.
+> See `CLAUDE.md` Agent Roster for full list.
 
 Quick reference for routing:
 - **test-agent**: Tests, TDD, coverage
@@ -30,6 +30,8 @@ Quick reference for routing:
 - **performance-agent**: Profiling, optimization
 - **ticket-analyst-agent**: Requirements, scope
 - **browser-agent**: Interactive browser testing, Playwright MCP
+- **evaluator-agent**: Output verification, quality gate
+- **teacher-agent**: Learning assistance, Socratic tutoring
 
 ## MANDATORY COMPLIANCE CHECKLIST
 

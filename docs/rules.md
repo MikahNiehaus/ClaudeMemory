@@ -2,7 +2,7 @@
 
 ## Overview
 
-The system uses 13 machine-readable rules encoded in `CLAUDE.md`. Each rule has:
+The system uses 14 machine-readable rules encoded in `CLAUDE.md`. Each rule has:
 - **ID**: Unique identifier
 - **TRIGGER**: When to check the rule
 - **CONDITION**: What must be true
@@ -188,6 +188,28 @@ See `knowledge/self-reflection.md` for protocol.
 | Quick lookups, simple exploration | haiku |
 
 **Priority**: Accuracy > Speed > Token Cost
+
+---
+
+### RULE-014: No Stopping in PERSISTENT Mode
+**Severity**: BLOCK
+
+**Trigger**: When task mode is PERSISTENT and considering asking user or stopping
+
+**Condition**: All completion criteria are MET or tokens are exhausted
+
+**Action**: BLOCK any question/stopping until criteria met; auto-continue
+
+**Anti-Pattern Detection**:
+If about to write any of these, STOP and continue instead:
+- "Shall I..."
+- "Would you like..."
+- "Let me know if..."
+- "Do you want..."
+
+**Critical**: PERSISTENT mode means CONTINUOUS until criteria met or tokens exhausted.
+
+See `knowledge/memory-management.md` for PERSISTENT mode protocol.
 
 ---
 

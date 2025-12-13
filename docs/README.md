@@ -26,12 +26,12 @@ A sophisticated multi-agent orchestration system for Claude Code that transforms
 
 ### Multi-Agent Architecture
 - **Lead Agent (Orchestrator)**: Claude analyzes requests and delegates to specialists
-- **16 Specialist Agents**: Each expert in a specific domain (testing, debugging, security, etc.)
+- **18 Specialist Agents**: Each expert in a specific domain (testing, debugging, security, etc.)
 - **Per-Task Context**: Each task gets isolated context in `workspace/[task-id]/`
 - **Handoff Protocol**: Agents pass findings through context.md files
 
 ### Machine-Readable Rules
-13 rules encoded with TRIGGER, CONDITION, ACTION, SEVERITY for consistent enforcement:
+14 rules encoded with TRIGGER, CONDITION, ACTION, SEVERITY for consistent enforcement:
 - RULE-001: Agent Spawn Required for Code Changes
 - RULE-002: TodoWrite for Multi-Step Tasks
 - RULE-003: Planning Phase Required
@@ -39,7 +39,7 @@ A sophisticated multi-agent orchestration system for Claude Code that transforms
 - And more...
 
 ### Knowledge System
-25 knowledge bases covering:
+30 knowledge bases covering:
 - Software engineering best practices
 - Security (OWASP Top 10)
 - Testing & TDD
@@ -59,12 +59,11 @@ All agents must self-reflect before finalizing output:
 ```
 ClaudeMemory/
 ├── CLAUDE.md              # Orchestrator instructions (loaded every session)
-├── MEMORY.md              # System registry & session history
 ├── .claude/
 │   ├── settings.json      # Permissions, hooks, sandbox config
 │   └── commands/          # 9 slash commands
-├── agents/                # 16 specialist agents + orchestrator
-├── knowledge/             # 25 knowledge bases
+├── agents/                # 18 specialist agents + orchestrator
+├── knowledge/             # 30 knowledge bases
 ├── workspace/             # Per-task work folders
 └── docs/                  # This documentation (gitignored)
 ```

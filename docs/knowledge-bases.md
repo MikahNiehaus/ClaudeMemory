@@ -2,7 +2,7 @@
 
 ## Overview
 
-25 knowledge bases in `knowledge/` provide domain expertise for agents and the orchestrator. Each has TRIGGER keywords for automatic routing.
+30 knowledge bases in `knowledge/` provide domain expertise for agents and the orchestrator. Each has TRIGGER keywords for automatic routing.
 
 ## Knowledge Base List
 
@@ -33,6 +33,11 @@
 | `playwright.md` | Playwright MCP | browser, playwright, interactive, e2e |
 | `self-reflection.md` | Agent Self-Reflection | reflection, confidence, hallucination |
 | `file-editing-windows.md` | Windows File Editing | file edit, unexpectedly modified |
+| `context-engineering.md` | Context Engineering | context, write, select, compress, isolate |
+| `error-recovery.md` | Error Recovery | error, recovery, detect, decide, act |
+| `multi-agent-failures.md` | Multi-Agent Failures | agent, failure, cascade, MAST |
+| `tool-design.md` | Tool Design | tool, MCP, function, parameter, API |
+| `teaching.md` | Teaching & Pedagogy | teach, learn, explain, Socratic, scaffold |
 
 ## Knowledge Base Categories
 
@@ -69,11 +74,18 @@
 - `self-reflection.md` - Anti-hallucination
 - `file-editing-windows.md` - Windows bug workarounds
 - `playwright.md` - Browser testing setup
+- `context-engineering.md` - Four pillars of context management
+- `error-recovery.md` - Agent error handling framework
+- `multi-agent-failures.md` - MAST taxonomy, failure prevention
+- `tool-design.md` - Tool definition best practices
 
 ### Research
 - `research.md` - Web research methodology
 - `code-exploration.md` - Codebase navigation
 - `prompting-patterns.md` - Prompt engineering
+
+### Education
+- `teaching.md` - Socratic tutoring, metacognitive scaffolding
 
 ## Usage
 
