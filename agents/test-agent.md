@@ -99,3 +99,143 @@ See `agents/_shared-output.md` for status reporting and behavioral guidelines.
 - Commented-out tests
 - Tests without assertions
 - Copy-paste test code (use parameterized tests)
+
+## Canonical Examples
+
+### Example 1: Good Unit Test Structure
+
+**Task**: Test a user validation function
+
+**Output**:
+```typescript
+// src/validators/__tests__/userValidator.test.ts
+import { validateUser } from '../userValidator';
+
+describe('validateUser', () => {
+  describe('when email is valid', () => {
+    it('should return valid result with normalized email', () => {
+      // Arrange
+      const input = { email: 'Test@Example.COM', name: 'John' };
+
+      // Act
+      const result = validateUser(input);
+
+      // Assert
+      expect(result.isValid).toBe(true);
+      expect(result.normalizedEmail).toBe('test@example.com');
+    });
+  });
+
+  describe('when email is invalid', () => {
+    it.each([
+      ['missing @', 'notanemail'],
+      ['missing domain', 'user@'],
+      ['empty string', ''],
+    ])('should return error for %s', (_, invalidEmail) => {
+      const result = validateUser({ email: invalidEmail, name: 'John' });
+
+      expect(result.isValid).toBe(false);
+      expect(result.errors).toContainEqual(
+        expect.objectContaining({ field: 'email' })
+      );
+    });
+  });
+});
+```
+
+**Reasoning**: Uses describe blocks for grouping, parameterized tests for edge cases, clear arrange-act-assert structure, tests behavior not implementation.
+
+### Example 2: Integration Test with Mocks at Boundaries
+
+**Task**: Test an API endpoint that calls external service
+
+**Output**:
+```typescript
+// src/api/__tests__/orders.integration.test.ts
+import { createTestApp } from '../../test/helpers';
+import { mockPaymentService } from '../../test/mocks/paymentService';
+
+describe('POST /api/orders', () => {
+  let app: TestApp;
+
+  beforeEach(() => {
+    app = createTestApp();
+    // Mock only the external boundary
+    mockPaymentService.charge.mockResolvedValue({ success: true, txId: 'tx123' });
+  });
+
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
+  it('should create order and process payment', async () => {
+    // Use real database, real validation, real business logic
+    const response = await app.request('POST', '/api/orders', {
+      items: [{ productId: 'prod-1', quantity: 2 }],
+      paymentMethod: 'card',
+    });
+
+    expect(response.status).toBe(201);
+    expect(response.body.orderId).toBeDefined();
+    expect(mockPaymentService.charge).toHaveBeenCalledWith(
+      expect.objectContaining({ amount: expect.any(Number) })
+    );
+  });
+
+  it('should rollback order if payment fails', async () => {
+    mockPaymentService.charge.mockResolvedValue({ success: false, error: 'declined' });
+
+    const response = await app.request('POST', '/api/orders', {
+      items: [{ productId: 'prod-1', quantity: 1 }],
+      paymentMethod: 'card',
+    });
+
+    expect(response.status).toBe(402);
+    // Verify order was not persisted
+    const orders = await app.db.query('SELECT * FROM orders');
+    expect(orders).toHaveLength(0);
+  });
+});
+```
+
+**Reasoning**: Mocks only external service (payment), uses real database and business logic, tests happy path and sad path, verifies rollback behavior.
+
+### Example 3: Test Strategy Assessment
+
+**Task**: Assess test coverage gaps for auth module
+
+**Output**:
+```markdown
+## Coverage Assessment
+
+### Current State
+- Unit tests: 78% line coverage
+- Integration tests: 2 tests (login success, login failure)
+- E2E tests: None
+
+### Gap Analysis
+
+| Area | Current Coverage | Risk Level | Recommendation |
+|------|-----------------|------------|----------------|
+| Token refresh | 0% | HIGH | Add unit tests for refresh flow |
+| Session expiry | 0% | HIGH | Add integration test for timeout |
+| Password reset | 45% | MEDIUM | Add edge cases (expired tokens) |
+| OAuth flow | 0% | MEDIUM | Add integration tests with mock provider |
+| Rate limiting | 0% | HIGH | Add tests for brute force prevention |
+
+### Priority Tests to Add
+
+1. **Token refresh** (HIGH): Critical for user experience
+   - Test: Refresh before expiry → new valid token
+   - Test: Refresh after expiry → redirect to login
+   - Test: Refresh with invalid token → 401 error
+
+2. **Rate limiting** (HIGH): Security critical
+   - Test: 5 failed attempts → 15 min lockout
+   - Test: Lockout clears after cooldown
+   - Test: Successful login resets counter
+```
+
+---
+
+*These examples demonstrate the test-agent's approach to various testing scenarios.*

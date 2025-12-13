@@ -242,6 +242,26 @@ Then, critique your own solution.
 Finally, provide an improved version addressing the critique."
 ```
 
+### Think Tool Pattern (Mid-Task Reflection)
+Stop and reflect during complex multi-step tasks:
+
+**When to use**:
+- After processing tool outputs before next action
+- In policy-heavy environments requiring compliance checking
+- During sequential decision-making where errors compound
+
+**Implementation**:
+```
+"Before proceeding to the next step:
+1. PAUSE and review what we've learned
+2. Check: Does this align with our goal?
+3. Check: Are there policy/rule violations?
+4. Check: Do we have all information needed?
+5. Then proceed or request clarification"
+```
+
+**Research Result**: 54% relative improvement on complex airline domain tasks (Anthropic research)
+
 ## Quality Checklist
 
 Before finalizing any response, verify:

@@ -12,7 +12,7 @@
 
 Multi-agent orchestration system where Claude acts as lead agent, delegating to specialized subagents. Agents collaborate through per-task context files.
 
-**16 Specialist Agents** | **25 Knowledge Bases** | **13 Rules** | **Per-task context isolation** | **9 Slash Commands**
+**17 Specialist Agents** | **29 Knowledge Bases** | **14 Rules** | **Per-task context isolation** | **9 Slash Commands**
 
 ## Architecture
 
@@ -57,6 +57,7 @@ ClaudeMemory/
 | `ticket-analyst-agent` | Requirements analysis, task clarification, scope definition | `knowledge/ticket-understanding.md` | 2025-12-09 |
 | `compliance-agent` | Rule compliance auditing, violation detection | `knowledge/rule-enforcement.md` | 2025-12-11 |
 | `browser-agent` | Interactive browser testing via Playwright MCP | `knowledge/playwright.md` | 2025-12-12 |
+| `evaluator-agent` | Quality gate, output verification, completion verification | `knowledge/completion-verification.md` | 2025-12-12 |
 
 ## Documentation Registry
 
@@ -87,6 +88,10 @@ ClaudeMemory/
 | `knowledge/playwright.md` | Playwright MCP | browser, playwright, interactive, e2e, click, navigate, test app | 2025-12-12 |
 | `knowledge/self-reflection.md` | Agent Self-Reflection | reflection, confidence, verify, check output, hallucination, accuracy | 2025-12-12 |
 | `knowledge/file-editing-windows.md` | Windows File Editing | file edit, write file, unexpectedly modified, edit error, windows | 2025-12-12 |
+| `knowledge/error-recovery.md` | Error Recovery | error, failure, stuck, blocked, retry, recovery, self-healing | 2025-12-12 |
+| `knowledge/context-engineering.md` | Context Engineering | context, token, attention, memory, scratchpad, write, select, compress, isolate | 2025-12-12 |
+| `knowledge/multi-agent-failures.md` | Multi-Agent Failures | multi-agent, failure, cascade, coordination, misalignment, handoff | 2025-12-12 |
+| `knowledge/tool-design.md` | Tool Design | tool, MCP, tool definition, API, function, parameter, tool use | 2025-12-12 |
 
 ## Slash Commands
 
@@ -290,6 +295,61 @@ See `knowledge/organization.md` for task folder guidelines.
   - **Key Finding**: Self-reflection improves LLM agent performance across all tested models (arXiv research)
   - **User Preference**: Accuracy > Speed > Token Cost (documented in RULE-013)
   - Total: 16 agents, 25 knowledge bases, 13 rules, 9 slash commands
+
+- **2025-12-12**: Context Engineering & Error Recovery Patterns
+  - **New Agent**: `evaluator-agent` - Quality gate for verifying outputs against acceptance criteria (Planner-Worker-Evaluator pattern)
+  - **New Knowledge Bases**:
+    - `knowledge/error-recovery.md` - Structured error taxonomy (5 levels), AgentDebug recovery patterns, Detect-Decide-Act framework
+    - `knowledge/context-engineering.md` - Four pillars (Write/Select/Compress/Isolate), scratchpad pattern, token budgets
+    - `knowledge/multi-agent-failures.md` - MAST taxonomy (14 failure modes), error cascading prevention, inter-agent misalignment
+    - `knowledge/tool-design.md` - Tool definition guidelines, error handling, token optimization, evaluation-driven improvement
+  - **Updated Agents**:
+    - `test-agent.md` - Added 3 canonical few-shot examples
+    - `debug-agent.md` - Added 3 canonical few-shot examples (5 Whys, race condition, flaky test)
+  - **Updated _orchestrator.md**:
+    - Added Quality Gate Pattern for evaluator-agent integration
+    - Added ERROR RECOVERY PROTOCOL with classification and decision tree
+    - Added SCRATCHPAD PATTERN for multi-step reasoning
+    - Added model escalation guidance (haiku → sonnet → opus)
+  - **Enhanced Model Selection** (`knowledge/self-reflection.md`):
+    - Detailed model characteristics table (context, cost)
+    - When to use each model matrix
+    - Orchestration pattern (Sonnet plans → Haiku executes → Opus reviews)
+    - Context length considerations
+  - **Research Sources**:
+    - Anthropic Context Engineering, Tool Writing Guide
+    - AgentDebug arXiv paper (24% accuracy improvement)
+    - MAST taxonomy (1600+ traces, 14 failure modes)
+    - Claude 4 model comparison guides
+  - **Key Improvements**:
+    - Few-shot examples improve agent output quality (research-backed)
+    - Structured error recovery improves task completion by 24%
+    - Context engineering pillars provide systematic memory management
+    - MAST failure taxonomy prevents 14 common failure modes
+    - Tool design guidelines reduce token waste and improve reliability
+    - Model selection guidance optimizes cost vs capability
+  - Total: 17 agents, 29 knowledge bases, 13 rules, 9 slash commands
+
+- **2025-12-12**: Persistent Mode Enforcement (RULE-014)
+  - **Root Cause Analysis**: Identified premature stopping in PERSISTENT mode - asking user instead of auto-continuing
+  - **New Rule**: RULE-014 "No Stopping in PERSISTENT Mode" (BLOCK severity)
+    - Explicitly BLOCKS asking "shall I continue?", "would you like...", etc.
+    - Defines only valid stop conditions: ALL criteria met, token exhaustion, unresolvable BLOCKED, user interrupt
+    - Includes anti-pattern detection list
+    - Default criterion for vague requests: "No improvements found after full analysis loop"
+  - **Updated README**:
+    - Added persistent mode enforcement diagram
+    - Added error recovery system diagram
+    - Added context engineering four pillars diagram
+    - Added multi-agent failure prevention (MAST) diagram
+    - Updated all counts to 17 agents, 29 knowledge bases, 14 rules
+  - **Updated prompting-patterns.md**:
+    - Added "Think Tool Pattern" for mid-task reflection (54% improvement in complex tasks)
+  - **Research Sources**:
+    - Anthropic Think Tool research (54% improvement)
+    - PERSISTENT mode execution patterns
+    - LLM agent stopping condition research
+  - Total: 17 agents, 29 knowledge bases, 14 rules, 9 slash commands
 
 ## Notes
 

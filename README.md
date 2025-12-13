@@ -5,7 +5,7 @@ A plug-and-play toolkit that supercharges Claude Code with specialized AI agents
 ## System Overview
 
 ```
-16 Specialist Agents | 23 Knowledge Bases | 10 Enforcement Rules | 9 Slash Commands
+17 Specialist Agents | 29 Knowledge Bases | 14 Enforcement Rules | 9 Slash Commands
 ```
 
 ---
@@ -88,22 +88,24 @@ flowchart LR
 ```mermaid
 flowchart TB
     subgraph Toolkit["Toolkit (copy to your project)"]
-        CLAUDE[CLAUDE.md<br/>Orchestrator + 10 Rules]
+        CLAUDE[CLAUDE.md<br/>Orchestrator + 14 Rules]
         MEMORY[MEMORY.md<br/>System Registry]
 
-        subgraph Agents["agents/ (16 specialists)"]
+        subgraph Agents["agents/ (17 specialists)"]
             Orch[_orchestrator.md]
             Test[test-agent]
             Debug[debug-agent]
             Browser[browser-agent]
-            More[... 13 more]
+            Evaluator[evaluator-agent]
+            More[... 12 more]
         end
 
-        subgraph Knowledge["knowledge/ (23 bases)"]
+        subgraph Knowledge["knowledge/ (29 bases)"]
             Testing[testing.md]
             Debugging[debugging.md]
-            Playwright[playwright.md]
-            MoreK[... 20 more]
+            ErrorRecovery[error-recovery.md]
+            ContextEng[context-engineering.md]
+            MoreK[... 25 more]
         end
 
         subgraph Commands[".claude/commands/ (9)"]
@@ -130,7 +132,7 @@ flowchart TB
 
 ---
 
-## The 16 Specialist Agents
+## The 17 Specialist Agents
 
 | Agent | Expertise | When Spawned |
 |-------|-----------|--------------|
@@ -150,6 +152,7 @@ flowchart TB
 | `ticket-analyst-agent` | Requirements analysis | Clarifying vague requests |
 | `compliance-agent` | Rule auditing | Checking rule adherence |
 | `browser-agent` | Playwright MCP | Interactive browser testing |
+| `evaluator-agent` | Quality gate | Output verification before completion |
 
 ---
 
@@ -254,11 +257,11 @@ sequenceDiagram
 
 ## Rule Enforcement System
 
-The toolkit enforces 10 machine-readable rules via CLAUDE.md:
+The toolkit enforces 14 machine-readable rules via CLAUDE.md:
 
 ```mermaid
 flowchart TB
-    subgraph Rules["10 Enforcement Rules"]
+    subgraph Rules["14 Enforcement Rules"]
         R1[RULE-001: Agent Spawn Required]
         R2[RULE-002: TodoWrite for Multi-Step]
         R3[RULE-003: Planning Phase Required]
@@ -269,6 +272,10 @@ flowchart TB
         R8[RULE-008: Token Efficient Spawning]
         R9[RULE-009: Browser URL Access Policy]
         R10[RULE-010: Playwright MCP Tools Required]
+        R11[RULE-011: Windows File Edit Resilience]
+        R12[RULE-012: Self-Reflection Required]
+        R13[RULE-013: Model Selection for Agents]
+        R14[RULE-014: No Stopping in PERSISTENT Mode]
     end
 
     subgraph Severity["Severity Levels"]
@@ -282,10 +289,14 @@ flowchart TB
     R4 --> Block
     R5 --> Block
     R10 --> Block
+    R12 --> Block
+    R14 --> Block
     R6 --> Warn
     R7 --> Warn
     R8 --> Warn
     R9 --> Warn
+    R11 --> Warn
+    R13 --> Warn
 ```
 
 ### Rule Format
@@ -332,6 +343,33 @@ flowchart TB
 |------|----------|----------|
 | **NORMAL** | Stop after each step, report, wait | Exploratory tasks, quick fixes |
 | **PERSISTENT** | Continue until criteria met | "convert all files", "test until 90%" |
+
+### PERSISTENT Mode Enforcement (RULE-014)
+
+```mermaid
+flowchart TB
+    subgraph EnforcedBehavior["RULE-014: No Stopping in PERSISTENT Mode"]
+        Start[PERSISTENT Mode Active] --> Check{Check Criteria}
+        Check --> |NOT MET| Continue[AUTO-CONTINUE<br/>No asking user]
+        Check --> |ALL MET| Complete[STOP & Report<br/>Verified complete]
+        Continue --> Work[Do Next Work Item]
+        Work --> Check
+    end
+
+    subgraph Blocked["BLOCKED Patterns"]
+        B1["❌ 'Shall I continue?'"]
+        B2["❌ 'Would you like...'"]
+        B3["❌ 'Let me know if...'"]
+        B4["❌ Stop at 'natural' points"]
+    end
+
+    subgraph Allowed["ALLOWED Stop Conditions"]
+        A1["✅ ALL criteria verified MET"]
+        A2["✅ Token exhaustion"]
+        A3["✅ Unresolvable BLOCKED"]
+        A4["✅ User interrupts"]
+    end
+```
 
 ### Explicit Control
 ```
@@ -417,26 +455,32 @@ Run `/update-docs` after completing work to generate clean project docs.
 
 ```
 ClaudeMemory/
-├── CLAUDE.md              # Orchestrator + 10 rules
+├── CLAUDE.md              # Orchestrator + 14 rules
 ├── MEMORY.md              # System registry
 ├── .claude/
 │   ├── settings.json      # Permissions, hooks, sandbox
 │   └── commands/          # 9 slash commands
-├── agents/                # 16 specialist agents
+├── agents/                # 17 specialist agents
 │   ├── _orchestrator.md   # Detailed routing
 │   ├── _shared-output.md  # Common output format
 │   ├── test-agent.md
 │   ├── debug-agent.md
 │   ├── browser-agent.md
-│   └── ... (13 more)
-├── knowledge/             # 23 knowledge bases
+│   ├── evaluator-agent.md # NEW: Quality gate
+│   └── ... (12 more)
+├── knowledge/             # 29 knowledge bases
 │   ├── testing.md
 │   ├── debugging.md
 │   ├── playwright.md
-│   └── ... (20 more)
+│   ├── error-recovery.md  # NEW: 5-level error taxonomy
+│   ├── context-engineering.md  # NEW: Four pillars
+│   ├── multi-agent-failures.md # NEW: MAST taxonomy
+│   ├── tool-design.md     # NEW: Tool best practices
+│   └── ... (22 more)
 ├── workspace/             # Task-organized work
 │   └── [task-id]/
 │       ├── context.md
+│       ├── scratchpad.md  # Working memory
 │       ├── mockups/
 │       ├── outputs/
 │       └── snapshots/
@@ -463,8 +507,96 @@ ClaudeMemory/
 4. **File-based memory** - Survives context compaction and session resets
 5. **Token efficient** - Minimal overhead, maximum capability
 6. **Completion verification** - Never say "done" without verifying criteria
-7. **Rule enforcement** - 10 machine-readable rules with compliance checking
+7. **Rule enforcement** - 14 machine-readable rules with compliance checking
 8. **Defense-in-depth** - Multiple layers for safety (rules, prompts, permissions)
+
+---
+
+## Error Recovery System
+
+```mermaid
+flowchart TB
+    subgraph ErrorTaxonomy["5-Level Error Taxonomy"]
+        L1[Level 1: Memory Errors<br/>Context issues, stale refs]
+        L2[Level 2: Reflection Errors<br/>Premature completion, scope creep]
+        L3[Level 3: Planning Errors<br/>Wrong agent, bad decomposition]
+        L4[Level 4: Action Errors<br/>Tool failures, syntax errors]
+        L5[Level 5: System Errors<br/>Tokens, rate limits]
+    end
+
+    subgraph Recovery["Detect-Decide-Act Recovery"]
+        D[Detect Error] --> C{Classify Level}
+        C --> |L1-2| Self[Self-Correction:<br/>Re-read, re-reflect]
+        C --> |L3| Replan[Re-Planning:<br/>Clarify, decompose again]
+        C --> |L4| Retry[Tactical:<br/>Parse error, adjust, retry]
+        C --> |L5| System[System:<br/>Checkpoint, wait, continue]
+    end
+```
+
+Based on [AgentDebug research](https://arxiv.org/abs/2503.13657) showing 24% accuracy improvement with structured error recovery.
+
+---
+
+## Context Engineering (Four Pillars)
+
+```mermaid
+flowchart LR
+    subgraph Pillars["Context Engineering Pillars"]
+        W[1. WRITE<br/>Right altitude prompts<br/>Not too specific, not vague]
+        S[2. SELECT<br/>Minimal viable tools<br/>Canonical examples]
+        C[3. COMPRESS<br/>Compaction<br/>Scratchpad<br/>Sub-agents]
+        I[4. ISOLATE<br/>Just-in-time context<br/>Progressive disclosure]
+    end
+
+    W --> Quality[High-Quality Output]
+    S --> Quality
+    C --> Quality
+    I --> Quality
+```
+
+Based on [Anthropic's Context Engineering guide](https://www.anthropic.com/engineering/effective-context-engineering-for-ai-agents).
+
+---
+
+## Multi-Agent Failure Prevention
+
+```mermaid
+flowchart TB
+    subgraph MAST["MAST Failure Taxonomy (14 modes)"]
+        subgraph Design["System Design (32%)"]
+            D1[Unclear spec]
+            D2[Missing context]
+            D3[Wrong agent]
+        end
+        subgraph Alignment["Inter-Agent (28%)"]
+            A1[Communication mismatch]
+            A2[Lost handoff]
+            A3[Duplicate effort]
+        end
+        subgraph Verification["Task Verification (24%)"]
+            V1[Premature completion]
+            V2[Missing validation]
+        end
+        subgraph Infra["Infrastructure (16%)"]
+            I1[Token exhaustion]
+            I2[Rate limiting]
+        end
+    end
+
+    subgraph Prevention["Prevention Strategies"]
+        P1[Validation at boundaries]
+        P2[Error isolation]
+        P3[Standardized handoffs]
+        P4[Evaluator quality gate]
+    end
+
+    Design --> P1
+    Alignment --> P3
+    Verification --> P4
+    Infra --> P2
+```
+
+Based on [MAST research](https://arxiv.org/abs/2503.13657) analyzing 1600+ multi-agent traces.
 
 ---
 

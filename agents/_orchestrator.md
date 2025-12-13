@@ -325,6 +325,134 @@ Use this to determine routing when multiple agents are involved:
 | Migration planning | explore → architect → estimator → workflow | Understand current, design new, estimate, plan |
 | Incident response | debug → security → performance → docs | Fix, audit, verify performance, document |
 | Pre-release audit | security + test + performance + reviewer (parallel) | Comprehensive release checklist |
+| Multi-step implementation | workflow → evaluator | Verify implementation before marking complete |
+| Critical feature | architect → workflow → evaluator → test | Design, implement, verify, test |
+
+### Quality Gate Pattern (Evaluator)
+
+For tasks with verification requirements, add evaluator-agent before completion:
+
+```
+Standard Flow:              With Evaluation:
+architect → workflow        architect → workflow → evaluator
+                                        ↓
+                            If APPROVE → COMPLETE
+                            If REVISE → Fix issues, re-evaluate
+                            If REJECT → Re-plan from start
+```
+
+**When to use evaluator-agent**:
+- Multi-step implementations
+- User requests verification
+- High-risk changes (payments, auth, data migrations)
+- Multi-agent collaborative output
+
+---
+
+## ERROR RECOVERY PROTOCOL
+
+When agents encounter errors or report BLOCKED, use structured recovery.
+
+### Error Classification
+Classify errors using the taxonomy in `knowledge/error-recovery.md`:
+- Level 1: Memory Errors (context issues)
+- Level 2: Reflection Errors (self-check failures)
+- Level 3: Planning Errors (wrong approach)
+- Level 4: Action Errors (tool failures)
+- Level 5: System Errors (infrastructure)
+
+### Recovery Decision Tree
+
+```
+Agent reports error/BLOCKED
+         │
+         ▼
+Classify error level
+         │
+         ├── Level 1-2: Self-correction
+         │   → Re-read context
+         │   → Run self-reflection checklist
+         │   → Retry with corrections
+         │
+         ├── Level 3: Re-planning
+         │   → Spawn ticket-analyst-agent to clarify
+         │   → Re-run planning phase
+         │   → Create new plan
+         │
+         ├── Level 4: Tactical recovery
+         │   → Parse error message
+         │   → Adjust approach
+         │   → Retry (max 3x)
+         │   → If still failing: different approach
+         │
+         └── Level 5: System handling
+             → Log error
+             → Checkpoint progress
+             → Continue with available resources
+             → Alert user if critical
+```
+
+### Model Escalation for Stuck Reasoning
+
+When an agent is stuck on complex reasoning:
+
+| Current | Escalate To | Trigger |
+|---------|-------------|---------|
+| haiku | sonnet | Complex task, low confidence output |
+| sonnet | opus | Architectural decisions, critical analysis |
+| opus | User | Still stuck after opus attempt |
+
+READ `knowledge/error-recovery.md` for full error taxonomy and recovery protocols.
+
+---
+
+## SCRATCHPAD PATTERN
+
+For complex multi-step reasoning, use the scratchpad pattern.
+
+### When to Use Scratchpad
+
+- Multi-step analysis requiring intermediate results
+- Tracking discoveries across agent spawns
+- Working memory for long-running tasks
+
+### Scratchpad Location
+
+```
+workspace/[task-id]/scratchpad.md
+```
+
+### Scratchpad Structure
+
+```markdown
+## Scratchpad: [Task ID]
+
+### Key Discoveries
+| Time | Agent | Finding |
+|------|-------|---------|
+| [ts] | [agent] | [what was learned] |
+
+### Intermediate Results
+- [step]: [result]
+
+### Open Questions
+- [ ] [question needing resolution]
+
+### Decisions Made
+- [decision]: [reasoning]
+
+### Notes
+[Free-form working notes]
+```
+
+### Usage Protocol
+
+1. **Create** scratchpad at task start for complex tasks
+2. **Agents write** key discoveries as they work
+3. **Agents read** before starting to see prior findings
+4. **Orchestrator references** when synthesizing
+
+READ `knowledge/context-engineering.md` for the four pillars of context management
 
 ---
 

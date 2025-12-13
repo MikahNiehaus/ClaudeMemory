@@ -122,3 +122,144 @@ Task context is stored at `workspace/[task-id]/context.md`
 - Changing multiple things at once
 - Not documenting the fix
 - Skipping regression tests
+
+## Canonical Examples
+
+### Example 1: Systematic Root Cause Analysis
+
+**Task**: Debug "Order total is sometimes wrong"
+
+**Investigation Process**:
+```markdown
+## Bug Analysis Report
+
+### Problem Statement
+- **Symptom**: Some orders show incorrect totals (reported 3x this week)
+- **Impact**: HIGH - financial accuracy, customer trust
+- **Reproducibility**: Intermittent (can't reproduce in dev)
+
+### Investigation
+
+#### Evidence Gathered
+1. **Affected orders**: Orders #1042, #1089, #1103
+2. **Pattern found**: All have multiple line items with quantities > 1
+3. **Logs at order time**: No errors, but async calls to pricing API
+4. **Code review**: Found race condition in calculateTotal()
+
+#### Hypotheses Tested
+| Hypothesis | Test | Result |
+|------------|------|--------|
+| Rounding error | Check decimal handling | Ruled out - using Decimal type |
+| Tax calculation | Compare expected vs actual tax | Ruled out - tax correct |
+| Race condition | Add delay in pricing API mock | **CONFIRMED** |
+
+### Root Cause
+**The actual cause**: Race condition in async price lookups.
+
+When multiple items call `getPriceAsync()` simultaneously, the shared `total` variable is updated without locking. Under high concurrency, some additions are lost.
+
+```javascript
+// Before (buggy)
+async calculateTotal(items) {
+  let total = 0;  // Shared mutable state
+  await Promise.all(items.map(async item => {
+    const price = await getPriceAsync(item.productId);
+    total += price * item.quantity;  // Race condition!
+  }));
+  return total;
+}
+
+// After (fixed)
+async calculateTotal(items) {
+  const prices = await Promise.all(
+    items.map(async item => {
+      const price = await getPriceAsync(item.productId);
+      return price * item.quantity;
+    })
+  );
+  return prices.reduce((sum, p) => sum + p, 0);  // No shared state
+}
+```
+
+**Why it happened**: Developer assumed JS was single-threaded (it is, but async introduces interleaving)
+**Why not caught**: Unit tests used sync mocks, integration tests had single items
+
+### Prevention
+- [ ] Regression test: Concurrent multi-item orders
+- [ ] Code review: Flag async mutations of shared state
+- [ ] Lint rule: Warn on mutable variables in async contexts
+```
+
+### Example 2: Using 5 Whys for Production Bug
+
+**Task**: Debug "Users logged out unexpectedly"
+
+```markdown
+## 5 Whys Analysis
+
+**Symptom**: Users report being logged out randomly
+
+1. **Why are users logged out?**
+   → Session token is invalid when checked
+
+2. **Why is the token invalid?**
+   → Token expired earlier than expected (30 min vs 24 hours)
+
+3. **Why did it expire early?**
+   → Server is using wrong expiry config value
+
+4. **Why is config value wrong?**
+   → Environment variable not set in production deployment
+
+5. **Why wasn't env var set?**
+   → New config added but not added to deployment checklist
+
+**Root Cause**: Missing entry in deployment checklist for SESSION_EXPIRY_HOURS
+
+**Fix**:
+1. Add SESSION_EXPIRY_HOURS=24 to production env
+2. Add to deployment checklist template
+3. Add startup validation that required env vars are present
+```
+
+### Example 3: Debugging Flaky Test
+
+**Task**: CI test fails ~20% of runs
+
+```markdown
+## Flaky Test Investigation
+
+### Evidence Collection
+- Test: `should update user profile`
+- Failure pattern: Times out waiting for DB write
+- Works in isolation, fails in parallel runs
+
+### Root Cause
+Test relies on database auto-increment ID being specific value (5), but parallel tests insert records, changing the ID.
+
+```javascript
+// Before (flaky)
+it('should update user profile', async () => {
+  await createUser({ id: 5, name: 'John' });  // Assumes ID is available
+  await updateProfile(5, { name: 'Jane' });
+  const user = await getUser(5);
+  expect(user.name).toBe('Jane');
+});
+
+// After (reliable)
+it('should update user profile', async () => {
+  const user = await createUser({ name: 'John' });  // Use returned ID
+  await updateProfile(user.id, { name: 'Jane' });
+  const updated = await getUser(user.id);
+  expect(updated.name).toBe('Jane');
+});
+```
+
+### Prevention
+- Use factory pattern for test data (never hardcode IDs)
+- Run tests in transaction rollback mode for isolation
+```
+
+---
+
+*These examples show the debug-agent's systematic approach to various bug types.*

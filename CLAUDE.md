@@ -246,6 +246,61 @@ See `knowledge/self-reflection.md` for full protocol.
 
 ---
 
+### RULE-014: No Stopping in PERSISTENT Mode
+- **ID**: RULE-014
+- **TRIGGER**: When task mode is PERSISTENT and considering asking user or stopping
+- **CONDITION**: All completion criteria are MET or tokens are exhausted
+- **ACTION**: BLOCK any question/stopping until criteria met; auto-continue
+- **SEVERITY**: BLOCK
+
+**Core Requirement**:
+In PERSISTENT mode, the orchestrator MUST NOT:
+- Ask "shall I continue?"
+- Ask "would you like me to..."
+- Say "let me know if you want..."
+- Present options and wait for selection
+- Stop at "natural" stopping points
+- Report completion without verifying ALL criteria
+
+**PERSISTENT Mode Behavior**:
+```
+PERSISTENT mode active
+         │
+         ▼
+    Check criteria
+         │
+    ┌────┴────┐
+    │         │
+ NOT MET     ALL MET
+    │         │
+    ▼         ▼
+AUTO-CONTINUE  STOP & REPORT
+(no asking)   (verified complete)
+```
+
+**Only Stop When**:
+1. ALL explicit completion criteria verified as MET
+2. Token/context exhaustion (compaction needed)
+3. BLOCKED state that cannot be auto-resolved
+4. User explicitly interrupts
+
+**Anti-Pattern Detection**:
+If you are about to write any of these, STOP and continue instead:
+- "Shall I..."
+- "Would you like..."
+- "Let me know if..."
+- "Do you want me to..."
+- "Should I proceed..."
+- "What would you prefer..."
+
+**When Criteria Unclear**:
+If PERSISTENT mode is active but criteria are vague (e.g., "keep improving"):
+- Default criterion: "No more improvements found after full analysis loop"
+- Continue until a full loop produces zero new improvements
+- Then report completion with evidence
+
+---
+
 ## Compliance Checking
 
 See `agents/_orchestrator.md` for the COMPLIANCE PROTOCOL that checks these rules.
@@ -366,6 +421,7 @@ When plan mode is **ACTIVE**:
 | `ticket-analyst-agent` | Requirements, scope |
 | `compliance-agent` | Rule auditing |
 | `browser-agent` | Interactive browser testing, Playwright MCP |
+| `evaluator-agent` | Output verification, quality gate |
 
 ## Quick Decision Tree
 
@@ -551,6 +607,10 @@ For simple documentation lookups without full agent delegation:
 | browser, playwright, interactive, e2e, click, navigate, test app | `knowledge/playwright.md` |
 | reflection, confidence, verify, check output, hallucination | `knowledge/self-reflection.md` |
 | file edit, write file, unexpectedly modified, windows error | `knowledge/file-editing-windows.md` |
+| error, failure, stuck, blocked, retry, recovery, self-healing | `knowledge/error-recovery.md` |
+| context, token, attention, memory, scratchpad, write, select, compress, isolate | `knowledge/context-engineering.md` |
+| multi-agent, failure, cascade, coordination, misalignment, handoff | `knowledge/multi-agent-failures.md` |
+| tool, MCP, tool definition, API, function, parameter, tool use | `knowledge/tool-design.md` |
 
 ---
 

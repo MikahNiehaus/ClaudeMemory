@@ -119,13 +119,48 @@ This is invalid - confidence must have reasoning.
 
 ## Model Selection Guidance
 
-Different models are suited for different tasks:
+Different models are suited for different tasks. Claude 4 models form a tiered, interconnected family designed for orchestrated agentic work.
 
-| Task Type | Recommended Model | Rationale |
-|-----------|------------------|-----------|
-| Complex reasoning, architecture decisions | opus | Highest capability |
-| Code review, research synthesis, analysis | sonnet | Good balance |
-| Quick lookups, simple tasks, exploration | haiku | Speed, lower cost |
-| Default if unspecified | inherit | Use orchestrator's model |
+### Model Characteristics
 
-When spawning agents, orchestrator should specify model based on task complexity.
+| Model | Strength | Context | Cost ($/M tokens) |
+|-------|----------|---------|-------------------|
+| **Opus 4.5** | Deep reasoning, complex analysis | 200K | $5/$25 |
+| **Sonnet 4.5** | Balanced intelligence, coding | 200K (1M beta) | $3/$15 |
+| **Haiku 4.5** | Speed, high-volume tasks | 200K | $1/$5 |
+
+### When to Use Each Model
+
+| Use Case | Model | Rationale |
+|----------|-------|-----------|
+| Architecture decisions | Opus | Deep reasoning needed |
+| Complex bug analysis | Opus | Multi-step investigation |
+| Final code review (pre-merge) | Opus | Catches subtle bugs |
+| Standard development tasks | Sonnet | Best balance of capability/cost |
+| Frontend/UI implementation | Sonnet | Excels at pixel-perfect layouts |
+| Research synthesis | Sonnet | Good at combining sources |
+| Parallel subtask execution | Haiku | Fast, cost-effective at scale |
+| Quick file exploration | Haiku | Speed matters more than depth |
+| High-volume validation | Haiku | 90% of Sonnet performance, 5x speed |
+
+### Orchestration Pattern
+
+The recommended pattern for complex tasks:
+1. **Sonnet** creates plan and decomposes into subtasks
+2. **Haiku** instances execute subtasks in parallel
+3. **Opus** reviews critical/complex results
+
+### Context Length Considerations
+
+| Scenario | Recommendation |
+|----------|---------------|
+| Short conversation (<10K tokens) | Any model suitable |
+| Medium (10K-50K tokens) | Sonnet preferred |
+| Long session (>50K tokens) | Sonnet or Opus (Haiku "loses track fast") |
+| Ultra-long (>200K tokens) | Sonnet with 1M context beta |
+
+When spawning agents, orchestrator should specify model based on:
+1. Task complexity (simple → haiku, complex → opus)
+2. Required depth (shallow → haiku, deep → opus)
+3. Session length (short → any, long → sonnet/opus)
+4. Cost sensitivity (budget-constrained → haiku)
