@@ -138,6 +138,16 @@ Every task folder should have a `context.md` file:
 - **Approved By**: [User/Auto]
 - **Modifications**: [Any changes requested before approval]
 
+### Model Usage
+| Agent | Model | Rationale |
+|-------|-------|-----------|
+| [agent-name] | [opus/sonnet] | [why this model: always-opus agent, complexity trigger, etc.] |
+
+**Summary**:
+- **Opus Usage**: [N] agents ([list])
+- **Sonnet Usage**: [N] agents ([list])
+- **Escalations**: [count and reasons, or "None"]
+
 ## Blocked Resolution (if BLOCKED)
 - **Blocked By**: [Specific blocker description]
 - **To Unblock**: [Required action or input needed]

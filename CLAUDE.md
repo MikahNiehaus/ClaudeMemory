@@ -231,18 +231,33 @@ See `knowledge/self-reflection.md` for full protocol.
 ### RULE-013: Model Selection for Agents
 - **ID**: RULE-013
 - **TRIGGER**: When spawning any agent via Task tool
-- **CONDITION**: Appropriate model selected for task complexity
-- **ACTION**: Select model based on task requirements
+- **CONDITION**: Model explicitly specified AND matches decision criteria
+- **ACTION**: Apply decision tree, specify model in Task tool call
 - **SEVERITY**: WARN
 
-**Model Selection Guide**:
-| Task Type | Model | Rationale |
-|-----------|-------|-----------|
-| Architecture, complex reasoning | opus | Highest capability |
-| Code review, research, analysis | sonnet | Good balance |
-| Quick lookups, simple exploration | haiku | Speed, lower cost |
+**Two-Tier System** (No Haiku - quality over speed):
 
-**Priority**: Accuracy > Speed > Token Cost (per user preference)
+**Always Opus** (3 agents):
+| Agent | Rationale |
+|-------|-----------|
+| architect-agent | Design decisions cascade everywhere |
+| ticket-analyst-agent | Wrong understanding = wrong everything |
+| reviewer-agent | Final quality gate before shipping |
+
+**Default Sonnet** (15 agents): All other agents use Sonnet with escalation capability
+
+**Opus Escalation Triggers** (use Opus if ANY match):
+- Always-Opus agent types (above)
+- 4+ domains in Planning Checklist
+- 10+ subtasks identified
+- Production/payment/auth code
+- Vague requirements needing interpretation
+- Agent reports LOW confidence or BLOCKED
+- Multi-step autonomous reasoning required
+
+**Priority**: Quality > Accuracy > Token Cost
+
+See `knowledge/model-selection.md` for full decision tree and complexity scoring.
 
 ---
 
@@ -432,9 +447,12 @@ User Request
     └─ Requires action/code/agents? ────────► PLANNING PHASE (mandatory)
             │
             ├─ Step 1: Create task workspace
-            ├─ Step 2: Run Planning Checklist
-            ├─ Step 3: Generate plan in context.md
-            ├─ Step 4: Approval gate (if plan mode active)
+            ├─ Step 2: Run Planning Checklist (ALL 7 domains)
+            ├─ Step 3: Select MODEL for each agent:
+            │          • architect/ticket-analyst/reviewer → Opus
+            │          • All others → Sonnet (unless triggers match)
+            ├─ Step 4: Generate plan in context.md
+            ├─ Step 5: Approval gate (if plan mode active)
             │
             └─ EXECUTION PHASE
                  │
@@ -456,6 +474,7 @@ User Request
 Use the **Task tool** with:
 ```
 subagent_type: "general-purpose"
+model: "[opus|sonnet]"  ← REQUIRED per Model Selection Protocol
 prompt: [Include all of the following]
 ```
 
@@ -611,6 +630,7 @@ For simple documentation lookups without full agent delegation:
 | multi-agent, failure, cascade, coordination, misalignment, handoff | `knowledge/multi-agent-failures.md` |
 | tool, MCP, tool definition, API, function, parameter, tool use | `knowledge/tool-design.md` |
 | teach, learn, explain, understand, why, how, Socratic, scaffold, tutor | `knowledge/teaching.md` |
+| model, opus, sonnet, cost, routing, escalation, agent model | `knowledge/model-selection.md` |
 
 ---
 
@@ -677,7 +697,7 @@ ClaudeMemory/
 │       ├── outputs/
 │       ├── snapshots/
 │       └── context.md     # Task context & agent handoffs
-├── knowledge/             # Knowledge bases (30 files)
+├── knowledge/             # Knowledge bases (31 files)
 │   ├── testing.md
 │   ├── debugging.md
 │   ├── documentation.md
@@ -702,7 +722,8 @@ ClaudeMemory/
 │   ├── rule-enforcement.md
 │   ├── playwright.md
 │   ├── self-reflection.md
-│   └── file-editing-windows.md
+│   ├── file-editing-windows.md
+│   └── model-selection.md
 └── docs/                  # Auto-generated (gitignored, run /update-docs to create)
 ```
 

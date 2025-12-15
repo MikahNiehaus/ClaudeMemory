@@ -39,13 +39,38 @@ Before responding to ANY user request, STOP and verify:
 
 - [ ] Have I identified a task ID for this work?
 - [ ] Have I created `workspace/[task-id]/` folder?
+- [ ] Have I run the **Planning Checklist** (evaluate ALL 7 domains)?
 - [ ] Have I identified which agent(s) this task requires?
+- [ ] Have I documented **WHY** these agents (not others) in context.md?
+- [ ] Have I selected the correct **model** for each agent (Opus/Sonnet)?
 - [ ] If task involves code changes: Have I spawned the appropriate agent?
 - [ ] Did I instruct agent to READ its definition and knowledge base?
 - [ ] Am I using TodoWrite for multi-step tasks?
 - [ ] Am I logging ALL decisions to `workspace/[task-id]/context.md`?
 
 **If ANY box is unchecked and should be checked → STOP and fix before proceeding.**
+
+### Agent Selection Reasoning Template
+
+When documenting agent selection in context.md, use this format:
+
+```markdown
+### Agent Selection - [Timestamp]
+**Request**: [User's request in 1-2 sentences]
+
+**Domains Evaluated**:
+| Domain | Applies? | Criteria Match | Agent |
+|--------|----------|----------------|-------|
+| Testing | Yes/No | [Why] | test-agent |
+| Security | Yes/No | [Why] | security-agent |
+| Architecture | Yes/No | [Why] | architect-agent |
+| ... | ... | ... | ... |
+
+**Agents Selected**: [List with rationale]
+**Agents NOT Selected**: [List with reason why not needed]
+**Execution Pattern**: Sequential / Parallel / Hybrid
+**Model Selection**: [Which agents get Opus vs Sonnet, per Model Selection Protocol]
+```
 
 ---
 
@@ -136,6 +161,7 @@ Before any agent execution, STOP and verify:
 - [ ] Have I populated the "Plan" section in context.md?
 - [ ] Is each subtask specific with clear success criteria?
 - [ ] Have I identified all required agents?
+- [ ] Have I selected model for each agent (Opus/Sonnet)?
 - [ ] Have I determined execution sequence (parallel vs sequential)?
 - [ ] If plan mode active: Have I received user approval?
 
@@ -183,22 +209,24 @@ Apply these to ensure quality decomposition:
 │ 2. Run Planning Checklist (evaluate each domain)        │
 │ 3. Decompose into subtasks with requirements above      │
 │ 4. Determine agent sequence (sequential/parallel)       │
-│ 5. Populate Plan section in context.md                  │
-│ 6. IF plan mode active:                                 │
+│ 5. SELECT MODEL for each agent (see Model Selection)    │
+│ 6. Populate Plan section in context.md                  │
+│ 7. IF plan mode active:                                 │
 │    - Present plan to user                               │
 │    - Wait for approval/modifications                    │
-│ 7. IF plan mode inactive OR approved:                   │
+│ 8. IF plan mode inactive OR approved:                   │
 │    - Proceed to execution                               │
 └─────────────────────────────────────────────────────────┘
            │
            ▼
 ┌─ EXECUTION PHASE ───────────────────────────────────────┐
 │ For each subtask in plan:                               │
-│ 1. Spawn assigned agent with full context               │
+│ 1. Spawn agent with model param (opus/sonnet)           │
 │ 2. Update context.md with agent contribution            │
 │ 3. Check agent status (COMPLETE/BLOCKED/NEEDS_INPUT)    │
-│ 4. Handle status appropriately                          │
-│ 5. Proceed to next subtask or synthesize results        │
+│ 4. Monitor for escalation triggers (see Model Selection)│
+│ 5. Handle status appropriately                          │
+│ 6. Proceed to next subtask or synthesize results        │
 └─────────────────────────────────────────────────────────┘
 ```
 
@@ -215,6 +243,62 @@ workspace/[task-id]/
 ├── outputs/            # Generated artifacts, code files
 └── snapshots/          # Screenshots, progress captures
 ```
+
+---
+
+## Model Selection Protocol
+
+During planning, select the appropriate model for each agent:
+
+### Decision Tree
+
+```
+Agent identified
+      │
+      ▼
+Is agent: architect-agent, ticket-analyst-agent, or reviewer-agent?
+      │
+      ├─ YES ────────────────────────► model: "opus"
+      │
+      └─ NO
+           │
+           ▼
+      Check Opus Escalation Triggers
+           │
+           ├─ ANY trigger matched? ───► model: "opus"
+           │
+           └─ No triggers ────────────► model: "sonnet" (default)
+```
+
+### Always Opus (3 agents)
+
+| Agent | Rationale |
+|-------|-----------|
+| architect-agent | Design decisions cascade everywhere |
+| ticket-analyst-agent | Wrong understanding = wrong everything |
+| reviewer-agent | Final quality gate before shipping |
+
+### Default Sonnet (15 agents)
+
+All other agents start with Sonnet. Escalate to Opus if triggers match.
+
+### Opus Escalation Triggers
+
+Use Opus instead of Sonnet if ANY match:
+- 4+ domains in Planning Checklist
+- 10+ subtasks identified
+- Production/payment/auth code
+- Vague requirements needing interpretation
+- Multi-step autonomous reasoning required
+
+### Mid-Task Escalation
+
+During execution, upgrade to Opus if agent reports:
+- `Confidence: LOW` on critical subtask
+- `Status: BLOCKED` with capability-related reason
+- Multiple failed tool calls (>3) on same operation
+
+**See `knowledge/model-selection.md` for full details.**
 
 ---
 
@@ -509,6 +593,7 @@ How: Spawn one agent with full context
 ```
 Use the Task tool with:
 - subagent_type: "general-purpose"
+- model: "[opus|sonnet]"  ← REQUIRED (see Model Selection Protocol)
 - prompt: Include:
   1. Agent definition (from agents/[name].md)
   2. Knowledge base (from knowledge/[relevant].md)
@@ -559,7 +644,19 @@ How: Agents contribute to task context, building on each other
 
 ## Agent Spawning Protocol
 
-When spawning an agent via Task tool, use this **token-efficient** approach:
+When spawning an agent via Task tool:
+
+1. **Select model** using Model Selection Protocol (above)
+2. **Use token-efficient** prompt approach (below)
+
+**Task tool parameters**:
+```
+- subagent_type: "general-purpose"
+- model: "[opus|sonnet]"  ← REQUIRED
+- prompt: [see template below]
+```
+
+**Token-efficient prompt template**:
 
 ```markdown
 ## Your Role

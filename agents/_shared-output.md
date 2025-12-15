@@ -89,10 +89,15 @@ See `knowledge/self-reflection.md` for full protocol.
 
 ## Model Selection Reference
 
-| Task Type | Recommended Model |
-|-----------|------------------|
-| Complex reasoning, architecture | opus |
-| Code review, research, analysis | sonnet |
-| Quick lookups, simple tasks | haiku |
+**Two-Tier System** (No Haiku - quality over speed):
 
-See RULE-013 in CLAUDE.md for details
+| Agent | Model | Rationale |
+|-------|-------|-----------|
+| architect-agent | **Opus** | Design decisions cascade |
+| ticket-analyst-agent | **Opus** | Requirements understanding critical |
+| reviewer-agent | **Opus** | Final quality gate |
+| All others (15) | Sonnet | Escalate on LOW confidence or triggers |
+
+**Escalation**: If you report LOW confidence or BLOCKED, orchestrator may retry with Opus.
+
+See `knowledge/model-selection.md` and RULE-013 in CLAUDE.md for full details.
