@@ -160,11 +160,11 @@
       "mcp__playwright_browser_close",
       "mcp__playwright_browser_resize",
       "mcp__playwright_browser_file_upload",
-      "mcp__playwright_browser_handle_dialog"
+      "mcp__playwright_browser_handle_dialog",
+      "Bash(find:*)"
     ],
     "ask": [
       "mcp__playwright_browser_navigate",
-      "Bash(find:*)",
       "Bash(awk:*)",
       "Bash(sed:*)",
       "Bash(xargs:*)",
