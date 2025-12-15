@@ -316,6 +316,33 @@ If PERSISTENT mode is active but criteria are vague (e.g., "keep improving"):
 
 ---
 
+### RULE-015: Ask Before Migrations and Deployments
+- **ID**: RULE-015
+- **TRIGGER**: Before running any migration, deployment, or database-altering command
+- **CONDITION**: User has explicitly approved this specific operation
+- **ACTION**: STOP and ask user for confirmation before proceeding
+- **SEVERITY**: BLOCK
+
+**Always Ask Before**:
+- Database migrations (`migrate`, `db push`, `prisma migrate`, `alembic`, `knex migrate`, `typeorm migration:run`)
+- Database seeding (`seed`, `db seed`)
+- Deployments (`deploy`, `publish`, `release`)
+- Production operations (any command targeting production environment)
+- Schema changes (`schema push`, `db:schema:sync`)
+- Data modifications (`db:truncate`, `db:drop`, `db:reset`)
+
+**How to Ask**:
+```
+I'm about to run a database migration:
+  Command: [command]
+
+This will modify the database schema. Proceed?
+```
+
+**Exception**: User explicitly said "run the migration" or "deploy it" in their request.
+
+---
+
 ## Compliance Checking
 
 See `agents/_orchestrator.md` for the COMPLIANCE PROTOCOL that checks these rules.
