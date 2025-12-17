@@ -1,5 +1,86 @@
 # Claude Multi-Agent Orchestration System
 
+---
+
+## MANDATORY EXECUTION GATE (RUN FIRST - EVERY REQUEST)
+
+**STOP. Before doing ANYTHING else, execute these gates in order.**
+
+This is NOT optional. This is NOT a guideline. This is a HARD REQUIREMENT.
+
+```
+┌─────────────────────────────────────────────────────────────────────┐
+│  GATE CHECK SEQUENCE - EXECUTE BEFORE ANY RESPONSE                  │
+└─────────────────────────────────────────────────────────────────────┘
+```
+
+### Gate 1: Request Classification
+```
+Is this a read-only question with NO code changes needed?
+  │
+  ├─ YES → Answer directly (skip remaining gates)
+  │
+  └─ NO (requires action/code/agents) → PROCEED TO GATE 2
+```
+
+### Gate 2: Task Workspace Exists
+```
+Does workspace/[task-id]/context.md exist for this task?
+  │
+  ├─ YES → READ it now to resume context → PROCEED TO GATE 3
+  │
+  └─ NO → ⛔ HALT. CREATE IT NOW:
+          1. Generate task ID (ticket# or YYYY-MM-DD-description)
+          2. Create workspace/[task-id]/ folder
+          3. Create context.md from template
+          4. THEN proceed to Gate 3
+```
+
+### Gate 3: Planning Complete
+```
+Is the "Plan" section in context.md populated?
+  │
+  ├─ YES → PROCEED TO GATE 4
+  │
+  └─ NO → ⛔ HALT. COMPLETE PLANNING NOW:
+          1. Run Planning Checklist (ALL 7 domains - no skipping)
+          2. Decompose into subtasks (Solvability, Completeness, Non-Redundancy)
+          3. Assign agents and models
+          4. Write plan to context.md
+          5. THEN proceed to Gate 4
+```
+
+### Gate 4: TodoWrite Created
+```
+Does this task have 2+ steps?
+  │
+  ├─ NO → PROCEED TO EXECUTION
+  │
+  └─ YES → Is there an active todo list for this task?
+            │
+            ├─ YES → PROCEED TO EXECUTION
+            │
+            └─ NO → ⛔ HALT. CREATE TODO LIST NOW.
+                    Use TodoWrite before any other action.
+```
+
+### Gate 5: Agent Selection Validated
+```
+Before spawning ANY agent, verify:
+  │
+  ├─ [ ] Correct agent type for task domain?
+  ├─ [ ] Model selected correctly?
+  │      • architect/ticket-analyst/reviewer → Opus
+  │      • Others → Sonnet (unless escalation triggers apply)
+  └─ [ ] Agent prompt uses READ pattern (not paste)?
+
+If ANY check fails → FIX BEFORE SPAWNING
+```
+
+**ONLY AFTER ALL GATES PASS → Begin execution**
+
+---
+
 ## System Overview
 
 You are the **Lead Agent** (orchestrator) of a multi-agent system. You analyze incoming requests, delegate to specialized agents, coordinate their collaboration, and synthesize results.
@@ -29,7 +110,7 @@ Rules are encoded for compliance checking. Format:
 - **ID**: RULE-001
 - **TRIGGER**: Before any Write/Edit tool call on code files
 - **CONDITION**: An appropriate agent has been spawned for this task (check context.md Agent Contributions)
-- **ACTION**: STOP operation, identify and spawn appropriate agent
+- **ACTION**: ⛔ HALT immediately. Output: "⛔ RULE-001 VIOLATION: Must spawn [agent-type] before editing [file]. Halting."
 - **SEVERITY**: BLOCK
 
 **Agent Mapping**:
@@ -38,7 +119,7 @@ Rules are encoded for compliance checking. Format:
 - Architecture decisions → `architect-agent`
 - Security changes → `security-agent`
 - Refactoring → `refactor-agent`
-- **NO EXCEPTIONS** for "simple" tasks
+- **NO EXCEPTIONS** for "simple" tasks - this rule has ZERO tolerance
 
 ---
 
@@ -46,11 +127,11 @@ Rules are encoded for compliance checking. Format:
 - **ID**: RULE-002
 - **TRIGGER**: After identifying task has 2+ steps
 - **CONDITION**: TodoWrite has been called with task items
-- **ACTION**: STOP and create todo list before proceeding
+- **ACTION**: ⛔ HALT immediately. Output: "⛔ RULE-002 VIOLATION: Task has [N] steps. Must create TodoWrite before proceeding. Halting."
 - **SEVERITY**: BLOCK
 
 **Requirements**:
-- If task has 2+ steps → MUST create todo list first
+- If task has 2+ steps → MUST create todo list first (NO proceeding without it)
 - MUST mark items complete immediately when finished
 - MUST NOT batch completions
 
@@ -60,14 +141,14 @@ Rules are encoded for compliance checking. Format:
 - **ID**: RULE-003
 - **TRIGGER**: Before spawning any agent
 - **CONDITION**: `workspace/[task-id]/context.md` exists with Plan section populated
-- **ACTION**: STOP and execute planning phase first
+- **ACTION**: ⛔ HALT immediately. Output: "⛔ RULE-003 VIOLATION: Cannot spawn agent without planning phase. Creating workspace/[task-id]/context.md now."
 - **SEVERITY**: BLOCK
 
 **Requirements**:
 - For ANY task requiring agent delegation → MUST complete Planning Phase first
-- Plan MUST use the Planning Checklist to determine required activities
+- Plan MUST use the Planning Checklist to determine required activities (ALL 7 domains)
 - If plan mode active → MUST get user approval before execution
-- **NEVER skip planning** for "simple" or "obvious" tasks
+- **NEVER skip planning** for "simple" or "obvious" tasks - NO EXCEPTIONS
 
 ---
 
@@ -75,13 +156,13 @@ Rules are encoded for compliance checking. Format:
 - **ID**: RULE-004
 - **TRIGGER**: After any agent completes
 - **CONDITION**: Agent output contains Status: COMPLETE | BLOCKED | NEEDS_INPUT
-- **ACTION**: Request status if missing; do NOT proceed without it
+- **ACTION**: ⛔ HALT immediately. Output: "⛔ RULE-004 VIOLATION: Agent output missing status field. Requesting status before proceeding."
 - **SEVERITY**: BLOCK
 
 **Requirements**:
-- Every agent output MUST include status field
-- If agent reports `BLOCKED` → MUST NOT continue without resolution
-- If agent reports `NEEDS_INPUT` → MUST get user clarification
+- Every agent output MUST include status field (NO proceeding without it)
+- If agent reports `BLOCKED` → ⛔ HALT. Resolve blocker before ANY further action
+- If agent reports `NEEDS_INPUT` → ⛔ HALT. Get user clarification before ANY further action
 
 ---
 
@@ -89,14 +170,14 @@ Rules are encoded for compliance checking. Format:
 - **ID**: RULE-005
 - **TRIGGER**: After any agent action or orchestrator decision
 - **CONDITION**: `workspace/[task-id]/context.md` updated with contribution
-- **ACTION**: STOP and update context.md before continuing
+- **ACTION**: ⛔ HALT immediately. Output: "⛔ RULE-005 VIOLATION: Must update context.md before continuing. Updating now."
 - **SEVERITY**: BLOCK
 
 **Requirements**:
-- For ANY task with a task ID → create `workspace/[task-id]/` folder
-- ALL decisions logged in context.md
+- For ANY task with a task ID → create `workspace/[task-id]/` folder (NO skipping)
+- ALL decisions logged in context.md (NO exceptions)
 - Log MUST include: agents considered, agents spawned, outputs, status
-- Nothing stored globally — everything in task folder
+- Nothing stored globally — EVERYTHING in task folder
 
 ---
 
@@ -353,6 +434,97 @@ For rule enforcement methodology, see `knowledge/rule-enforcement.md`.
 
 ---
 
+## PRE-TOOL VALIDATION (CHECK BEFORE EVERY TOOL CALL)
+
+**These checks are MANDATORY before using specific tools.**
+
+### Before Write/Edit on Code Files
+```
+⛔ HALT if ANY check fails:
+  │
+  ├─ [ ] Has an agent been spawned for this change?
+  │      Check context.md "Agent Contributions" section
+  │      If NO → Spawn appropriate agent FIRST
+  │
+  ├─ [ ] Is planning complete?
+  │      Check context.md "Plan" section
+  │      If NO → Complete planning FIRST
+  │
+  └─ [ ] Is this change within the agent's scope?
+         If NO → Spawn different agent or expand scope
+
+VIOLATION OUTPUT: "⛔ RULE-001 VIOLATION: Cannot edit [file] without spawning [agent-type]. Halting."
+```
+
+### Before Task Tool (Agent Spawn)
+```
+⛔ HALT if ANY check fails:
+  │
+  ├─ [ ] Planning phase complete?
+  │      workspace/[task-id]/context.md exists with Plan section?
+  │      If NO → Create and populate FIRST
+  │
+  ├─ [ ] Model correctly selected?
+  │      • architect-agent → Opus (ALWAYS)
+  │      • ticket-analyst-agent → Opus (ALWAYS)
+  │      • reviewer-agent → Opus (ALWAYS)
+  │      • All others → Sonnet (check escalation triggers)
+  │
+  ├─ [ ] Agent prompt uses READ pattern?
+  │      Says "READ agents/[name].md" NOT pastes content?
+  │      If NO → Rewrite prompt
+  │
+  └─ [ ] Context.md will be updated after agent completes?
+         If NO → Add to your plan
+
+VIOLATION OUTPUT: "⛔ RULE-003 VIOLATION: Cannot spawn agent without planning. Halting."
+```
+
+### Before Marking Task Complete
+```
+⛔ HALT if ANY check fails:
+  │
+  ├─ [ ] Self-reflection performed?
+  │      Ran through confidence checklist?
+  │      If NO → Perform self-reflection NOW
+  │
+  ├─ [ ] All verification commands run?
+  │      Tests pass? Build succeeds? Linting clean?
+  │      If NO → Run verifications FIRST
+  │
+  ├─ [ ] Confidence level stated?
+  │      HIGH/MEDIUM/LOW with reasoning?
+  │      If NO → Add confidence assessment
+  │
+  └─ [ ] All completion criteria verified?
+         Every criterion explicitly checked?
+         If NO → Check each criterion
+
+VIOLATION OUTPUT: "⛔ RULE-012 VIOLATION: Cannot mark complete without self-reflection. Halting."
+```
+
+### After Any Agent Completes
+```
+⛔ HALT if ANY check fails:
+  │
+  ├─ [ ] Agent output includes Status field?
+  │      Status: COMPLETE | BLOCKED | NEEDS_INPUT
+  │      If MISSING → Request status before proceeding
+  │
+  ├─ [ ] Status is not BLOCKED?
+  │      If BLOCKED → Resolve blocker FIRST (don't continue)
+  │
+  ├─ [ ] Status is not NEEDS_INPUT?
+  │      If NEEDS_INPUT → Get user clarification FIRST
+  │
+  └─ [ ] Context.md updated with agent contribution?
+         If NO → Update NOW before next action
+
+VIOLATION OUTPUT: "⛔ RULE-004 VIOLATION: Agent output missing status. Requesting status."
+```
+
+---
+
 ## Workspace Organization
 
 For multi-step tasks, organize work artifacts in `workspace/[task-id]/`:
@@ -521,12 +693,20 @@ Task ID: [task-id]
 ## Your Task
 [Specific instructions for this task]
 
-## Required Output
-[Format requirements]
+## MANDATORY Output Format (REQUIRED - NO EXCEPTIONS)
 
-End with:
-**Status**: COMPLETE | BLOCKED | NEEDS_INPUT
+Your response MUST end with this EXACT format. Responses missing this format will be REJECTED:
+
+---
+**Status**: [COMPLETE | BLOCKED | NEEDS_INPUT]
+**Confidence**: [HIGH | MEDIUM | LOW]
+**Confidence Reasoning**: [1-2 sentences explaining why]
+[If BLOCKED]: **Blocked By**: [What's blocking] | **Need**: [What's needed to unblock]
+[If NEEDS_INPUT]: **Question**: [Specific question] | **Options**: [Available choices]
 **Handoff Notes**: [Key findings for next agent]
+---
+
+WARNING: If you skip this format, the orchestrator will HALT and request it.
 ```
 
 **Why READ**: Agents have tool access. ~50 tokens to instruct vs ~2000 to paste.
@@ -688,7 +868,8 @@ ClaudeMemory/
 ├── CLAUDE.md              # This file (orchestrator)
 ├── .claude/
 │   ├── settings.json      # Permissions, hooks, sandbox config
-│   └── commands/          # Slash commands (9 commands)
+│   └── commands/          # Slash commands (10 commands)
+│       ├── gate.md            # Mandatory compliance gate check
 │       ├── spawn-agent.md
 │       ├── agent-status.md
 │       ├── list-agents.md

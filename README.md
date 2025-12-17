@@ -5,7 +5,7 @@ A plug-and-play toolkit that supercharges Claude Code with specialized AI agents
 ## System Overview
 
 ```
-18 Specialist Agents | 30 Knowledge Bases | 14 Enforcement Rules | 9 Slash Commands
+18 Specialist Agents | 30 Knowledge Bases | 15 Enforcement Rules | 10 Slash Commands
 ```
 
 ---
@@ -88,7 +88,7 @@ flowchart LR
 ```mermaid
 flowchart TB
     subgraph Toolkit["Toolkit (copy to your project)"]
-        CLAUDE[CLAUDE.md<br/>Orchestrator + 14 Rules]
+        CLAUDE[CLAUDE.md<br/>Orchestrator + 15 Rules]
 
         subgraph Agents["agents/ (18 specialists)"]
             Orch[_orchestrator.md]
@@ -257,11 +257,11 @@ sequenceDiagram
 
 ## Rule Enforcement System
 
-The toolkit enforces 14 machine-readable rules via CLAUDE.md:
+The toolkit enforces 15 machine-readable rules via CLAUDE.md with **hard enforcement** (not just guidelines):
 
 ```mermaid
 flowchart TB
-    subgraph Rules["14 Enforcement Rules"]
+    subgraph Rules["15 Enforcement Rules"]
         R1[RULE-001: Agent Spawn Required]
         R2[RULE-002: TodoWrite for Multi-Step]
         R3[RULE-003: Planning Phase Required]
@@ -276,10 +276,11 @@ flowchart TB
         R12[RULE-012: Self-Reflection Required]
         R13[RULE-013: Model Selection for Agents]
         R14[RULE-014: No Stopping in PERSISTENT Mode]
+        R15[RULE-015: Ask Before Migrations]
     end
 
     subgraph Severity["Severity Levels"]
-        Block[BLOCK: Stop execution]
+        Block[BLOCK: ⛔ HALT execution]
         Warn[WARN: Log and continue]
     end
 
@@ -291,6 +292,7 @@ flowchart TB
     R10 --> Block
     R12 --> Block
     R14 --> Block
+    R15 --> Block
     R6 --> Warn
     R7 --> Warn
     R8 --> Warn
@@ -420,6 +422,7 @@ Run `/update-docs` after completing work to generate clean project docs.
 
 | Command | Purpose |
 |---------|---------|
+| `/gate` | **Run mandatory compliance gate check** |
 | `/spawn-agent <name> <task-id>` | Spawn an agent with context |
 | `/agent-status <task-id>` | Check task status |
 | `/list-agents` | List all available agents |
@@ -454,10 +457,10 @@ Run `/update-docs` after completing work to generate clean project docs.
 
 ```
 ClaudeMemory/
-├── CLAUDE.md              # Orchestrator + 14 rules
+├── CLAUDE.md              # Orchestrator + 15 rules + Execution Gates
 ├── .claude/
 │   ├── settings.json      # Permissions, hooks, sandbox
-│   └── commands/          # 9 slash commands
+│   └── commands/          # 10 slash commands
 ├── agents/                # 18 specialist agents
 │   ├── _orchestrator.md   # Detailed routing
 │   ├── _shared-output.md  # Common output format
@@ -505,8 +508,9 @@ ClaudeMemory/
 4. **File-based memory** - Survives context compaction and session resets
 5. **Token efficient** - Minimal overhead, maximum capability
 6. **Completion verification** - Never say "done" without verifying criteria
-7. **Rule enforcement** - 14 machine-readable rules with compliance checking
-8. **Defense-in-depth** - Multiple layers for safety (rules, prompts, permissions)
+7. **Hard rule enforcement** - 15 machine-readable rules with ⛔ HALT on violations
+8. **Mandatory execution gates** - Pre-action validation before every tool call
+9. **Defense-in-depth** - Multiple layers for safety (gates, rules, prompts, permissions)
 
 ---
 
