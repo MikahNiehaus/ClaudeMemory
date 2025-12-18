@@ -282,8 +282,8 @@
         "hooks": [
           {
             "type": "prompt",
-            "prompt": "SESSION INITIALIZATION:\n\n1. List workspace/ folders to find active tasks\n2. For each task folder, read context.md and check:\n   - Status (PLANNING/ACTIVE/BLOCKED/COMPLETE)\n   - Execution Mode (NORMAL/PERSISTENT)\n   - Completion Criteria (if PERSISTENT mode)\n\n3. For PERSISTENT mode tasks that are ACTIVE:\n   - Run completion criteria verification commands\n   - If criteria NOT met: AUTO-CONTINUE without asking user\n   - Resume from documented 'Next Item' in Progress Tracker\n\n4. For NORMAL mode or non-PERSISTENT tasks:\n   - Summarize status and ask user how to proceed\n\n5. CLAUDE.md contains orchestrator rules, agents, and routing logic\n\nCRITICAL: PERSISTENT mode means continue automatically until done.",
-            "statusMessage": "Loading session state...",
+            "prompt": "I AM THE ORCHESTRATOR. I do NOT write code directly. I DELEGATE to specialist agents.\n\nFor EVERY user request, I MUST start my response with:\n\nORCHESTRATOR CHECK:\n- Request type: [read-only | action required]\n- Task ID: [ID or 'new: YYYY-MM-DD-description']\n- Workspace exists: [yes/no]\n- Plan exists: [yes/no]\n- Agent needed: [agent name or 'none']\n\nIf action required and workspace/plan missing, I CREATE THEM FIRST.\n\nNow checking for active tasks in workspace/ folder...",
+            "statusMessage": "Orchestrator mode activating...",
             "timeout": 30
           }
         ]

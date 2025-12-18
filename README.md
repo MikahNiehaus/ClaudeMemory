@@ -14,34 +14,52 @@ A plug-and-play toolkit that supercharges Claude Code with specialized AI agents
 
 ```mermaid
 flowchart TB
-    User[User Request] --> Orchestrator[Orchestrator]
+    User[User Request] --> Check[ORCHESTRATOR CHECK]
 
-    Orchestrator --> Analyze{Analyze Request}
-    Analyze --> |"Testing needed"| TestAgent[test-agent]
-    Analyze --> |"Bug to fix"| DebugAgent[debug-agent]
-    Analyze --> |"Design question"| ArchAgent[architect-agent]
-    Analyze --> |"Security concern"| SecAgent[security-agent]
-    Analyze --> |"Browser testing"| BrowserAgent[browser-agent]
-    Analyze --> |"Multiple domains"| Parallel[Parallel/Sequential]
+    Check --> |"Read-only?"| Direct[Answer Directly]
+    Check --> |"Action required"| Workspace{Workspace exists?}
 
-    TestAgent --> Context[(workspace/task-id/context.md)]
+    Workspace --> |No| Create[Create workspace/task-id/]
+    Workspace --> |Yes| Plan{Plan exists?}
+    Create --> Plan
+
+    Plan --> |No| Planning[Run 7-domain checklist]
+    Plan --> |Yes| Agent{Select Agent}
+    Planning --> Agent
+
+    Agent --> |"Testing"| TestAgent[test-agent]
+    Agent --> |"Bug fix"| DebugAgent[debug-agent]
+    Agent --> |"Design"| ArchAgent[architect-agent]
+    Agent --> |"Security"| SecAgent[security-agent]
+    Agent --> |"Research"| ResearchAgent[research-agent]
+
+    TestAgent --> Context[(context.md)]
     DebugAgent --> Context
     ArchAgent --> Context
     SecAgent --> Context
-    BrowserAgent --> Context
+    ResearchAgent --> Context
 
-    Context --> Synthesize[Synthesize Results]
-    Synthesize --> Response[Response to User]
+    Context --> Response[Response to User]
 ```
 
-### The Flow
+### The Forced Flow
 
-1. **User makes a request** - Orchestrator receives it
-2. **Orchestrator analyzes** - Determines which specialist(s) are needed
-3. **Planning phase** - Creates task workspace and plan (RULE-003)
-4. **Spawns specialist agent(s)** - Each with focused role + domain knowledge
-5. **Agents work & share context** - Via `workspace/[task-id]/context.md`
-6. **Results synthesized** - Unified response back to user
+Every response MUST start with:
+```
+ORCHESTRATOR CHECK:
+- Request type: [read-only | action required]
+- Task ID: [existing or new YYYY-MM-DD-description]
+- Workspace exists: [yes/no]
+- Plan exists: [yes/no]
+- Agent needed: [agent name or "none"]
+```
+
+1. **Orchestrator check** - Classify request, verify workspace/plan
+2. **Create if missing** - Workspace folder and context.md
+3. **Plan before delegation** - 7-domain checklist (testing, docs, security, architecture, performance, review, clarity)
+4. **Spawn specialist** - Agent reads its own definition + knowledge base
+5. **Log to context.md** - Every agent contribution recorded
+6. **Synthesize result** - Response back to user
 
 ---
 
