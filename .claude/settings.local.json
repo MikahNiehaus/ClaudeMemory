@@ -2,7 +2,8 @@
   "permissions": {
     "allow": [
       "WebSearch",
-      "WebFetch(domain:platform.claude.com)"
+      "WebFetch(domain:platform.claude.com)",
+      "Bash(powershell -Command \"(Get-Content ''C:\\prj\\ClaudeMemory\\CLAUDE.md'' -Raw).Length / 4\")"
     ],
     "deny": [],
     "ask": [
