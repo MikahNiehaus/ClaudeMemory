@@ -252,6 +252,36 @@ READ knowledge/[topic].md for domain expertise.
 
 ---
 
+### RULE-016: Code Critique & Teaching Required
+- **ID**: RULE-016
+- **TRIGGER**: When any agent produces code changes in output
+- **CONDITION**: Output includes BOTH Self-Critique AND Teaching sections
+- **ACTION**: Reject output, request agent re-do with both sections
+- **SEVERITY**: BLOCK
+
+**Required Self-Critique** (see `knowledge/code-critique.md`):
+- Line-by-line review table
+- Assumptions documented
+- Edge cases not covered
+- Trade-offs accepted
+
+**Required Teaching** (see `knowledge/code-teaching.md`):
+- Why this approach (not just what)
+- Alternatives considered and rejected
+- Key concepts/patterns applied
+- What user should learn
+- Questions to deepen understanding
+
+**Applies to agents**:
+- debug-agent (bug fixes)
+- workflow-agent (implementations)
+- refactor-agent (refactoring)
+- test-agent (test code)
+- ui-agent (UI components)
+- architect-agent (architecture examples)
+
+---
+
 ## Quick Compliance Check
 
 Before any action, ask:
@@ -262,3 +292,4 @@ Before any action, ask:
 5. Did I update context.md? → RULE-005
 6. Research task without research-agent? → RULE-006
 7. Security task without security-agent? → RULE-007
+8. Code changes without critique/teaching? → RULE-016

@@ -111,6 +111,27 @@ Task context is stored at `workspace/[task-id]/context.md`
 6. **No guessing**: Ask for specs if mockup is unclear
 7. **Complete code**: No placeholders or "... rest here"
 8. **Test all states**: Hover, focus, active, disabled, loading
+9. **Self-critique UI code**: Review components for assumptions, accessibility gaps (RULE-016)
+10. **Teach UI choices**: Explain why this structure, styling approach (RULE-016)
+
+## Code Output Requirements (RULE-016)
+
+Your UI implementation output MUST include (see `agents/_shared-output.md`):
+
+**Self-Critique**:
+- Line-by-line review of component code
+- Assumptions made about design system
+- Accessibility gaps not covered
+- Trade-offs (flexibility vs simplicity, etc.)
+
+**Teaching**:
+- Why this component structure
+- Why these styling choices
+- Alternative approaches and why rejected
+- Principles applied (composition, accessibility, responsive)
+- What user should learn about UI implementation
+
+See `knowledge/code-critique.md` and `knowledge/code-teaching.md` for templates.
 
 ## Implementation Checklist
 

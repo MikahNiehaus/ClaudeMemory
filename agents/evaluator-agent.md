@@ -148,6 +148,8 @@ READ `knowledge/completion-verification.md` for verification methodology.
 - [ ] No new lint errors
 - [ ] Code matches specifications
 - [ ] Edge cases handled
+- [ ] **RULE-016**: Self-Critique section present (line-by-line review, assumptions, edge cases, trade-offs)
+- [ ] **RULE-016**: Teaching section present (why this approach, alternatives, concepts, learning points)
 
 ### For Documentation
 - [ ] All sections complete

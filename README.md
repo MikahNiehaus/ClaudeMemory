@@ -5,7 +5,7 @@ A plug-and-play toolkit that supercharges Claude Code with specialized AI agents
 ## System Overview
 
 ```
-18 Specialist Agents | 30 Knowledge Bases | 15 Enforcement Rules | 10 Slash Commands
+18 Specialist Agents | 32 Knowledge Bases | 16 Enforcement Rules | 10 Slash Commands
 ```
 
 ---
@@ -106,7 +106,7 @@ flowchart LR
 ```mermaid
 flowchart TB
     subgraph Toolkit["Toolkit (copy to your project)"]
-        CLAUDE[CLAUDE.md<br/>Orchestrator + 15 Rules]
+        CLAUDE[CLAUDE.md<br/>Orchestrator + 16 Rules]
 
         subgraph Agents["agents/ (18 specialists)"]
             Orch[_orchestrator.md]
@@ -275,11 +275,11 @@ sequenceDiagram
 
 ## Rule Enforcement System
 
-The toolkit enforces 15 machine-readable rules via CLAUDE.md with **hard enforcement** (not just guidelines):
+The toolkit enforces 16 machine-readable rules via CLAUDE.md with **hard enforcement** (not just guidelines):
 
 ```mermaid
 flowchart TB
-    subgraph Rules["15 Enforcement Rules"]
+    subgraph Rules["16 Enforcement Rules"]
         R1[RULE-001: Agent Spawn Required]
         R2[RULE-002: TodoWrite for Multi-Step]
         R3[RULE-003: Planning Phase Required]
@@ -295,6 +295,7 @@ flowchart TB
         R13[RULE-013: Model Selection for Agents]
         R14[RULE-014: No Stopping in PERSISTENT Mode]
         R15[RULE-015: Ask Before Migrations]
+        R16[RULE-016: Code Critique & Teaching]
     end
 
     subgraph Severity["Severity Levels"]
@@ -317,6 +318,7 @@ flowchart TB
     R9 --> Warn
     R11 --> Warn
     R13 --> Warn
+    R16 --> Block
 ```
 
 ### Rule Format
@@ -475,7 +477,7 @@ Run `/update-docs` after completing work to generate clean project docs.
 
 ```
 ClaudeMemory/
-├── CLAUDE.md              # Orchestrator + 15 rules + Execution Gates
+├── CLAUDE.md              # Orchestrator + 16 rules + Execution Gates
 ├── .claude/
 │   ├── settings.json      # Permissions, hooks, sandbox
 │   └── commands/          # 10 slash commands
@@ -487,7 +489,7 @@ ClaudeMemory/
 │   ├── browser-agent.md
 │   ├── evaluator-agent.md # NEW: Quality gate
 │   └── ... (12 more)
-├── knowledge/             # 30 knowledge bases
+├── knowledge/             # 32 knowledge bases
 │   ├── testing.md
 │   ├── debugging.md
 │   ├── playwright.md
@@ -495,6 +497,8 @@ ClaudeMemory/
 │   ├── context-engineering.md  # NEW: Four pillars
 │   ├── multi-agent-failures.md # NEW: MAST taxonomy
 │   ├── tool-design.md     # NEW: Tool best practices
+│   ├── code-critique.md   # NEW: Self-critique protocol
+│   ├── code-teaching.md   # NEW: Teaching code changes
 │   └── ... (22 more)
 ├── workspace/             # Task-organized work
 │   └── [task-id]/
@@ -526,7 +530,7 @@ ClaudeMemory/
 4. **File-based memory** - Survives context compaction and session resets
 5. **Token efficient** - Minimal overhead, maximum capability
 6. **Completion verification** - Never say "done" without verifying criteria
-7. **Hard rule enforcement** - 15 machine-readable rules with ⛔ HALT on violations
+7. **Hard rule enforcement** - 16 machine-readable rules with ⛔ HALT on violations
 8. **Mandatory execution gates** - Pre-action validation before every tool call
 9. **Defense-in-depth** - Multiple layers for safety (gates, rules, prompts, permissions)
 

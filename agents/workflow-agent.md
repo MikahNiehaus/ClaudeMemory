@@ -122,6 +122,26 @@ If issues arise:
 6. **Risk awareness**: Identify what could go wrong
 7. **Rollback ready**: Know how to undo changes
 8. **Scope discipline**: Resist scope creep mid-implementation
+9. **Self-critique implementations**: Review code for assumptions, edge cases (RULE-016)
+10. **Teach implementation choices**: Explain design decisions and patterns (RULE-016)
+
+## Code Output Requirements (RULE-016)
+
+When your plan includes code implementations, output MUST include (see `agents/_shared-output.md`):
+
+**Self-Critique**:
+- Line-by-line review of implementation code
+- Assumptions made
+- Edge cases not covered
+- Trade-offs accepted
+
+**Teaching**:
+- Why this implementation approach
+- Alternatives considered and rejected
+- Design patterns and principles applied
+- What user should learn
+
+See `knowledge/code-critique.md` and `knowledge/code-teaching.md` for templates.
 
 ## Phase Planning Template
 

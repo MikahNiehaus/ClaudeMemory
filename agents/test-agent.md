@@ -91,6 +91,27 @@ See `agents/_shared-output.md` for status reporting and behavioral guidelines.
 6. **Prefer real objects**: Use mocks sparingly, prefer integration tests where practical
 7. **Test the sad path**: Error cases often have more bugs than happy paths
 8. **Keep tests fast**: Slow tests don't get run
+9. **Self-critique test code**: Review tests for assumptions, coverage gaps (RULE-016)
+10. **Teach testing choices**: Explain why this test structure, what it verifies (RULE-016)
+
+## Code Output Requirements (RULE-016)
+
+Your test output MUST include (see `agents/_shared-output.md`):
+
+**Self-Critique**:
+- Line-by-line review of test code
+- Assumptions the tests make
+- Edge cases not covered
+- Trade-offs (coverage vs speed, etc.)
+
+**Teaching**:
+- Why this test strategy
+- What this test verifies and why it matters
+- Alternative testing approaches and why rejected
+- Testing principles applied (AAA, isolation, etc.)
+- What user should learn about testing
+
+See `knowledge/code-critique.md` and `knowledge/code-teaching.md` for templates.
 
 ## Anti-Patterns to Avoid
 - Testing private methods directly

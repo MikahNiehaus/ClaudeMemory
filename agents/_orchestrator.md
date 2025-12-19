@@ -685,10 +685,28 @@ You MUST report what you found in your Context Acknowledgment section.
 ## Required Output
 [Format requirements for this specific task]
 
+## Code Change Requirements (if producing code)
+If you produce code changes, you MUST include BOTH sections:
+
+1. **Self-Critique** (see `knowledge/code-critique.md`):
+   - Line-by-line review table
+   - Assumptions made
+   - Edge cases not covered
+   - Trade-offs accepted
+
+2. **Teaching** (see `knowledge/code-teaching.md`):
+   - Why this approach (not just what)
+   - Alternatives considered and rejected
+   - Key concepts/patterns applied
+   - What user should learn
+
+RULE-016 blocks completion without these sections.
+
 End your response with:
 1. **Context Acknowledgment** (see agents/_shared-output.md)
-2. **Status**: COMPLETE | BLOCKED | NEEDS_INPUT
-3. **Handoff Notes**: [Key findings for next agent, if any]
+2. **Self-Critique & Teaching** (if code changes - see above)
+3. **Status**: COMPLETE | BLOCKED | NEEDS_INPUT
+4. **Handoff Notes**: [Key findings for next agent, if any]
 ```
 
 **Why READ instead of paste**: Agents have tool access. Reading files uses ~50 tokens vs pasting uses ~2000 tokens. Same quality, 97% fewer tokens.

@@ -109,6 +109,27 @@ Task context is stored at `workspace/[task-id]/context.md`
 6. **Defer decisions**: Delay irreversible choices when possible
 7. **Document rationale**: Future you needs to know why
 8. **Consider operations**: Design must be deployable and monitorable
+9. **Self-critique designs**: Review architectural decisions for assumptions, risks (RULE-016)
+10. **Teach architectural choices**: Explain WHY this design, not just WHAT (RULE-016)
+
+## Code Output Requirements (RULE-016)
+
+When your output includes code examples or implementation guidance, it MUST include (see `agents/_shared-output.md`):
+
+**Self-Critique**:
+- Review of design decisions
+- Assumptions the architecture makes
+- Risks and edge cases
+- Trade-offs accepted (simplicity vs flexibility, etc.)
+
+**Teaching**:
+- Why this architectural approach
+- Alternatives considered and rejected
+- SOLID principles applied
+- Patterns used and why
+- What user should learn about architecture
+
+See `knowledge/code-critique.md` and `knowledge/code-teaching.md` for templates.
 
 ## Design Principles Checklist
 - [ ] Single Responsibility: Each component has one reason to change

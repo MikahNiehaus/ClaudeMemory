@@ -104,6 +104,26 @@ Task context is stored at `workspace/[task-id]/context.md`
 6. **Consider timing**: Race conditions hide in "intermittent" bugs
 7. **Look for patterns**: Multiple symptoms often share one cause
 8. **Document findings**: Even dead ends inform future debugging
+9. **Self-critique fixes**: Review every fix for assumptions, edge cases, trade-offs (RULE-016)
+10. **Teach the fix**: Explain WHY this fix works, what concepts apply (RULE-016)
+
+## Code Output Requirements (RULE-016)
+
+Your bug fix output MUST include these sections (see `agents/_shared-output.md`):
+
+**Self-Critique**:
+- Line-by-line review of the fix
+- Assumptions the fix makes
+- Edge cases not covered
+- Trade-offs accepted
+
+**Teaching**:
+- Why this fix (not just what it does)
+- Alternatives you considered and rejected
+- Key concepts (defensive programming, fail-fast, etc.)
+- What user should learn from this bug
+
+See `knowledge/code-critique.md` and `knowledge/code-teaching.md` for full templates.
 
 ## Debugging Checklist
 - [ ] Can I reproduce the issue?

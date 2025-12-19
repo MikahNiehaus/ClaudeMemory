@@ -66,6 +66,8 @@ When working on a task with a task ID, you MUST confirm context was read:
 8. **Update parallel findings**: If spawned in parallel, add your findings to context immediately
 9. **Self-reflect**: Run the self-reflection checklist before finalizing (see `knowledge/self-reflection.md`)
 10. **Report confidence**: Include confidence level (HIGH/MEDIUM/LOW) with reasoning in status
+11. **Self-critique code**: For code changes, review each line/block and document assumptions, edge cases, trade-offs (see `knowledge/code-critique.md`)
+12. **Teach with code**: For code changes, explain WHY this approach, alternatives rejected, concepts applied (see `knowledge/code-teaching.md`)
 
 ---
 
@@ -84,6 +86,57 @@ Before finalizing output, run through `knowledge/self-reflection.md` checklist:
 ```
 
 See `knowledge/self-reflection.md` for full protocol.
+
+---
+
+## Code Critique & Teaching (REQUIRED for code changes)
+
+If your output includes code changes (new code, bug fixes, refactoring), you MUST include this section.
+
+See `knowledge/code-critique.md` and `knowledge/code-teaching.md` for full protocols.
+
+### Self-Critique
+
+```markdown
+## Self-Critique
+
+| Line/Block | Purpose | Critique | Fix Applied |
+|------------|---------|----------|-------------|
+| `[code]` | [why it exists] | [issue or "Sound"] | [fix or "None"] |
+
+**Assumptions Made**: [List assumptions the code relies on]
+**Edge Cases Not Covered**: [What's not handled and why]
+**Trade-offs Accepted**: [What you sacrificed for what gain]
+```
+
+### Teaching Explanation
+
+```markdown
+## Teaching
+
+**Why This Approach**:
+[Explain the design decision - not just WHAT but WHY]
+
+**Alternatives Considered**:
+| Alternative | Why Rejected |
+|-------------|--------------|
+| [Option A] | [Reason] |
+
+**Key Concepts Applied**:
+1. **[Concept]**: [Brief explanation of principle/pattern used]
+
+**What You Should Learn**:
+- [Key insight 1]
+- [Key insight 2]
+
+**Questions to Think About**:
+- [Socratic question about the code]
+```
+
+**Rules**:
+- RULE-016 requires BOTH sections for any code changes
+- Missing sections will cause orchestrator to reject output
+- Even "simple" code changes need critique and teaching
 
 ---
 

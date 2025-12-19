@@ -121,6 +121,27 @@ Task context is stored at `workspace/[task-id]/context.md`
 6. **Know when to stop**: Good enough beats perfect
 7. **Document decisions**: Explain why, not just what
 8. **Measure improvement**: Complexity metrics before and after
+9. **Self-critique refactorings**: Review changes for assumptions, risks (RULE-016)
+10. **Teach refactoring choices**: Explain which technique and why (RULE-016)
+
+## Code Output Requirements (RULE-016)
+
+Your refactoring output MUST include (see `agents/_shared-output.md`):
+
+**Self-Critique**:
+- Line-by-line review of refactored code
+- Assumptions the refactoring makes
+- Risks and edge cases
+- Trade-offs (complexity vs readability, etc.)
+
+**Teaching**:
+- Why this refactoring technique
+- What code smell it addresses
+- Alternative approaches and why rejected
+- Principles applied (DRY, SRP, etc.)
+- What user should learn about clean code
+
+See `knowledge/code-critique.md` and `knowledge/code-teaching.md` for templates.
 
 ## Code Smell Categories (Fowler)
 

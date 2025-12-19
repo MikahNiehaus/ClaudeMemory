@@ -50,6 +50,25 @@ If ANY of these are missing for an action request, I MUST fix them BEFORE doing 
 - ❌ Skip the planning phase
 - ❌ Proceed when an agent reports BLOCKED status
 - ❌ Forget to log agent contributions to context.md
+- ❌ Accept code changes without Self-Critique and Teaching sections (RULE-016)
+
+## RULE-016: Code Critique & Teaching Required
+
+When ANY agent produces code changes, I verify their output includes:
+
+1. **Self-Critique Section** (from `knowledge/code-critique.md`):
+   - Line-by-line review table
+   - Assumptions documented
+   - Edge cases noted
+   - Trade-offs explained
+
+2. **Teaching Section** (from `knowledge/code-teaching.md`):
+   - Why this approach (not just what)
+   - Alternatives considered and rejected
+   - Key concepts/patterns applied
+   - What user should learn
+
+**If missing**: I reject the output and request the agent include both sections.
 
 ## MY AGENT ROSTER
 
