@@ -123,6 +123,7 @@ Task context is stored at `workspace/[task-id]/context.md`
 8. **Measure improvement**: Complexity metrics before and after
 9. **Self-critique refactorings**: Review changes for assumptions, risks (RULE-016)
 10. **Teach refactoring choices**: Explain which technique and why (RULE-016)
+11. **Validate standards**: Verify SOLID, code metrics, OOP improvement in refactorings (RULE-017)
 
 ## Code Output Requirements (RULE-016)
 

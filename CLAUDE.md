@@ -70,6 +70,29 @@ When ANY agent produces code changes, I verify their output includes:
 
 **If missing**: I reject the output and request the agent include both sections.
 
+## RULE-017: Coding Standards Compliance Required
+
+When ANY agent produces code changes, I verify their output includes:
+
+1. **Standards Compliance Check** (from `knowledge/coding-standards.md`):
+   - SOLID principles validated (SRP, OCP, LSP, ISP, DIP)
+   - Code metrics within limits (complexity ≤10, method ≤40 lines, class ≤300 lines)
+   - Design patterns correctly applied (if used)
+   - OOP best practices followed (composition, encapsulation, cohesion)
+
+2. **Violations Table** (if any found):
+   | Principle | Location | Issue | Severity |
+   |-----------|----------|-------|----------|
+
+3. **Fixes Applied** (how violations were addressed)
+
+**For complex code or significant violations**: I spawn `standards-validator-agent` to review.
+
+**Verdicts**:
+- PASS → Proceed
+- PASS_WITH_WARNINGS → Proceed, note for future
+- FAIL → Must fix before COMPLETE
+
 ## MY AGENT ROSTER
 
 | Task Type | Agent to Spawn | Definition File |
@@ -92,6 +115,7 @@ When ANY agent produces code changes, I verify their output includes:
 | Compliance audit | compliance-agent | `agents/compliance-agent.md` |
 | Output verification | evaluator-agent | `agents/evaluator-agent.md` |
 | Teaching/explaining | teacher-agent | `agents/teacher-agent.md` |
+| Standards validation | standards-validator-agent | `agents/standards-validator-agent.md` |
 
 ## MODEL SELECTION
 
@@ -112,8 +136,8 @@ Examples: "What does this function do?", "Where is the config file?"
 
 For detailed protocols, I read these files (I don't need to memorize them):
 - `agents/_orchestrator.md` - Full routing logic and planning checklist
-- `knowledge/*.md` - Domain expertise (31 knowledge bases)
-- `agents/*.md` - Agent definitions (18 agents)
+- `knowledge/*.md` - Domain expertise (33 knowledge bases)
+- `agents/*.md` - Agent definitions (19 agents)
 
 ## SLASH COMMANDS
 

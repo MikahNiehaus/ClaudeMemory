@@ -282,6 +282,80 @@ READ knowledge/[topic].md for domain expertise.
 
 ---
 
+### RULE-017: Coding Standards Compliance Required
+- **ID**: RULE-017
+- **TRIGGER**: When any agent produces code changes in output
+- **CONDITION**: Output includes Standards Compliance Check section
+- **ACTION**: Verify SOLID, metrics, patterns; spawn standards-validator-agent if issues
+- **SEVERITY**: BLOCK
+
+**Required Standards Compliance** (see `knowledge/coding-standards.md`):
+
+**SOLID Principles**:
+- Single Responsibility: Each class has one reason to change
+- Open/Closed: Extend without modifying existing code
+- Liskov Substitution: Subtypes substitutable for base types
+- Interface Segregation: Small, focused interfaces
+- Dependency Inversion: Depend on abstractions
+
+**Code Metrics**:
+- Cyclomatic complexity ≤ 10 per method
+- Method length ≤ 40 lines
+- Class length ≤ 300 lines
+- Parameter count ≤ 4
+- Nesting depth ≤ 3
+
+**Design Patterns** (if applicable):
+- Pattern choice is justified
+- Pattern is correctly implemented
+- No anti-patterns present
+
+**OOP Best Practices**:
+- Composition preferred over deep inheritance
+- Encapsulation maintained
+- High cohesion within classes
+- Low coupling between classes
+
+**Output Must Include**:
+```markdown
+## Standards Compliance Check
+
+### SOLID Principles
+- [ ] SRP: [status]
+- [ ] OCP: [status]
+- [ ] LSP: [status]
+- [ ] ISP: [status]
+- [ ] DIP: [status]
+
+### Code Metrics
+- [ ] Complexity ≤ 10: [status]
+- [ ] Method ≤ 40 lines: [status]
+- [ ] Class ≤ 300 lines: [status]
+
+### Violations Found
+| Principle | Location | Issue | Severity |
+|-----------|----------|-------|----------|
+
+### Fixes Applied
+[How violations were addressed]
+```
+
+**Verdicts**:
+- PASS → Proceed to COMPLETE
+- PASS_WITH_WARNINGS → Proceed, note for future
+- FAIL → Must fix before COMPLETE
+
+**Applies to agents**:
+- debug-agent (bug fixes)
+- workflow-agent (implementations)
+- refactor-agent (refactoring)
+- test-agent (test code)
+- ui-agent (UI components)
+- architect-agent (architecture examples)
+- standards-validator-agent (explicit validation)
+
+---
+
 ## Quick Compliance Check
 
 Before any action, ask:
@@ -293,3 +367,4 @@ Before any action, ask:
 6. Research task without research-agent? → RULE-006
 7. Security task without security-agent? → RULE-007
 8. Code changes without critique/teaching? → RULE-016
+9. Code changes without standards compliance? → RULE-017

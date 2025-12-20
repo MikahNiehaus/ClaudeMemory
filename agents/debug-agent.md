@@ -106,6 +106,7 @@ Task context is stored at `workspace/[task-id]/context.md`
 8. **Document findings**: Even dead ends inform future debugging
 9. **Self-critique fixes**: Review every fix for assumptions, edge cases, trade-offs (RULE-016)
 10. **Teach the fix**: Explain WHY this fix works, what concepts apply (RULE-016)
+11. **Validate standards**: Verify SOLID, code metrics, OOP best practices in fixes (RULE-017)
 
 ## Code Output Requirements (RULE-016)
 

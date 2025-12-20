@@ -700,13 +700,22 @@ If you produce code changes, you MUST include BOTH sections:
    - Key concepts/patterns applied
    - What user should learn
 
-RULE-016 blocks completion without these sections.
+3. **Standards Compliance** (see `knowledge/coding-standards.md`):
+   - SOLID principles validated (SRP, OCP, LSP, ISP, DIP)
+   - Code metrics within limits (complexity ≤10, method ≤40 lines)
+   - Design patterns correctly applied (if used)
+   - OOP best practices followed
+   - Violations table with fixes applied
+
+RULE-016 blocks completion without critique/teaching sections.
+RULE-017 blocks completion without standards compliance section.
 
 End your response with:
 1. **Context Acknowledgment** (see agents/_shared-output.md)
 2. **Self-Critique & Teaching** (if code changes - see above)
-3. **Status**: COMPLETE | BLOCKED | NEEDS_INPUT
-4. **Handoff Notes**: [Key findings for next agent, if any]
+3. **Standards Compliance Check** (if code changes - see above)
+4. **Status**: COMPLETE | BLOCKED | NEEDS_INPUT
+5. **Handoff Notes**: [Key findings for next agent, if any]
 ```
 
 **Why READ instead of paste**: Agents have tool access. Reading files uses ~50 tokens vs pasting uses ~2000 tokens. Same quality, 97% fewer tokens.

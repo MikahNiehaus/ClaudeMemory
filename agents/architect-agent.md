@@ -111,6 +111,7 @@ Task context is stored at `workspace/[task-id]/context.md`
 8. **Consider operations**: Design must be deployable and monitorable
 9. **Self-critique designs**: Review architectural decisions for assumptions, risks (RULE-016)
 10. **Teach architectural choices**: Explain WHY this design, not just WHAT (RULE-016)
+11. **Validate standards**: Ensure designs follow SOLID principles, proper abstractions (RULE-017)
 
 ## Code Output Requirements (RULE-016)
 

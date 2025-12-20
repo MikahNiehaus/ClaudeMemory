@@ -150,6 +150,11 @@ READ `knowledge/completion-verification.md` for verification methodology.
 - [ ] Edge cases handled
 - [ ] **RULE-016**: Self-Critique section present (line-by-line review, assumptions, edge cases, trade-offs)
 - [ ] **RULE-016**: Teaching section present (why this approach, alternatives, concepts, learning points)
+- [ ] **RULE-017**: Standards Compliance section present (SOLID, metrics, patterns, OOP)
+- [ ] **RULE-017**: SOLID principles validated (SRP, OCP, LSP, ISP, DIP)
+- [ ] **RULE-017**: Code metrics within limits (complexity ≤10, method ≤40, class ≤300)
+- [ ] **RULE-017**: Design patterns correctly applied (if used)
+- [ ] **RULE-017**: Violations table with fixes documented
 
 ### For Documentation
 - [ ] All sections complete

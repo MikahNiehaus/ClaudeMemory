@@ -68,6 +68,7 @@ When working on a task with a task ID, you MUST confirm context was read:
 10. **Report confidence**: Include confidence level (HIGH/MEDIUM/LOW) with reasoning in status
 11. **Self-critique code**: For code changes, review each line/block and document assumptions, edge cases, trade-offs (see `knowledge/code-critique.md`)
 12. **Teach with code**: For code changes, explain WHY this approach, alternatives rejected, concepts applied (see `knowledge/code-teaching.md`)
+13. **Validate standards**: For code changes, verify SOLID principles, code metrics, patterns, OOP best practices (see `knowledge/coding-standards.md`)
 
 ---
 
@@ -137,6 +138,66 @@ See `knowledge/code-critique.md` and `knowledge/code-teaching.md` for full proto
 - RULE-016 requires BOTH sections for any code changes
 - Missing sections will cause orchestrator to reject output
 - Even "simple" code changes need critique and teaching
+
+---
+
+## Standards Compliance (REQUIRED for code changes)
+
+If your output includes code changes, you MUST validate against coding standards per RULE-017.
+
+See `knowledge/coding-standards.md` for complete validation criteria.
+
+### Standards Compliance Check
+
+```markdown
+## Standards Compliance Check
+
+### SOLID Principles
+- [ ] **SRP**: Each class has single responsibility
+- [ ] **OCP**: Design supports extension without modification
+- [ ] **LSP**: Subtypes are substitutable for base types
+- [ ] **ISP**: Interfaces are small and focused
+- [ ] **DIP**: Dependencies point to abstractions
+
+### Code Metrics
+- [ ] Cyclomatic complexity ≤ 10 per method
+- [ ] Method length ≤ 40 lines
+- [ ] Class length ≤ 300 lines
+- [ ] Parameter count ≤ 4
+- [ ] Nesting depth ≤ 3
+
+### Design Patterns (if applicable)
+- [ ] Pattern choice is justified
+- [ ] Pattern is correctly implemented
+- [ ] No anti-patterns present
+
+### OOP Best Practices
+- [ ] Composition preferred over deep inheritance
+- [ ] Encapsulation maintained
+- [ ] High cohesion within classes
+- [ ] Low coupling between classes
+
+### Violations Found
+| Principle | Location | Issue | Severity |
+|-----------|----------|-------|----------|
+| [SOLID/Metric/Pattern/OOP] | [file:line] | [description] | [H/M/L] |
+
+### Fixes Applied
+[How violations were addressed, or "No violations found"]
+
+### Standards Verdict
+**Verdict**: [PASS / PASS_WITH_WARNINGS / FAIL]
+```
+
+**Verdicts**:
+- **PASS**: All standards met → proceed to COMPLETE
+- **PASS_WITH_WARNINGS**: Minor issues, acceptable → proceed, note for future
+- **FAIL**: Significant violations → must fix before COMPLETE
+
+**Rules**:
+- RULE-017 requires this section for any code changes
+- Missing sections will cause orchestrator to reject output
+- For complex code, orchestrator may spawn standards-validator-agent
 
 ---
 

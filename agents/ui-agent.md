@@ -113,6 +113,7 @@ Task context is stored at `workspace/[task-id]/context.md`
 8. **Test all states**: Hover, focus, active, disabled, loading
 9. **Self-critique UI code**: Review components for assumptions, accessibility gaps (RULE-016)
 10. **Teach UI choices**: Explain why this structure, styling approach (RULE-016)
+11. **Validate standards**: Verify UI code follows SOLID, metrics, component patterns (RULE-017)
 
 ## Code Output Requirements (RULE-016)
 

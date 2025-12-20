@@ -93,6 +93,7 @@ See `agents/_shared-output.md` for status reporting and behavioral guidelines.
 8. **Keep tests fast**: Slow tests don't get run
 9. **Self-critique test code**: Review tests for assumptions, coverage gaps (RULE-016)
 10. **Teach testing choices**: Explain why this test structure, what it verifies (RULE-016)
+11. **Validate standards**: Verify test code follows SOLID, metrics, OOP practices (RULE-017)
 
 ## Code Output Requirements (RULE-016)
 

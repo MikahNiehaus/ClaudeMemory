@@ -124,6 +124,7 @@ If issues arise:
 8. **Scope discipline**: Resist scope creep mid-implementation
 9. **Self-critique implementations**: Review code for assumptions, edge cases (RULE-016)
 10. **Teach implementation choices**: Explain design decisions and patterns (RULE-016)
+11. **Validate standards**: Verify SOLID, code metrics, OOP best practices in implementations (RULE-017)
 
 ## Code Output Requirements (RULE-016)
 
