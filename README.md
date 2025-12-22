@@ -5,7 +5,7 @@ A plug-and-play toolkit that supercharges Claude Code with specialized AI agents
 ## System Overview
 
 ```
-19 Specialist Agents | 33 Knowledge Bases | 17 Enforcement Rules | 10 Slash Commands
+19 Specialist Agents | 33 Knowledge Bases | 18 Enforcement Rules | 10 Slash Commands
 ```
 
 ---
@@ -106,7 +106,7 @@ flowchart LR
 ```mermaid
 flowchart TB
     subgraph Toolkit["Toolkit (copy to your project)"]
-        CLAUDE[CLAUDE.md<br/>Orchestrator + 17 Rules]
+        CLAUDE[CLAUDE.md<br/>Orchestrator + 18 Rules]
 
         subgraph Agents["agents/ (19 specialists)"]
             Orch[_orchestrator.md]
@@ -276,11 +276,11 @@ sequenceDiagram
 
 ## Rule Enforcement System
 
-The toolkit enforces 17 machine-readable rules via CLAUDE.md with **hard enforcement** (not just guidelines):
+The toolkit enforces 18 machine-readable rules via CLAUDE.md with **hard enforcement** (not just guidelines):
 
 ```mermaid
 flowchart TB
-    subgraph Rules["17 Enforcement Rules"]
+    subgraph Rules["18 Enforcement Rules"]
         R1[RULE-001: Agent Spawn Required]
         R2[RULE-002: TodoWrite for Multi-Step]
         R3[RULE-003: Planning Phase Required]
@@ -298,6 +298,7 @@ flowchart TB
         R15[RULE-015: Ask Before Migrations]
         R16[RULE-016: Code Critique & Teaching]
         R17[RULE-017: Standards Compliance]
+        R18[RULE-018: Parallel Agent Limits]
     end
 
     subgraph Severity["Severity Levels"]
@@ -322,6 +323,7 @@ flowchart TB
     R13 --> Warn
     R16 --> Block
     R17 --> Block
+    R18 --> Warn
 ```
 
 ### Rule Format
@@ -480,7 +482,7 @@ Run `/update-docs` after completing work to generate clean project docs.
 
 ```
 ClaudeMemory/
-├── CLAUDE.md              # Orchestrator + 17 rules + Execution Gates
+├── CLAUDE.md              # Orchestrator + 18 rules + Execution Gates
 ├── .claude/
 │   ├── settings.json      # Permissions, hooks, sandbox
 │   └── commands/          # 10 slash commands
@@ -535,7 +537,7 @@ ClaudeMemory/
 4. **File-based memory** - Survives context compaction and session resets
 5. **Token efficient** - Minimal overhead, maximum capability
 6. **Completion verification** - Never say "done" without verifying criteria
-7. **Hard rule enforcement** - 17 machine-readable rules with ⛔ HALT on violations
+7. **Hard rule enforcement** - 18 machine-readable rules with ⛔ HALT on violations
 8. **Mandatory execution gates** - Pre-action validation before every tool call
 9. **Defense-in-depth** - Multiple layers for safety (gates, rules, prompts, permissions)
 

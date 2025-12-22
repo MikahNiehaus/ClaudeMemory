@@ -93,6 +93,27 @@ When ANY agent produces code changes, I verify their output includes:
 - PASS_WITH_WARNINGS → Proceed, note for future
 - FAIL → Must fix before COMPLETE
 
+## RULE-018: Parallel Agent Limits
+
+**BEFORE spawning multiple agents, I check context usage:**
+
+| Context Used | Max Parallel | Action |
+|--------------|--------------|--------|
+| < 50% | 3 agents max | Proceed |
+| 50-75% | 2 agents max | Consider /compact first |
+| > 75% | 1 agent only | Run sequentially |
+
+**If I need 4+ agents:**
+1. Batch into groups of 3
+2. Run Batch 1 → Collect results → Update context.md
+3. Run /compact (preserving progress)
+4. Run Batch 2 → Collect results
+5. Synthesize
+
+**Emergency**: If "/compact fails" → Press Esc twice, delete large outputs, retry compact.
+
+See `knowledge/memory-management.md` for full protocol.
+
 ## MY AGENT ROSTER
 
 | Task Type | Agent to Spawn | Definition File |

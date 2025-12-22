@@ -356,6 +356,49 @@ READ knowledge/[topic].md for domain expertise.
 
 ---
 
+### RULE-018: Parallel Agent Limits
+- **ID**: RULE-018
+- **TRIGGER**: Before spawning 2+ agents in parallel
+- **CONDITION**: Context usage allows parallel execution
+- **ACTION**: Check context, batch if needed, compact between batches
+- **SEVERITY**: WARN (escalate to BLOCK if context exhaustion occurs)
+
+**Context Thresholds**:
+| Context Used | Max Parallel | Action |
+|--------------|--------------|--------|
+| < 50% | 3 agents max | Proceed normally |
+| 50-75% | 2 agents max | Consider /compact first |
+| > 75% | 1 agent only | Run sequentially, no parallel |
+
+**Batching Protocol** (for 4+ agents):
+1. Split into batches of 3 agents max
+2. Run Batch 1 → Wait for completion → Update context.md
+3. Run /compact with progress preservation
+4. Run Batch 2 → Wait → Update
+5. Repeat until all batches complete
+6. Synthesize final results
+
+**Emergency Recovery** (if /compact fails):
+1. Press Esc twice to go back in conversation
+2. Delete large agent output messages
+3. Retry /compact with context hints
+4. Resume from context.md state
+5. Switch to sequential agents
+
+**Token Estimation Guide**:
+| Item | ~Tokens |
+|------|---------|
+| Agent spawn prompt | 500-1000 |
+| Agent output (simple) | 1000-2000 |
+| Agent output (with code) | 2000-5000 |
+| File read | 1000-3000 |
+
+**Rule of thumb**: 4+ parallel agents with code ≈ 20K-30K tokens ≈ context limit
+
+See `knowledge/memory-management.md` for full protocol.
+
+---
+
 ## Quick Compliance Check
 
 Before any action, ask:
@@ -368,3 +411,4 @@ Before any action, ask:
 7. Security task without security-agent? → RULE-007
 8. Code changes without critique/teaching? → RULE-016
 9. Code changes without standards compliance? → RULE-017
+10. Spawning 4+ agents without batching? → RULE-018

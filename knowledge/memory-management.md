@@ -356,3 +356,93 @@ Take action when you notice:
 - Confusion about project structure
 
 **Response**: Manually `/compact` with hints rather than waiting for auto-compact.
+
+---
+
+## Parallel Agent Limits (CRITICAL)
+
+**Problem**: Spawning too many agents in parallel exhausts context, causing compaction to fail with "Conversation too long" error.
+
+### Hard Limits
+
+| Scenario | Max Parallel Agents | Action if More Needed |
+|----------|--------------------|-----------------------|
+| **Simple tasks** | 3 | Batch into groups of 3 |
+| **Complex tasks** | 2 | Run sequentially |
+| **Low context** | 1 | Run sequentially |
+
+### Pre-Spawn Context Check
+
+**BEFORE spawning multiple agents, ALWAYS**:
+
+```
+1. Check current context usage (mental estimate)
+2. If > 50% used → /compact FIRST
+3. If > 75% used → Run agents sequentially, not parallel
+4. If spawning 4+ agents → Split into batches with /compact between
+```
+
+### Batch Pattern for Many Agents
+
+When you need 5+ agents (e.g., "write tests for all modules"):
+
+```
+WRONG (will exhaust context):
+  Spawn all 6 agents in parallel → Context explosion → /compact fails
+
+RIGHT (batched with compaction):
+  Batch 1: Spawn 3 agents → Wait → Collect results → Update context.md
+  /compact (preserving progress)
+  Batch 2: Spawn 3 agents → Wait → Collect results → Update context.md
+  Synthesize all results
+```
+
+### Using Background Agents
+
+For long-running tasks, prefer background agents with `run_in_background: true`:
+
+```markdown
+## Advantages
+- Doesn't block context
+- Can check status incrementally
+- Allows compaction while running
+- Results fetched on demand
+
+## Pattern
+1. Spawn agent with run_in_background: true
+2. Continue with other work
+3. Periodically check with TaskOutput (block: false)
+4. When complete, fetch full results
+5. Update context.md with findings
+```
+
+### Emergency Recovery
+
+If you hit "Conversation too long" error:
+
+1. **Press Esc twice** to go back in conversation
+2. **Delete** the most recent large messages (agent outputs)
+3. **Run /compact** with context hints
+4. **Resume** from context.md state
+5. **Use sequential** agents instead of parallel
+
+### Context Estimation Guide
+
+| Action | ~Token Cost |
+|--------|-------------|
+| Agent spawn prompt | ~500-1000 |
+| Agent output (simple) | ~1000-2000 |
+| Agent output (code) | ~2000-5000 |
+| File read (medium) | ~1000-3000 |
+| Large code block | ~2000-4000 |
+
+**Rule of thumb**: 4+ parallel agents with code output ≈ 20K-30K tokens → near context limit
+
+### Proactive Compaction Triggers
+
+Compact BEFORE these operations:
+- Spawning 3+ agents
+- Starting a multi-file refactor
+- Beginning a "test everything" task
+- Any task with 5+ subtasks
+- When todo list has 5+ pending items
