@@ -3,7 +3,14 @@
     "allow": [
       "WebSearch",
       "WebFetch(domain:platform.claude.com)",
-      "Bash(powershell -Command \"(Get-Content ''C:\\prj\\ClaudeMemory\\CLAUDE.md'' -Raw).Length / 4\")"
+      "Bash(powershell -Command \"(Get-Content ''C:\\prj\\ClaudeMemory\\CLAUDE.md'' -Raw).Length / 4\")",
+      "mcp__playwright__browser_take_screenshot",
+      "mcp__playwright__browser_snapshot",
+      "mcp__playwright__browser_click",
+      "mcp__playwright__browser_run_code",
+      "mcp__playwright__browser_type",
+      "mcp__playwright__browser_navigate",
+      "mcp__playwright__browser_wait_for"
     ],
     "deny": [],
     "ask": [
