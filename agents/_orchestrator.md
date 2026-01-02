@@ -148,6 +148,32 @@ READ `knowledge/completion-verification.md` for verification methodology.
 
 ---
 
+## PRE-PLANNING QUESTIONS (Verification-First)
+
+Before creating ANY plan, I MUST answer these questions and document in context.md:
+
+### What Could Go Wrong? (Risk Analysis)
+1. What are the 3 most likely failure modes for this task?
+2. How would we detect each failure?
+3. How would we recover from each failure?
+
+### What Alternatives Exist? (Options Analysis)
+1. What is the obvious/default approach?
+2. What is a fundamentally different approach?
+3. What would we do with half the time/budget?
+4. What would a 10x engineer do differently?
+
+### Why Is This Better? (Justification)
+1. Why is this better than doing nothing?
+2. Why is this better than the simplest possible solution?
+3. Why is this better than using an existing library/tool?
+4. What would have to change to make a different approach better?
+
+**Document answers in context.md BEFORE proceeding to Planning Checklist.**
+**See RULE-020 in CLAUDE.md for full Alternatives Analysis requirements.**
+
+---
+
 ## MANDATORY PLANNING PROTOCOL
 
 Before spawning ANY agent, the orchestrator MUST complete the planning phase.
@@ -299,6 +325,59 @@ During execution, upgrade to Opus if agent reports:
 - Multiple failed tool calls (>3) on same operation
 
 **See `knowledge/model-selection.md` for full details.**
+
+---
+
+## Agent Selection Decision Tree
+
+For EVERY task, traverse this tree to ensure optimal agent selection:
+
+```
+Task Identified
+      │
+      ▼
+Does task involve understanding unclear/vague requirements?
+      │
+      ├── YES → START with ticket-analyst-agent (Opus)
+      │         └── Then continue tree with clarified requirements
+      │
+      └── NO
+            │
+            ▼
+      Does task require research or learning new information?
+            │
+            ├── YES → Include research-agent FIRST
+            │         └── Then continue with research findings
+            │
+            └── NO
+                  │
+                  ▼
+            Does task involve architectural decisions or new components?
+                  │
+                  ├── YES → architect-agent MUST be included (Opus)
+                  │         └── Before any implementation agent
+                  │
+                  └── NO
+                        │
+                        ▼
+                  Is this a code change task?
+                        │
+                        ├── YES → Mandatory checks:
+                        │         ├── SOLID Design Review (RULE-019)
+                        │         ├── Must include test-agent
+                        │         ├── Must include standards check
+                        │         └── Consider: security-agent, performance-agent
+                        │
+                        └── NO (documentation, estimation, review)
+                              │
+                              └── Select domain-specific agent
+```
+
+**After traversing:**
+1. List ALL agents identified
+2. Determine sequence (use Collaboration Matrix below)
+3. Document WHY each agent was selected
+4. Document WHY agents NOT selected aren't needed
 
 ---
 
@@ -736,6 +815,43 @@ When spawning multiple agents simultaneously (Pattern 3):
    4. Format: | [your-agent-name] | [finding] | [impact] | [timestamp] |
    ```
 3. **After all complete**: Orchestrator synthesizes all parallel findings
+
+### Principle-Specific Validation Prompts
+
+When reviewing agent code output, validate EACH applicable principle using these specific prompts:
+
+#### SRP Validation Prompt
+> "For class [X], I identify exactly ONE reason it would need to change: [___].
+> **PASS**: Can state single reason clearly.
+> **FAIL**: Can identify 2+ distinct reasons for change."
+
+#### OCP Validation Prompt
+> "To add a new variant of [X], I would need to modify these existing files: [___].
+> **PASS**: Only need to add new files (new class implementing interface).
+> **FAIL**: Must modify existing logic or add to switch/if-else chains."
+
+#### LSP Validation Prompt
+> "Substituting [Subclass] for [BaseClass] anywhere in the code:
+> - Honors all base class contracts: [Y/N]
+> - Throws no unexpected exceptions: [Y/N]
+> - Requires no instanceof checks: [Y/N]
+> **PASS**: All Y. **FAIL**: Any N."
+
+#### ISP Validation Prompt
+> "Interface [X] has [N total] methods. Typical client uses [M] of them.
+> Usage ratio: M/N = [%]
+> **PASS**: M/N >= 80%. **FAIL**: M/N < 80% (consider splitting interface)."
+
+#### DIP Validation Prompt
+> "Class [X] has these dependencies:
+> - Abstract dependencies (interfaces/ABC): [list]
+> - Concrete dependencies (specific implementations): [list]
+> **PASS**: Critical dependencies are abstractions.
+> **FAIL**: Critical dependencies are concrete implementations."
+
+**Use these prompts in RULE-017 spot-checks. Any FAIL triggers fix request.**
+
+---
 
 ## Context Update Protocol
 
