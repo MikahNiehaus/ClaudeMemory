@@ -1,55 +1,111 @@
 # Visual Communication Knowledge Base
 
-TRIGGER: explain, diagram, visual, architecture, show me, how does, what does, structure, flow, why
+<knowledge-base name="visual-communication" version="1.0">
+<triggers>explain, diagram, visual, architecture, show me, how does, what does, structure, flow, why</triggers>
+<overview>Templates and guidelines for visual ASCII diagram communication. Orchestrator's DEFAULT mode per RULE-021.</overview>
 
-## Overview
+<frameworks>
 
-This knowledge base provides templates and guidelines for visual ASCII diagram communication. The orchestrator uses these patterns as the DEFAULT communication mode for ALL explanations (RULE-021).
+<framework id="SOLID">
+  <principle id="SRP" desc="One class, one reason to change" annotation="SRP: [responsibility]"/>
+  <principle id="OCP" desc="Extend without modifying" annotation="OCP: [extension point]"/>
+  <principle id="LSP" desc="Subtypes replace base types" annotation="LSP: [substitution]"/>
+  <principle id="ISP" desc="Small, focused interfaces" annotation="ISP: [interface scope]"/>
+  <principle id="DIP" desc="Depend on abstractions" annotation="DIP: [abstraction name]"/>
+</framework>
 
----
+<framework id="GoF" name="Gang of Four">
+  <category name="Creational">
+    <pattern name="Factory Method" when="Object creation varies" annotation="GoF: Factory Method"/>
+    <pattern name="Abstract Factory" when="Families of related objects" annotation="GoF: Abstract Factory"/>
+    <pattern name="Builder" when="Complex object construction" annotation="GoF: Builder"/>
+    <pattern name="Prototype" when="Clone existing objects" annotation="GoF: Prototype"/>
+    <pattern name="Singleton" when="Exactly one instance" annotation="GoF: Singleton"/>
+  </category>
+  <category name="Structural">
+    <pattern name="Adapter" when="Interface incompatibility" annotation="GoF: Adapter"/>
+    <pattern name="Bridge" when="Separate abstraction/impl" annotation="GoF: Bridge"/>
+    <pattern name="Composite" when="Tree structures" annotation="GoF: Composite"/>
+    <pattern name="Decorator" when="Add behavior dynamically" annotation="GoF: Decorator"/>
+    <pattern name="Facade" when="Simplify subsystem" annotation="GoF: Facade"/>
+    <pattern name="Flyweight" when="Share common state" annotation="GoF: Flyweight"/>
+    <pattern name="Proxy" when="Control access" annotation="GoF: Proxy"/>
+  </category>
+  <category name="Behavioral">
+    <pattern name="Chain of Responsibility" when="Pass request along chain" annotation="GoF: Chain of Resp"/>
+    <pattern name="Command" when="Encapsulate request" annotation="GoF: Command"/>
+    <pattern name="Iterator" when="Traverse collection" annotation="GoF: Iterator"/>
+    <pattern name="Mediator" when="Centralize communication" annotation="GoF: Mediator"/>
+    <pattern name="Memento" when="Capture/restore state" annotation="GoF: Memento"/>
+    <pattern name="Observer" when="Notify subscribers" annotation="GoF: Observer"/>
+    <pattern name="State" when="Behavior varies by state" annotation="GoF: State"/>
+    <pattern name="Strategy" when="Swap algorithms" annotation="GoF: Strategy"/>
+    <pattern name="Template Method" when="Define algorithm skeleton" annotation="GoF: Template Method"/>
+    <pattern name="Visitor" when="Add operations externally" annotation="GoF: Visitor"/>
+  </category>
+</framework>
 
-## Core Principle Frameworks
+<framework id="OOP" name="Four Pillars">
+  <pillar id="Encapsulation" desc="Bundle data + methods, hide internals" annotation="OOP: Encapsulated [what]"/>
+  <pillar id="Abstraction" desc="Hide complexity, show essential features" annotation="OOP: Abstracted [what]"/>
+  <pillar id="Inheritance" desc="Create subclass from parent (IS-A)" annotation="OOP: Inherits [parent]"/>
+  <pillar id="Polymorphism" desc="Same interface, different behavior" annotation="OOP: Polymorphic [interface]"/>
+</framework>
 
-### SOLID Principles Quick Reference
+<framework id="TDD" name="Red-Green-Refactor">
+  <phase id="Red" desc="Write failing test first" annotation="TDD: Test written for [behavior]"/>
+  <phase id="Green" desc="Minimum code to pass" annotation="TDD: Passes [test name]"/>
+  <phase id="Refactor" desc="Improve without breaking" annotation="TDD: Refactored [what]"/>
+  <test-pyramid top="E2E (few, slow)" middle="Integration (some, medium)" base="Unit (many, fast)"/>
+</framework>
 
-| Principle | One-Line Description | Annotation Format |
-|-----------|---------------------|-------------------|
-| **SRP** | One class, one reason to change | `SRP: [responsibility]` |
-| **OCP** | Extend without modifying | `OCP: [extension point]` |
-| **LSP** | Subtypes replace base types | `LSP: [substitution]` |
-| **ISP** | Small, focused interfaces | `ISP: [interface scope]` |
-| **DIP** | Depend on abstractions | `DIP: [abstraction name]` |
+<framework id="DDD" name="Domain-Driven Design">
+  <concept name="Entity" desc="Has unique identity" annotation="DDD: Entity"/>
+  <concept name="Value Object" desc="Defined by attributes, immutable" annotation="DDD: Value Object"/>
+  <concept name="Aggregate" desc="Consistency boundary" annotation="DDD: Aggregate"/>
+  <concept name="Aggregate Root" desc="Entry point for aggregate" annotation="DDD: Aggregate Root"/>
+  <concept name="Bounded Context" desc="Model boundary, ubiquitous language" annotation="DDD: Bounded Context"/>
+  <concept name="Domain Event" desc="Something significant happened" annotation="DDD: Domain Event"/>
+  <concept name="Repository" desc="Collection-like interface for aggregates" annotation="DDD: Repository"/>
+  <concept name="Domain Service" desc="Stateless domain operation" annotation="DDD: Domain Service"/>
+</framework>
 
-### Gang of Four Patterns Quick Reference
+<framework id="CIA" name="Security Triad">
+  <aspect id="C" name="Confidentiality" questions="Who can see? Is it encrypted? Are access logs kept?"/>
+  <aspect id="I" name="Integrity" questions="Can it be tampered with? Is it signed? Are changes tracked?"/>
+  <aspect id="A" name="Availability" questions="What if this fails? Is there redundancy? What's recovery time?"/>
+</framework>
 
-| Category | Pattern | Use When | Annotation |
-|----------|---------|----------|------------|
-| **Creational** | Factory Method | Object creation varies | `GoF: Factory Method` |
-| | Abstract Factory | Families of related objects | `GoF: Abstract Factory` |
-| | Builder | Complex object construction | `GoF: Builder` |
-| | Prototype | Clone existing objects | `GoF: Prototype` |
-| | Singleton | Exactly one instance | `GoF: Singleton` |
-| **Structural** | Adapter | Interface incompatibility | `GoF: Adapter` |
-| | Bridge | Separate abstraction/impl | `GoF: Bridge` |
-| | Composite | Tree structures | `GoF: Composite` |
-| | Decorator | Add behavior dynamically | `GoF: Decorator` |
-| | Facade | Simplify subsystem | `GoF: Facade` |
-| | Flyweight | Share common state | `GoF: Flyweight` |
-| | Proxy | Control access | `GoF: Proxy` |
-| **Behavioral** | Chain of Responsibility | Pass request along chain | `GoF: Chain of Resp` |
-| | Command | Encapsulate request | `GoF: Command` |
-| | Iterator | Traverse collection | `GoF: Iterator` |
-| | Mediator | Centralize communication | `GoF: Mediator` |
-| | Memento | Capture/restore state | `GoF: Memento` |
-| | Observer | Notify subscribers | `GoF: Observer` |
-| | State | Behavior varies by state | `GoF: State` |
-| | Strategy | Swap algorithms | `GoF: Strategy` |
-| | Template Method | Define algorithm skeleton | `GoF: Template Method` |
-| | Visitor | Add operations externally | `GoF: Visitor` |
+<framework id="GRASP" name="General Responsibility Assignment">
+  <pattern name="Information Expert" desc="Assign to class with needed info" annotation="GRASP: Expert [class]"/>
+  <pattern name="Creator" desc="Who creates instances?" annotation="GRASP: Creator [class]"/>
+  <pattern name="Controller" desc="First object receiving UI events" annotation="GRASP: Controller [class]"/>
+  <pattern name="Low Coupling" desc="Minimize dependencies" annotation="GRASP: Low coupling via [how]"/>
+  <pattern name="High Cohesion" desc="Focused, related responsibilities" annotation="GRASP: Cohesive [class]"/>
+  <pattern name="Polymorphism" desc="Use polymorphism for varying behavior" annotation="GRASP: Polymorphic [interface]"/>
+  <pattern name="Pure Fabrication" desc="Artificial class for cohesion/coupling" annotation="GRASP: Fabrication [class]"/>
+  <pattern name="Indirection" desc="Intermediate object to decouple" annotation="GRASP: Indirection via [what]"/>
+  <pattern name="Protected Variations" desc="Wrap instability points" annotation="GRASP: Protected [variation]"/>
+</framework>
 
-### Clean Architecture Layers
+<framework id="CleanCode">
+  <principle name="Meaningful Names" annotation="Clean: Named [intent]" rule="Classes=nouns, Methods=verbs"/>
+  <principle name="Small Functions" annotation="Clean: Small [lines]" rule="< 20 lines ideal"/>
+  <principle name="Single Purpose" annotation="Clean: Single purpose [what]" rule="One thing well"/>
+  <principle name="No Side Effects" annotation="Clean: Pure function" rule="Input to output only"/>
+</framework>
 
-```
+<framework id="KISS-DRY-YAGNI">
+  <principle id="KISS" desc="Keep It Simple, Stupid" annotation="KISS: Simplified [how]" antipattern="Over-engineering"/>
+  <principle id="DRY" desc="Don't Repeat Yourself" annotation="DRY: Extracted [what]" antipattern="Copy-paste code"/>
+  <principle id="YAGNI" desc="You Aren't Gonna Need It" annotation="YAGNI: Removed [what]" antipattern="Speculative features"/>
+</framework>
+
+</frameworks>
+
+<architectures>
+
+<architecture id="CleanArchitecture"><![CDATA[
 +-------------------------------------------+
 |           Frameworks & Drivers             |  ← Outermost: DB, Web, UI
 |  +-------------------------------------+  |
@@ -58,409 +114,131 @@ This knowledge base provides templates and guidelines for visual ASCII diagram c
 |  |  |          Use Cases            |  |  |  ← Application business rules
 |  |  |  +-------------------------+  |  |  |
 |  |  |  |       Entities          |  |  |  |  ← Enterprise business rules
-|  |  |  |     (innermost)         |  |  |  |
 |  |  |  +-------------------------+  |  |  |
 |  |  +-------------------------------+  |  |
 |  +-------------------------------------+  |
 +-------------------------------------------+
+CA RULE: Dependencies ONLY point inward
+]]></architecture>
 
-CA RULE: Dependencies ONLY point inward (toward Entities)
-```
+<architecture id="Hexagonal" name="Ports &amp; Adapters"><![CDATA[
+     [Web UI]  [CLI]  [API Client]
+          \     |     /
+           v    v    v
+    +─────────────────────────+
+    |    PRIMARY ADAPTERS     |  ← Driving adapters
+    +─────────────────────────+
+               │
+    +─────────────────────────+
+    |     PRIMARY PORTS       |  ← Input interfaces
+    +─────────────────────────+
+               │
+    +─────────────────────────+
+    |    APPLICATION CORE     |  ← Business logic
+    +─────────────────────────+
+               │
+    +─────────────────────────+
+    |    SECONDARY PORTS      |  ← Output interfaces
+    +─────────────────────────+
+               │
+    +─────────────────────────+
+    |   SECONDARY ADAPTERS    |  ← Driven adapters
+    +─────────────────────────+
+               │
+     [Database] [Email] [Gateway]
 
-### Domain-Driven Design Concepts
+Key: Domain is ISOLATED from external concerns
+]]></architecture>
 
-| Concept | Description | Annotation |
-|---------|-------------|------------|
-| **Entity** | Has unique identity | `DDD: Entity` |
-| **Value Object** | Defined by attributes, immutable | `DDD: Value Object` |
-| **Aggregate** | Consistency boundary | `DDD: Aggregate` |
-| **Aggregate Root** | Entry point for aggregate | `DDD: Aggregate Root` |
-| **Bounded Context** | Model boundary, ubiquitous language | `DDD: Bounded Context` |
-| **Domain Event** | Something significant happened | `DDD: Domain Event` |
-| **Repository** | Collection-like interface for aggregates | `DDD: Repository` |
-| **Service** | Stateless domain operation | `DDD: Domain Service` |
+<architecture id="CQRS"><![CDATA[
+   [Client Request]
+          │
+          ├──────────────────────┐
+          ▼                      ▼
+   +-------------+        +-------------+
+   |   COMMAND   |        |    QUERY    |
+   |   (Write)   |        |   (Read)    |
+   +-------------+        +-------------+
+          │                      │
+   +-------------+        +-------------+
+   | Write Model |        | Read Model  |
+   | (Normalized)|        |(Denormalized|
+   +-------------+        +-------------+
+          │      [Event]       │
+          └────────►◄──────────┘
 
-### CIA Triad (Security)
+Commands: Change state, return void/ID
+Queries: Return data, no side effects
+]]></architecture>
 
-| Aspect | Meaning | Questions to Answer |
-|--------|---------|---------------------|
-| **Confidentiality** | Data protected from unauthorized access | Who can see this? Is it encrypted? Are access logs kept? |
-| **Integrity** | Data accurate and unaltered | Can this be tampered with? Is it signed/validated? Are changes tracked? |
-| **Availability** | System accessible when needed | What if this fails? Is there redundancy? What's the recovery time? |
+<architecture id="EventSourcing"><![CDATA[
+Traditional:              Event Sourced:
++-----------+             +-----------+
+| Current   |             | Event 1   | → OrderCreated
+| State     |             | Event 2   | → ItemAdded
+| (Latest)  |             | Event 3   | → OrderPaid
++-----------+             +-----------+
+                                │ Replay
+                          +-----------+
+                          | Current   |
+                          +-----------+
 
-### Object-Oriented Programming (OOP) - Four Pillars
+Benefits: Audit trail, time travel, event replay
+Challenges: Eventual consistency, schema evolution
+]]></architecture>
 
-```
-+================================================================+
-|                    OOP FOUR PILLARS                             |
-+================================================================+
-|                                                                 |
-|  +------------------+           +------------------+            |
-|  |  ENCAPSULATION   |           |   ABSTRACTION    |            |
-|  +------------------+           +------------------+            |
-|  | Bundle data +    |           | Hide complexity  |            |
-|  | methods that     |           | Show only        |            |
-|  | operate on it    |           | essential        |            |
-|  | Hide internals   |           | features         |            |
-|  +------------------+           +------------------+            |
-|                                                                 |
-|  +------------------+           +------------------+            |
-|  |   INHERITANCE    |           |  POLYMORPHISM    |            |
-|  +------------------+           +------------------+            |
-|  | Create new class |           | Same interface   |            |
-|  | from existing    |           | different        |            |
-|  | Reuse code       |           | implementations  |            |
-|  | IS-A relationship|           | Runtime behavior |            |
-|  +------------------+           +------------------+            |
-|                                                                 |
-+================================================================+
-```
+</architectures>
 
-| Pillar | One-Line Description | Annotation Format |
-|--------|---------------------|-------------------|
-| **Encapsulation** | Bundle data with methods, hide internals | `OOP: Encapsulated [what]` |
-| **Abstraction** | Hide complexity, show essential features | `OOP: Abstracted [what]` |
-| **Inheritance** | Create subclass from parent (IS-A) | `OOP: Inherits [parent]` |
-| **Polymorphism** | Same interface, different behavior | `OOP: Polymorphic [interface]` |
+<diagram-templates>
 
-### Test-Driven Development (TDD) - Red-Green-Refactor
-
-```
-+================================================================+
-|                   TDD: RED-GREEN-REFACTOR                       |
-+================================================================+
-|                                                                 |
-|   +------------------+                                          |
-|   |    1. RED        |  Write a failing test first              |
-|   |    (Write Test)  |  Test defines expected behavior          |
-|   +------------------+                                          |
-|            │                                                    |
-|            ▼                                                    |
-|   +------------------+                                          |
-|   |    2. GREEN      |  Write minimum code to pass              |
-|   |    (Make Pass)   |  Don't optimize yet                      |
-|   +------------------+                                          |
-|            │                                                    |
-|            ▼                                                    |
-|   +------------------+                                          |
-|   |    3. REFACTOR   |  Clean up code                           |
-|   |    (Improve)     |  Tests still pass                        |
-|   +------------------+                                          |
-|            │                                                    |
-|            └──────────────────────────────────┐                 |
-|                                               │                 |
-|            ┌──────────────────────────────────┘                 |
-|            │                                                    |
-|            ▼                                                    |
-|   +------------------+                                          |
-|   |    REPEAT        |  Next test case                          |
-|   +------------------+                                          |
-|                                                                 |
-+================================================================+
-```
-
-| Phase | Description | Annotation Format |
-|-------|-------------|-------------------|
-| **Red** | Write failing test first | `TDD: Test written for [behavior]` |
-| **Green** | Minimum code to pass | `TDD: Passes [test name]` |
-| **Refactor** | Improve without breaking | `TDD: Refactored [what]` |
-
-### TDD Test Types Pyramid
-
-```
-          /\
-         /  \         E2E Tests (Few)
-        /    \        - Full system
-       /──────\       - Slow, brittle
-      /        \
-     /  Integ   \     Integration Tests (Some)
-    /   Tests    \    - Component interactions
-   /──────────────\   - Medium speed
-  /                \
- /    Unit Tests    \ Unit Tests (Many)
-/____________________\- Single units
-                      - Fast, isolated
-                      - Most coverage
-```
-
-### Design Principles: KISS, DRY, YAGNI
-
-| Principle | Meaning | Annotation | Anti-Pattern |
-|-----------|---------|------------|--------------|
-| **KISS** | Keep It Simple, Stupid | `KISS: Simplified [how]` | Over-engineering |
-| **DRY** | Don't Repeat Yourself | `DRY: Extracted [what]` | Copy-paste code |
-| **YAGNI** | You Aren't Gonna Need It | `YAGNI: Removed [what]` | Speculative features |
-
-```
-+================================================================+
-|                  DESIGN PRINCIPLES                              |
-+================================================================+
-|                                                                 |
-|  KISS: Simplest solution that works                             |
-|  ├── Avoid unnecessary complexity                               |
-|  ├── Prefer readable over clever                                |
-|  └── Simple is easier to maintain                               |
-|                                                                 |
-|  DRY: Single source of truth                                    |
-|  ├── Extract common logic to one place                          |
-|  ├── Changes happen in one location                             |
-|  └── BUT: Don't over-abstract prematurely                       |
-|                                                                 |
-|  YAGNI: Build only what's needed NOW                            |
-|  ├── Delete unused code                                         |
-|  ├── Don't build for hypothetical futures                       |
-|  └── Easier to add later than remove                            |
-|                                                                 |
-+================================================================+
-```
-
-### GRASP Patterns (General Responsibility Assignment)
-
-| Pattern | Description | Annotation Format |
-|---------|-------------|-------------------|
-| **Information Expert** | Assign responsibility to class with needed info | `GRASP: Expert [class]` |
-| **Creator** | Who creates instances? Class that has initializing data | `GRASP: Creator [class]` |
-| **Controller** | First object receiving UI events | `GRASP: Controller [class]` |
-| **Low Coupling** | Minimize dependencies between classes | `GRASP: Low coupling via [how]` |
-| **High Cohesion** | Focused, related responsibilities | `GRASP: Cohesive [class]` |
-| **Polymorphism** | Use polymorphism for varying behavior | `GRASP: Polymorphic [interface]` |
-| **Pure Fabrication** | Artificial class for cohesion/coupling | `GRASP: Fabrication [class]` |
-| **Indirection** | Intermediate object to decouple | `GRASP: Indirection via [what]` |
-| **Protected Variations** | Wrap instability points | `GRASP: Protected [variation]` |
-
-### Clean Code Principles
-
-```
-+================================================================+
-|                    CLEAN CODE PRINCIPLES                        |
-+================================================================+
-|                                                                 |
-|  NAMING:                                                        |
-|  - Use intention-revealing names                                |
-|  - Avoid abbreviations and single letters                       |
-|  - Classes = nouns, Methods = verbs                             |
-|                                                                 |
-|  FUNCTIONS:                                                     |
-|  - Small (< 20 lines ideal)                                     |
-|  - Do one thing (SRP for functions)                             |
-|  - Few parameters (0-3 ideal)                                   |
-|  - No side effects                                              |
-|                                                                 |
-|  COMMENTS:                                                      |
-|  - Code should be self-documenting                              |
-|  - Comments explain WHY, not WHAT                               |
-|  - Bad comments = code smell                                    |
-|                                                                 |
-|  ERROR HANDLING:                                                |
-|  - Use exceptions, not return codes                             |
-|  - Don't return null                                            |
-|  - Fail fast                                                    |
-|                                                                 |
-+================================================================+
-```
-
-| Principle | Annotation Format | Example |
-|-----------|-------------------|---------|
-| Meaningful Names | `Clean: Named [intent]` | `getUserById` not `get` |
-| Small Functions | `Clean: Small [lines]` | `< 20 lines` |
-| Single Purpose | `Clean: Single purpose [what]` | One thing well |
-| No Side Effects | `Clean: Pure function` | Input → output only |
-
-### Hexagonal Architecture (Ports & Adapters)
-
-```
-+================================================================+
-|                  HEXAGONAL ARCHITECTURE                         |
-|                   (Ports & Adapters)                            |
-+================================================================+
-|                                                                 |
-|        [Web UI]     [CLI]     [API Client]                      |
-|            \          |          /                              |
-|             \         |         /                               |
-|              v        v        v                                |
-|         +─────────────────────────────+                         |
-|         |     PRIMARY ADAPTERS        |  ← Driving adapters     |
-|         |   (Controllers, Handlers)   |                         |
-|         +─────────────────────────────+                         |
-|                      │                                          |
-|                      v                                          |
-|         +─────────────────────────────+                         |
-|         |      PRIMARY PORTS          |  ← Input interfaces     |
-|         |    (Use Case Interfaces)    |                         |
-|         +─────────────────────────────+                         |
-|                      │                                          |
-|                      v                                          |
-|         +─────────────────────────────+                         |
-|         |       APPLICATION           |                         |
-|         |       CORE/DOMAIN           |  ← Business logic       |
-|         +─────────────────────────────+                         |
-|                      │                                          |
-|                      v                                          |
-|         +─────────────────────────────+                         |
-|         |     SECONDARY PORTS         |  ← Output interfaces    |
-|         |   (Repository Interfaces)   |                         |
-|         +─────────────────────────────+                         |
-|                      │                                          |
-|                      v                                          |
-|         +─────────────────────────────+                         |
-|         |    SECONDARY ADAPTERS       |  ← Driven adapters      |
-|         |  (DB, External Services)    |                         |
-|         +─────────────────────────────+                         |
-|                      │                                          |
-|                      v                                          |
-|        [Database]  [Email]  [Payment Gateway]                   |
-|                                                                 |
-+================================================================+
-| Key: Domain is ISOLATED from all external concerns              |
-|      Dependencies point INWARD toward domain                    |
-+================================================================+
-```
-
-### CQRS (Command Query Responsibility Segregation)
-
-```
-+================================================================+
-|                         CQRS                                    |
-+================================================================+
-|                                                                 |
-|   [Client Request]                                              |
-|          │                                                      |
-|          ├─────────────────┬─────────────────┐                 |
-|          │                 │                 │                  |
-|          ▼                 │                 ▼                  |
-|   +-------------+          │          +-------------+           |
-|   |   COMMAND   |          │          |    QUERY    |           |
-|   |   (Write)   |          │          |   (Read)    |           |
-|   +-------------+          │          +-------------+           |
-|          │                 │                 │                  |
-|          ▼                 │                 ▼                  |
-|   +-------------+          │          +-------------+           |
-|   | Write Model |          │          | Read Model  |           |
-|   | (Normalized)|          │          |(Denormalized|           |
-|   +-------------+          │          +-------------+           |
-|          │                 │                 │                  |
-|          │     [Event]     │                 │                  |
-|          └────────────────►│◄────────────────┘                  |
-|                            │                                    |
-|                     [Sync/Async]                                |
-|                                                                 |
-+================================================================+
-| Commands: Change state, return void/ID                          |
-| Queries: Return data, no side effects                           |
-+================================================================+
-```
-
-### Event Sourcing
-
-```
-+================================================================+
-|                     EVENT SOURCING                              |
-+================================================================+
-|                                                                 |
-|  Traditional:              Event Sourced:                       |
-|  +-----------+             +-----------+                        |
-|  | Current   |             | Event 1   | → OrderCreated         |
-|  | State     |             | Event 2   | → ItemAdded            |
-|  | (Latest)  |             | Event 3   | → ItemAdded            |
-|  +-----------+             | Event 4   | → ItemRemoved          |
-|                            | Event 5   | → OrderPaid            |
-|                            +-----------+                        |
-|                                  │                              |
-|                                  ▼                              |
-|                            +-----------+                        |
-|                            | Replay    | → Current State        |
-|                            +-----------+                        |
-|                                                                 |
-+================================================================+
-| Benefits: Full audit trail, time travel, event replay           |
-| Challenges: Eventual consistency, event schema evolution        |
-+================================================================+
-```
-
----
-
-## Diagram Templates
-
-### Template 1: Layered Architecture Box
-
-Use for: Component relationships, system structure, module dependencies
-
-```
+<template id="layered-architecture" use="Component relationships, system structure"><![CDATA[
 +================================================================+
 |                         LAYER NAME                              |
 |                    (Layer Type: Domain/App/Infra)               |
 +================================================================+
-|                                                                 |
 |  +---------------------------+  +---------------------------+   |
 |  |      Component A          |  |      Component B          |   |
 |  |  SRP: [responsibility]    |  |  SRP: [responsibility]    |   |
 |  +---------------------------+  +---------------------------+   |
 |             |                              |                    |
 |             +------------+  +--------------+                    |
-|                          |  |                                   |
 |                          v  v                                   |
 |                   +-------------+                               |
 |                   | Interface   |  ← DIP: Abstraction           |
 |                   +-------------+                               |
-|                                                                 |
 +================================================================+
 | CA: [Clean Architecture layer rule]                             |
 | GoF: [Patterns used]                                            |
 +================================================================+
-```
+]]></template>
 
-### Template 2: Request Flow / Decision Tree
-
-Use for: Logic explanation, conditional behavior, process flows
-
-```
+<template id="request-flow" use="Logic explanation, conditional behavior, process flows"><![CDATA[
 [Input/Request]
        │
-       ▼
 +------------------+
 |   ENTRY POINT    |  ← CA: Interface Adapter
 +------------------+
        │
-       ▼
 +------------------+
 |   DECISION       |
 +------------------+
        │
-       ├── YES ──────────────────┐
-       │                         │
-       │                         ▼
-       │                 +------------------+
-       │                 |   Action A       |  ← OCP: Extended via [X]
-       │                 +------------------+
+       ├── YES ─────────► [Action A]  ← OCP: Extended via [X]
        │
-       └── NO ───────────────────┐
-                                 │
-                                 ▼
-                         +------------------+
-                         |   Action B       |  ← GoF: [Pattern]
-                         +------------------+
-```
+       └── NO ──────────► [Action B]  ← GoF: [Pattern]
+]]></template>
 
-### Template 3: Component Interaction
-
-Use for: Communication between parts, data flow, API interactions
-
-```
+<template id="component-interaction" use="Communication, data flow, API interactions"><![CDATA[
 +------------+     +------------+     +------------+
 |  Client    | --> | Interface  | --> |   Impl     |
 |            |     | (Port)     |     | (Adapter)  |
 +------------+     +------------+     +------------+
                          ^
-                         │
                    DIP: Depends on abstraction
                    CA: Port separates domain from infrastructure
-```
+]]></template>
 
-### Template 4: Security Context Box
-
-Use for: Any security-relevant explanation (ALWAYS include for security topics)
-
-```
+<template id="security-box" use="Security-relevant explanations" required="always-for-security"><![CDATA[
 +================================================================+
 |                      SECURITY DECISION                          |
 +================================================================+
@@ -472,134 +250,83 @@ Use for: Any security-relevant explanation (ALWAYS include for security topics)
 | OWASP Relevance: [A01-A10 if applicable]                        |
 | Threat Model: [What threats does this address?]                 |
 +================================================================+
-```
+]]></template>
 
-### Template 5: Comparison Matrix
-
-Use for: Evaluating alternatives, showing trade-offs
-
-```
+<template id="comparison-matrix" use="Evaluating alternatives, showing trade-offs"><![CDATA[
 +==================+============+============+============+
 |     Criterion    |  Option A  |  Option B  |  Option C  |
 +==================+============+============+============+
 | SOLID Compliance |    HIGH    |   MEDIUM   |    LOW     |
 | Maintainability  |    HIGH    |    HIGH    |   MEDIUM   |
 | Performance      |   MEDIUM   |    HIGH    |    HIGH    |
-| Complexity       |    LOW     |   MEDIUM   |    HIGH    |
-| Testability      |    HIGH    |   MEDIUM   |    LOW     |
 +==================+============+============+============+
 | Selected: Option [X]                                     |
 | Rationale: [principle-based reason]                      |
 +==========================================================+
-```
+]]></template>
 
-### Template 6: Before/After Refactoring
-
-Use for: Showing violations and fixes, code evolution
-
-```
+<template id="before-after" use="Showing violations and fixes, code evolution"><![CDATA[
 BEFORE (Violations)                AFTER (Compliant)
 +-------------------+             +-------------------+
 | GodClass          |             | ClassA            |
 | - method1()       |    SRP      | - responsibility1 |
 | - method2()       |   ====>     +-------------------+
-| - method3()       |             | ClassB            |
-| [SRP VIOLATION]   |             | - responsibility2 |
-+-------------------+             +-------------------+
-                                  | ClassC            |
-                                  | - responsibility3 |
+| [SRP VIOLATION]   |             | ClassB            |
++-------------------+             | - responsibility2 |
                                   +-------------------+
-
 OCP: Now each can extend independently
 DIP: Classes depend on interfaces, not each other
-```
+]]></template>
 
-### Template 7: Dependency Injection Flow
-
-Use for: Explaining how DI wires components together
-
-```
+<template id="di-flow" use="Explaining dependency injection wiring"><![CDATA[
 +-------------------------------------------+
 |           DI Container (Startup)           |
 +-------------------------------------------+
-|                                           |
 |  Register:                                |
-|  ┌─────────────────────────────────────┐  |
-|  │ IService → ConcreteService          │  |
-|  │ IRepository → SqlRepository         │  |
-|  └─────────────────────────────────────┘  |
-|                                           |
+|  │ IService → ConcreteService             |
+|  │ IRepository → SqlRepository            |
 +-------------------------------------------+
-              │
               │ At Runtime
-              ▼
 +-------------------------------------------+
 |           Consumer Created                 |
+|  new Controller(container.Resolve<IService>())  |
+|  DIP: Depends on abstraction, not impl    |
 +-------------------------------------------+
-|                                           |
-|  new Controller(                          |
-|      container.Resolve<IService>()        |
-|  )                                        |
-|                                           |
-|  DIP: Controller depends on IService      |
-|       (abstraction), not ConcreteService  |
-|       (implementation)                    |
-|                                           |
-+-------------------------------------------+
-```
+]]></template>
 
----
+</diagram-templates>
 
-## Response Complexity Guidelines
+<response-guidelines>
+  <guideline complexity="simple" diagram="1 small box" annotations="1-2" example="What does X do?"/>
+  <guideline complexity="medium" diagram="2-3 connected boxes" annotations="3-4" example="How does X work?"/>
+  <guideline complexity="complex" diagram="Full layered diagram" annotations="5+" example="Design for X"/>
+  <guideline complexity="security" diagram="Include CIA box" annotations="CIA + OWASP ref" example="Is this secure?"/>
+</response-guidelines>
 
-| Question Complexity | Diagram Size | Annotations Required | Example |
-|--------------------|--------------|---------------------|---------|
-| **Simple** | 1 small box | 1-2 principles | "What does X do?" |
-| **Medium** | 2-3 connected boxes | 3-4 principles | "How does X work?" |
-| **Complex** | Full layered diagram | 5+ principles | "Design for X" |
-| **Security** | Include CIA box | CIA + OWASP ref | "Is this secure?" |
+<annotation-formats>
+  <annotation type="SRP" format="SRP: [reason]" example="SRP: Handles only user validation"/>
+  <annotation type="OCP" format="OCP: [extension point]" example="OCP: New validators via interface"/>
+  <annotation type="LSP" format="LSP: [substitution note]" example="LSP: All handlers interchangeable"/>
+  <annotation type="ISP" format="ISP: [interface focus]" example="ISP: Read-only vs read-write split"/>
+  <annotation type="DIP" format="DIP: [abstraction]" example="DIP: Depends on IRepository"/>
+  <annotation type="GoF" format="GoF: [Pattern]" example="GoF: Strategy for algorithms"/>
+  <annotation type="DDD" format="DDD: [concept]" example="DDD: Aggregate root boundary"/>
+  <annotation type="CA" format="CA: [layer rule]" example="CA: Domain knows no frameworks"/>
+  <annotation type="CIA" format="CIA: [aspect]" example="CIA: C - encrypted at rest"/>
+</annotation-formats>
 
----
-
-## Principle Annotation Requirements
-
-When explaining code or architecture, ALWAYS annotate with relevant principles:
-
-| Annotation | Format | Example |
-|------------|--------|---------|
-| SRP | `SRP: [reason]` | `SRP: Handles only user validation` |
-| OCP | `OCP: [extension point]` | `OCP: New validators via interface` |
-| LSP | `LSP: [substitution note]` | `LSP: All handlers interchangeable` |
-| ISP | `ISP: [interface focus]` | `ISP: Read-only vs read-write split` |
-| DIP | `DIP: [abstraction]` | `DIP: Depends on IRepository` |
-| GoF | `GoF: [Pattern]` | `GoF: Strategy for algorithms` |
-| DDD | `DDD: [concept]` | `DDD: Aggregate root boundary` |
-| CA | `CA: [layer rule]` | `CA: Domain knows no frameworks` |
-| CIA | `CIA: [aspect]` | `CIA: C - encrypted at rest` |
-
----
-
-## Complete Example Response
-
-**User Question**: "How does the order processing system work?"
-
-**Orchestrator Response**:
-
-```
+<complete-example title="Order Processing System"><![CDATA[
 +================================================================+
 |                   ORDER PROCESSING SYSTEM                       |
 |                    (Clean Architecture)                         |
 +================================================================+
-|                                                                 |
 |   [Customer Request]                                            |
 |          │                                                      |
-|          ▼                                                      |
 |   +---------------------------+                                 |
 |   |    OrderController        |  ← CA: Interface Adapter        |
 |   |    (HTTP concerns only)   |    SRP: HTTP request handling   |
 |   +---------------------------+                                 |
 |          │                                                      |
-|          ▼                                                      |
 |   +---------------------------+                                 |
 |   |    PlaceOrderUseCase      |  ← CA: Application Layer        |
 |   |    (orchestrates flow)    |    SRP: Order placement logic   |
@@ -608,48 +335,28 @@ When explaining code or architecture, ALWAYS annotate with relevant principles:
 |          ├───────────────┬───────────────┐                     |
 |          ▼               ▼               ▼                      |
 |   +-------------+  +-------------+  +-------------+            |
-|   | IOrderRepo  |  | IPaymentSvc |  | IInventory  |            |
-|   | (Port)      |  | (Port)      |  | (Port)      |            |
+|   | IOrderRepo  |  | IPaymentSvc |  | IInventory  |  ← Ports   |
 |   +-------------+  +-------------+  +-------------+            |
 |          │               │               │                      |
 |   DIP: Use case depends on abstractions only                   |
-|          │               │               │                      |
 |          ▼               ▼               ▼                      |
 |   +-------------+  +-------------+  +-------------+            |
-|   | SqlOrderRepo|  | StripeGateway|  | WarehouseAPI|           |
-|   | (Adapter)   |  | (Adapter)    |  | (Adapter)   |           |
+|   | SqlOrderRepo|  | StripeGateway|  | WarehouseAPI| ← Adapters|
 |   +-------------+  +-------------+  +-------------+            |
-|                                                                 |
 +================================================================+
-|  DOMAIN MODEL (DDD):                                            |
-|  - Order: Aggregate Root (owns OrderLines, controls invariants) |
-|  - OrderLine: Entity (has identity within Order)                |
-|  - Money: Value Object (immutable, equality by value)           |
-|  - OrderPlaced: Domain Event (triggers downstream processes)    |
+|  DDD: Order=Aggregate Root, OrderLine=Entity, Money=ValueObject |
+|  GoF: Strategy (payment), Repository, Observer (events)         |
+|  CIA: C=tokenized payments, I=server-side totals, A=retry logic |
 +================================================================+
-|  PATTERNS:                                                      |
-|  - GoF: Strategy (swappable payment providers)                  |
-|  - GoF: Repository (abstracts persistence)                      |
-|  - GoF: Observer (domain events notify subscribers)             |
-+================================================================+
-|  SECURITY (CIA):                                                |
-|  - C: Payment data never stored, tokenized via Stripe           |
-|  - I: Order totals calculated server-side, signed               |
-|  - A: Retry logic for payment gateway timeouts                  |
-+================================================================+
-```
+]]></complete-example>
 
----
+<integration-rule ref="RULE-021">
+  <step order="1">Identify question category (simple/medium/complex/security)</step>
+  <step order="2">Select appropriate diagram template</step>
+  <step order="3">Add principle annotations</step>
+  <step order="4">Include CIA box if security-relevant</step>
+  <step order="5">Conclude with key insight summary</step>
+  <mandatory>Every explanation includes at least ONE framework annotation</mandatory>
+</integration-rule>
 
-## Integration with RULE-021
-
-This knowledge base is referenced by RULE-021 (Visual Communication Standard).
-
-When the orchestrator answers ANY question directly:
-1. Identify question category (simple/medium/complex/security)
-2. Select appropriate diagram template from this file
-3. Add principle annotations
-4. Include CIA box if security-relevant
-5. Conclude with key insight summary
-
-**MANDATORY**: Every explanation includes at least ONE framework annotation.
+</knowledge-base>

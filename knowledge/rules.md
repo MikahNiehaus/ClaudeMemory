@@ -1,414 +1,309 @@
 # System Rules Reference
 
-TRIGGER: rule, RULE-, violation, compliance, block, warn, enforcement
+<knowledge-base name="rules" version="1.0">
+<triggers>rule, RULE-, violation, compliance, block, warn, enforcement</triggers>
+<overview>15 system rules enforced by orchestrator and compliance-agent</overview>
 
-## Overview
+<rule-format>
+  <field name="ID">Unique identifier (RULE-XXX)</field>
+  <field name="TRIGGER">When to check this rule</field>
+  <field name="CONDITION">What must be true</field>
+  <field name="ACTION">What to do if violated</field>
+  <field name="SEVERITY">BLOCK (halt) or WARN (log and continue)</field>
+</rule-format>
 
-This file contains the complete definition of all 15 system rules. These rules are enforced by the orchestrator and checked by compliance-agent.
+<rules severity="BLOCK">
 
-## Rule Format
+<rule id="RULE-001" name="Agent Spawn Required for Code Changes">
+  <trigger>Before any Write/Edit tool call on code files</trigger>
+  <condition>An appropriate agent has been spawned for this task</condition>
+  <action>HALT. Spawn appropriate agent before editing code.</action>
+  <mappings>
+    <map task="Testing code" agent="test-agent"/>
+    <map task="Bug fixes" agent="debug-agent"/>
+    <map task="Architecture decisions" agent="architect-agent"/>
+    <map task="Security changes" agent="security-agent"/>
+    <map task="Refactoring" agent="refactor-agent"/>
+  </mappings>
+</rule>
 
-Each rule has:
-- **ID**: Unique identifier (RULE-XXX)
-- **TRIGGER**: When to check this rule
-- **CONDITION**: What must be true
-- **ACTION**: What to do if violated
-- **SEVERITY**: BLOCK (halt execution) or WARN (log and continue)
+<rule id="RULE-002" name="TodoWrite for Multi-Step Tasks">
+  <trigger>After identifying task has 2+ steps</trigger>
+  <condition>TodoWrite has been called with task items</condition>
+  <action>HALT. Create todo list before proceeding.</action>
+</rule>
 
----
+<rule id="RULE-003" name="Planning Phase Required">
+  <trigger>Before spawning any agent</trigger>
+  <condition>workspace/[task-id]/context.md exists with Plan section populated</condition>
+  <action>HALT. Complete planning phase first.</action>
+  <planning-checklist>
+    <domain id="1">Testing - New code, behavior changes, bug fixes?</domain>
+    <domain id="2">Documentation - API changes, config changes, user features?</domain>
+    <domain id="3">Security - Auth, user input, sensitive data, DB queries?</domain>
+    <domain id="4">Architecture - New component, design decisions, integrations?</domain>
+    <domain id="5">Performance - Large loops, DB queries, caching, hot paths?</domain>
+    <domain id="6">Review - Code changes ready for merge?</domain>
+    <domain id="7">Clarity - Vague request, missing acceptance criteria?</domain>
+  </planning-checklist>
+</rule>
 
-## BLOCK Severity Rules (Must Halt on Violation)
+<rule id="RULE-004" name="Agent Status Validation">
+  <trigger>After any agent completes</trigger>
+  <condition>Agent output contains Status: COMPLETE | BLOCKED | NEEDS_INPUT</condition>
+  <action>HALT. Request status if missing. Do not proceed without it.</action>
+  <status-handling>
+    <status value="COMPLETE">Continue to next step</status>
+    <status value="BLOCKED">Resolve blocker before continuing</status>
+    <status value="NEEDS_INPUT">Get user clarification</status>
+  </status-handling>
+</rule>
 
-### RULE-001: Agent Spawn Required for Code Changes
-- **ID**: RULE-001
-- **TRIGGER**: Before any Write/Edit tool call on code files
-- **CONDITION**: An appropriate agent has been spawned for this task
-- **ACTION**: HALT. Spawn appropriate agent before editing code.
-- **SEVERITY**: BLOCK
+<rule id="RULE-005" name="Context Logging Required">
+  <trigger>After any agent action or orchestrator decision</trigger>
+  <condition>workspace/[task-id]/context.md updated with contribution</condition>
+  <action>HALT. Update context.md before continuing.</action>
+  <required-fields>
+    <field>Agent name and timestamp</field>
+    <field>Task assigned</field>
+    <field>Status returned</field>
+    <field>Key findings</field>
+    <field>Handoff notes</field>
+  </required-fields>
+</rule>
 
-**Agent Mapping**:
-- Testing code → test-agent
-- Bug fixes → debug-agent
-- Architecture decisions → architect-agent
-- Security changes → security-agent
-- Refactoring → refactor-agent
+<rule id="RULE-010" name="Playwright MCP Tool Usage Required">
+  <trigger>When using Playwright for browser interaction</trigger>
+  <condition>Using mcp__playwright_* tools directly (NOT writing code)</condition>
+  <action>HALT. Use MCP tools instead of writing Playwright code.</action>
+  <required-tools>
+    <tool>mcp__playwright_browser_navigate</tool>
+    <tool>mcp__playwright_browser_click</tool>
+    <tool>mcp__playwright_browser_type</tool>
+    <tool>mcp__playwright_browser_snapshot</tool>
+  </required-tools>
+</rule>
 
----
+<rule id="RULE-012" name="Self-Reflection Required">
+  <trigger>Before any agent reports COMPLETE status</trigger>
+  <condition>Agent has performed self-reflection checklist</condition>
+  <action>HALT. Run self-reflection, include confidence level.</action>
+  <required-output>
+    <field>Confidence: HIGH | MEDIUM | LOW</field>
+    <field>Confidence Reasoning: 1-2 sentences</field>
+  </required-output>
+</rule>
 
-### RULE-002: TodoWrite for Multi-Step Tasks
-- **ID**: RULE-002
-- **TRIGGER**: After identifying task has 2+ steps
-- **CONDITION**: TodoWrite has been called with task items
-- **ACTION**: HALT. Create todo list before proceeding.
-- **SEVERITY**: BLOCK
+<rule id="RULE-014" name="No Stopping in PERSISTENT Mode">
+  <trigger>When task mode is PERSISTENT and considering asking user</trigger>
+  <condition>All completion criteria are MET or tokens exhausted</condition>
+  <action>HALT any question/stopping until criteria met. Auto-continue.</action>
+  <blocked-phrases>
+    <phrase>Shall I continue?</phrase>
+    <phrase>Would you like...</phrase>
+    <phrase>Let me know if...</phrase>
+    <phrase>Should I proceed...</phrase>
+  </blocked-phrases>
+</rule>
 
----
+<rule id="RULE-015" name="Ask Before Migrations and Deployments">
+  <trigger>Before running migration, deployment, or database-altering command</trigger>
+  <condition>User has explicitly approved this specific operation</condition>
+  <action>HALT. Ask user for confirmation before proceeding.</action>
+  <always-ask>
+    <operation>Database migrations (migrate, db push, prisma migrate)</operation>
+    <operation>Database seeding</operation>
+    <operation>Deployments (deploy, publish, release)</operation>
+    <operation>Production operations</operation>
+    <operation>Schema changes</operation>
+  </always-ask>
+</rule>
 
-### RULE-003: Planning Phase Required
-- **ID**: RULE-003
-- **TRIGGER**: Before spawning any agent
-- **CONDITION**: workspace/[task-id]/context.md exists with Plan section populated
-- **ACTION**: HALT. Complete planning phase first.
-- **SEVERITY**: BLOCK
+<rule id="RULE-016" name="Code Critique and Teaching Required">
+  <trigger>When any agent produces code changes in output</trigger>
+  <condition>Output includes BOTH Self-Critique AND Teaching sections</condition>
+  <action>Reject output, request agent re-do with both sections</action>
+  <required-critique ref="knowledge/code-critique.md">
+    <field>Line-by-line review table</field>
+    <field>Assumptions documented</field>
+    <field>Edge cases not covered</field>
+    <field>Trade-offs accepted</field>
+  </required-critique>
+  <required-teaching ref="knowledge/code-teaching.md">
+    <field>Why this approach (not just what)</field>
+    <field>Alternatives considered and rejected</field>
+    <field>Key concepts/patterns applied</field>
+    <field>What user should learn</field>
+    <field>Questions to deepen understanding</field>
+  </required-teaching>
+  <applies-to>
+    <agent>debug-agent</agent>
+    <agent>workflow-agent</agent>
+    <agent>refactor-agent</agent>
+    <agent>test-agent</agent>
+    <agent>ui-agent</agent>
+    <agent>architect-agent</agent>
+  </applies-to>
+</rule>
 
-**Planning Checklist** (ALL 7 domains):
-1. Testing - New code, behavior changes, bug fixes?
-2. Documentation - API changes, config changes, user features?
-3. Security - Auth, user input, sensitive data, DB queries?
-4. Architecture - New component, design decisions, integrations?
-5. Performance - Large loops, DB queries, caching, hot paths?
-6. Review - Code changes ready for merge?
-7. Clarity - Vague request, missing acceptance criteria?
+<rule id="RULE-017" name="Coding Standards Compliance Required">
+  <trigger>When any agent produces code changes in output</trigger>
+  <condition>Output includes Standards Compliance Check section</condition>
+  <action>Verify SOLID, metrics, patterns; spawn standards-validator-agent if issues</action>
+  <solid-checks ref="knowledge/coding-standards.md">
+    <check id="SRP">Each class has one reason to change</check>
+    <check id="OCP">Extend without modifying existing code</check>
+    <check id="LSP">Subtypes substitutable for base types</check>
+    <check id="ISP">Small, focused interfaces</check>
+    <check id="DIP">Depend on abstractions</check>
+  </solid-checks>
+  <metrics>
+    <metric name="Cyclomatic complexity" max="10" unit="per method"/>
+    <metric name="Method length" max="40" unit="lines"/>
+    <metric name="Class length" max="300" unit="lines"/>
+    <metric name="Parameter count" max="4"/>
+    <metric name="Nesting depth" max="3"/>
+  </metrics>
+  <verdicts>
+    <verdict value="PASS">Proceed to COMPLETE</verdict>
+    <verdict value="PASS_WITH_WARNINGS">Proceed, note for future</verdict>
+    <verdict value="FAIL">Must fix before COMPLETE</verdict>
+  </verdicts>
+  <applies-to>
+    <agent>debug-agent</agent>
+    <agent>workflow-agent</agent>
+    <agent>refactor-agent</agent>
+    <agent>test-agent</agent>
+    <agent>ui-agent</agent>
+    <agent>architect-agent</agent>
+    <agent>standards-validator-agent</agent>
+  </applies-to>
+</rule>
 
----
+</rules>
 
-### RULE-004: Agent Status Validation
-- **ID**: RULE-004
-- **TRIGGER**: After any agent completes
-- **CONDITION**: Agent output contains Status: COMPLETE | BLOCKED | NEEDS_INPUT
-- **ACTION**: HALT. Request status if missing. Do not proceed without it.
-- **SEVERITY**: BLOCK
+<rules severity="WARN">
 
-**Status Handling**:
-- COMPLETE → Continue to next step
-- BLOCKED → Resolve blocker before continuing
-- NEEDS_INPUT → Get user clarification
+<rule id="RULE-006" name="Research Agent for Research Tasks">
+  <trigger>Task involves web search, fact verification, external info</trigger>
+  <condition>research-agent spawned (not direct WebSearch/WebFetch)</condition>
+  <action>Log warning. Consider spawning research-agent.</action>
+</rule>
 
----
+<rule id="RULE-007" name="Security Agent for Security Tasks">
+  <trigger>Task involves auth, user input, sensitive data, DB queries</trigger>
+  <condition>security-agent spawned or explicitly consulted</condition>
+  <action>Log warning. Add security-agent to plan.</action>
+  <triggers-list>
+    <item>Authentication/authorization</item>
+    <item>User input handling</item>
+    <item>Sensitive data processing</item>
+    <item>Database queries</item>
+    <item>HTTP requests to external services</item>
+    <item>File system operations</item>
+    <item>Payment processing</item>
+  </triggers-list>
+</rule>
 
-### RULE-005: Context Logging Required
-- **ID**: RULE-005
-- **TRIGGER**: After any agent action or orchestrator decision
-- **CONDITION**: workspace/[task-id]/context.md updated with contribution
-- **ACTION**: HALT. Update context.md before continuing.
-- **SEVERITY**: BLOCK
-
-**Required Log Fields**:
-- Agent name and timestamp
-- Task assigned
-- Status returned
-- Key findings
-- Handoff notes
-
----
-
-### RULE-010: Playwright MCP Tool Usage Required
-- **ID**: RULE-010
-- **TRIGGER**: When using Playwright for browser interaction
-- **CONDITION**: Using mcp__playwright_* tools directly (NOT writing code)
-- **ACTION**: HALT. Use MCP tools instead of writing Playwright code.
-- **SEVERITY**: BLOCK
-
-**Required Tools**:
-- mcp__playwright_browser_navigate
-- mcp__playwright_browser_click
-- mcp__playwright_browser_type
-- mcp__playwright_browser_snapshot
-
----
-
-### RULE-012: Self-Reflection Required
-- **ID**: RULE-012
-- **TRIGGER**: Before any agent reports COMPLETE status
-- **CONDITION**: Agent has performed self-reflection checklist
-- **ACTION**: HALT. Run self-reflection, include confidence level.
-- **SEVERITY**: BLOCK
-
-**Required Output**:
-- Confidence: HIGH | MEDIUM | LOW
-- Confidence Reasoning: 1-2 sentences
-
----
-
-### RULE-014: No Stopping in PERSISTENT Mode
-- **ID**: RULE-014
-- **TRIGGER**: When task mode is PERSISTENT and considering asking user
-- **CONDITION**: All completion criteria are MET or tokens exhausted
-- **ACTION**: HALT any question/stopping until criteria met. Auto-continue.
-- **SEVERITY**: BLOCK
-
-**Blocked Phrases in PERSISTENT Mode**:
-- "Shall I continue?"
-- "Would you like..."
-- "Let me know if..."
-- "Should I proceed..."
-
----
-
-### RULE-015: Ask Before Migrations and Deployments
-- **ID**: RULE-015
-- **TRIGGER**: Before running migration, deployment, or database-altering command
-- **CONDITION**: User has explicitly approved this specific operation
-- **ACTION**: HALT. Ask user for confirmation before proceeding.
-- **SEVERITY**: BLOCK
-
-**Always Ask Before**:
-- Database migrations (migrate, db push, prisma migrate, etc.)
-- Database seeding
-- Deployments (deploy, publish, release)
-- Production operations
-- Schema changes
-
----
-
-## WARN Severity Rules (Log and Continue)
-
-### RULE-006: Research Agent for Research Tasks
-- **ID**: RULE-006
-- **TRIGGER**: Task involves web search, fact verification, external info
-- **CONDITION**: research-agent spawned (not direct WebSearch/WebFetch)
-- **ACTION**: Log warning. Consider spawning research-agent.
-- **SEVERITY**: WARN
-
----
-
-### RULE-007: Security Agent for Security Tasks
-- **ID**: RULE-007
-- **TRIGGER**: Task involves auth, user input, sensitive data, DB queries
-- **CONDITION**: security-agent spawned or explicitly consulted
-- **ACTION**: Log warning. Add security-agent to plan.
-- **SEVERITY**: WARN
-
-**Triggers**:
-- Authentication/authorization
-- User input handling
-- Sensitive data processing
-- Database queries
-- HTTP requests to external services
-- File system operations
-- Payment processing
-
----
-
-### RULE-008: Token Efficient Agent Spawning
-- **ID**: RULE-008
-- **TRIGGER**: When spawning any agent via Task tool
-- **CONDITION**: Agent prompt instructs to READ files, not paste content
-- **ACTION**: Rewrite prompt to use READ pattern.
-- **SEVERITY**: WARN
-
-**Correct Pattern**:
-```
+<rule id="RULE-008" name="Token Efficient Agent Spawning">
+  <trigger>When spawning any agent via Task tool</trigger>
+  <condition>Agent prompt instructs to READ files, not paste content</condition>
+  <action>Rewrite prompt to use READ pattern.</action>
+  <correct-pattern><![CDATA[
 ## Your Role
 You are [agent-name]. READ agents/[agent-name].md for your definition.
 
 ## Your Knowledge
 READ knowledge/[topic].md for domain expertise.
-```
+  ]]></correct-pattern>
+</rule>
 
----
+<rule id="RULE-009" name="Browser URL Access Policy">
+  <trigger>Before any browser navigation via Playwright MCP</trigger>
+  <condition>URL matches access policy</condition>
+  <action>Ask user before navigating to external URLs.</action>
+  <auto-allowed>
+    <pattern>localhost:*</pattern>
+    <pattern>127.0.0.1:*</pattern>
+    <pattern>b2clogin.com</pattern>
+    <pattern>auth0.com</pattern>
+  </auto-allowed>
+  <requires-permission>
+    <item>Production URLs</item>
+    <item>External domains</item>
+  </requires-permission>
+</rule>
 
-### RULE-009: Browser URL Access Policy
-- **ID**: RULE-009
-- **TRIGGER**: Before any browser navigation via Playwright MCP
-- **CONDITION**: URL matches access policy
-- **ACTION**: Ask user before navigating to external URLs.
-- **SEVERITY**: WARN
+<rule id="RULE-011" name="Windows File Edit Resilience">
+  <trigger>Edit/Write tool fails with "unexpectedly modified" error</trigger>
+  <condition>On Windows platform</condition>
+  <action>Retry with workarounds.</action>
+  <workaround-priority>
+    <step order="1">Use relative paths</step>
+    <step order="2">Read immediately before edit</step>
+    <step order="3">Fall back to Bash commands</step>
+    <step order="4">Create new file + rename</step>
+  </workaround-priority>
+</rule>
 
-**Auto-Allowed**:
-- localhost:*, 127.0.0.1:*
-- OAuth providers (b2clogin.com, auth0.com, etc.)
+<rule id="RULE-013" name="Model Selection for Agents">
+  <trigger>When spawning any agent via Task tool</trigger>
+  <condition>Model explicitly specified AND matches criteria</condition>
+  <action>Apply decision tree, specify model in Task call.</action>
+  <always-opus>
+    <agent>architect-agent</agent>
+    <agent>ticket-analyst-agent</agent>
+    <agent>reviewer-agent</agent>
+  </always-opus>
+  <default>sonnet</default>
+  <opus-escalation-triggers>
+    <trigger>4+ domains in Planning Checklist</trigger>
+    <trigger>10+ subtasks identified</trigger>
+    <trigger>Production/payment/auth code</trigger>
+    <trigger>Agent reports LOW confidence or BLOCKED</trigger>
+  </opus-escalation-triggers>
+</rule>
 
-**Requires Permission**:
-- Production URLs
-- External domains
+<rule id="RULE-018" name="Parallel Agent Limits">
+  <trigger>Before spawning 2+ agents in parallel</trigger>
+  <condition>Context usage allows parallel execution</condition>
+  <action>Check context, batch if needed, compact between batches</action>
+  <escalates-to>BLOCK if context exhaustion occurs</escalates-to>
+  <context-thresholds>
+    <threshold usage="< 50%" max-parallel="3">Proceed normally</threshold>
+    <threshold usage="50-75%" max-parallel="2">Consider /compact first</threshold>
+    <threshold usage="> 75%" max-parallel="1">Run sequentially, no parallel</threshold>
+  </context-thresholds>
+  <batching-protocol>
+    <step order="1">Split into batches of 3 agents max</step>
+    <step order="2">Run Batch 1 → Wait → Update context.md</step>
+    <step order="3">Run /compact with progress preservation</step>
+    <step order="4">Run Batch 2 → Wait → Update</step>
+    <step order="5">Repeat until all batches complete</step>
+    <step order="6">Synthesize final results</step>
+  </batching-protocol>
+  <token-estimation>
+    <item tokens="500-1000">Agent spawn prompt</item>
+    <item tokens="1000-2000">Agent output (simple)</item>
+    <item tokens="2000-5000">Agent output (with code)</item>
+    <item tokens="1000-3000">File read</item>
+  </token-estimation>
+  <ref>knowledge/memory-management.md</ref>
+</rule>
 
----
+</rules>
 
-### RULE-011: Windows File Edit Resilience
-- **ID**: RULE-011
-- **TRIGGER**: Edit/Write tool fails with "unexpectedly modified" error
-- **CONDITION**: On Windows platform
-- **ACTION**: Retry with workarounds.
-- **SEVERITY**: WARN
+<quick-compliance-check>
+  <check rule="RULE-001">Am I editing code without an agent?</check>
+  <check rule="RULE-002">Multi-step task without TodoWrite?</check>
+  <check rule="RULE-003">Spawning agent without planning?</check>
+  <check rule="RULE-004">Agent missing status field?</check>
+  <check rule="RULE-005">Did I update context.md?</check>
+  <check rule="RULE-006">Research task without research-agent?</check>
+  <check rule="RULE-007">Security task without security-agent?</check>
+  <check rule="RULE-016">Code changes without critique/teaching?</check>
+  <check rule="RULE-017">Code changes without standards compliance?</check>
+  <check rule="RULE-018">Spawning 4+ agents without batching?</check>
+</quick-compliance-check>
 
-**Workaround Priority**:
-1. Use relative paths
-2. Read immediately before edit
-3. Fall back to Bash commands
-4. Create new file + rename
-
----
-
-### RULE-013: Model Selection for Agents
-- **ID**: RULE-013
-- **TRIGGER**: When spawning any agent via Task tool
-- **CONDITION**: Model explicitly specified AND matches criteria
-- **ACTION**: Apply decision tree, specify model in Task call.
-- **SEVERITY**: WARN
-
-**Always Opus**:
-- architect-agent
-- ticket-analyst-agent
-- reviewer-agent
-
-**Default Sonnet**: All other agents
-
-**Opus Escalation Triggers**:
-- 4+ domains in Planning Checklist
-- 10+ subtasks identified
-- Production/payment/auth code
-- Agent reports LOW confidence or BLOCKED
-
----
-
-### RULE-016: Code Critique & Teaching Required
-- **ID**: RULE-016
-- **TRIGGER**: When any agent produces code changes in output
-- **CONDITION**: Output includes BOTH Self-Critique AND Teaching sections
-- **ACTION**: Reject output, request agent re-do with both sections
-- **SEVERITY**: BLOCK
-
-**Required Self-Critique** (see `knowledge/code-critique.md`):
-- Line-by-line review table
-- Assumptions documented
-- Edge cases not covered
-- Trade-offs accepted
-
-**Required Teaching** (see `knowledge/code-teaching.md`):
-- Why this approach (not just what)
-- Alternatives considered and rejected
-- Key concepts/patterns applied
-- What user should learn
-- Questions to deepen understanding
-
-**Applies to agents**:
-- debug-agent (bug fixes)
-- workflow-agent (implementations)
-- refactor-agent (refactoring)
-- test-agent (test code)
-- ui-agent (UI components)
-- architect-agent (architecture examples)
-
----
-
-### RULE-017: Coding Standards Compliance Required
-- **ID**: RULE-017
-- **TRIGGER**: When any agent produces code changes in output
-- **CONDITION**: Output includes Standards Compliance Check section
-- **ACTION**: Verify SOLID, metrics, patterns; spawn standards-validator-agent if issues
-- **SEVERITY**: BLOCK
-
-**Required Standards Compliance** (see `knowledge/coding-standards.md`):
-
-**SOLID Principles**:
-- Single Responsibility: Each class has one reason to change
-- Open/Closed: Extend without modifying existing code
-- Liskov Substitution: Subtypes substitutable for base types
-- Interface Segregation: Small, focused interfaces
-- Dependency Inversion: Depend on abstractions
-
-**Code Metrics**:
-- Cyclomatic complexity ≤ 10 per method
-- Method length ≤ 40 lines
-- Class length ≤ 300 lines
-- Parameter count ≤ 4
-- Nesting depth ≤ 3
-
-**Design Patterns** (if applicable):
-- Pattern choice is justified
-- Pattern is correctly implemented
-- No anti-patterns present
-
-**OOP Best Practices**:
-- Composition preferred over deep inheritance
-- Encapsulation maintained
-- High cohesion within classes
-- Low coupling between classes
-
-**Output Must Include**:
-```markdown
-## Standards Compliance Check
-
-### SOLID Principles
-- [ ] SRP: [status]
-- [ ] OCP: [status]
-- [ ] LSP: [status]
-- [ ] ISP: [status]
-- [ ] DIP: [status]
-
-### Code Metrics
-- [ ] Complexity ≤ 10: [status]
-- [ ] Method ≤ 40 lines: [status]
-- [ ] Class ≤ 300 lines: [status]
-
-### Violations Found
-| Principle | Location | Issue | Severity |
-|-----------|----------|-------|----------|
-
-### Fixes Applied
-[How violations were addressed]
-```
-
-**Verdicts**:
-- PASS → Proceed to COMPLETE
-- PASS_WITH_WARNINGS → Proceed, note for future
-- FAIL → Must fix before COMPLETE
-
-**Applies to agents**:
-- debug-agent (bug fixes)
-- workflow-agent (implementations)
-- refactor-agent (refactoring)
-- test-agent (test code)
-- ui-agent (UI components)
-- architect-agent (architecture examples)
-- standards-validator-agent (explicit validation)
-
----
-
-### RULE-018: Parallel Agent Limits
-- **ID**: RULE-018
-- **TRIGGER**: Before spawning 2+ agents in parallel
-- **CONDITION**: Context usage allows parallel execution
-- **ACTION**: Check context, batch if needed, compact between batches
-- **SEVERITY**: WARN (escalate to BLOCK if context exhaustion occurs)
-
-**Context Thresholds**:
-| Context Used | Max Parallel | Action |
-|--------------|--------------|--------|
-| < 50% | 3 agents max | Proceed normally |
-| 50-75% | 2 agents max | Consider /compact first |
-| > 75% | 1 agent only | Run sequentially, no parallel |
-
-**Batching Protocol** (for 4+ agents):
-1. Split into batches of 3 agents max
-2. Run Batch 1 → Wait for completion → Update context.md
-3. Run /compact with progress preservation
-4. Run Batch 2 → Wait → Update
-5. Repeat until all batches complete
-6. Synthesize final results
-
-**Emergency Recovery** (if /compact fails):
-1. Press Esc twice to go back in conversation
-2. Delete large agent output messages
-3. Retry /compact with context hints
-4. Resume from context.md state
-5. Switch to sequential agents
-
-**Token Estimation Guide**:
-| Item | ~Tokens |
-|------|---------|
-| Agent spawn prompt | 500-1000 |
-| Agent output (simple) | 1000-2000 |
-| Agent output (with code) | 2000-5000 |
-| File read | 1000-3000 |
-
-**Rule of thumb**: 4+ parallel agents with code ≈ 20K-30K tokens ≈ context limit
-
-See `knowledge/memory-management.md` for full protocol.
-
----
-
-## Quick Compliance Check
-
-Before any action, ask:
-1. Am I editing code without an agent? → RULE-001
-2. Multi-step task without TodoWrite? → RULE-002
-3. Spawning agent without planning? → RULE-003
-4. Agent missing status field? → RULE-004
-5. Did I update context.md? → RULE-005
-6. Research task without research-agent? → RULE-006
-7. Security task without security-agent? → RULE-007
-8. Code changes without critique/teaching? → RULE-016
-9. Code changes without standards compliance? → RULE-017
-10. Spawning 4+ agents without batching? → RULE-018
+</knowledge-base>
