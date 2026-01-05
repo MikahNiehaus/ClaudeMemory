@@ -6,6 +6,71 @@ TRIGGER: security, vulnerability, OWASP, injection, XSS, authentication, authori
 
 This guide covers secure coding practices, vulnerability prevention, and security review methodology. Fixing vulnerabilities early (during development) costs up to 100x less than fixing them in production.
 
+---
+
+## CIA Triad
+
+The foundation of ALL security decisions. Every security-related explanation must reference CIA.
+
+```
++================================================================+
+|                        CIA TRIAD                                |
++================================================================+
+|                                                                 |
+|  +------------------+  +------------------+  +------------------+
+|  | CONFIDENTIALITY  |  |    INTEGRITY     |  |  AVAILABILITY   |
+|  +------------------+  +------------------+  +------------------+
+|  |                  |  |                  |  |                  |
+|  | Protect data     |  | Ensure data      |  | Ensure system   |
+|  | from unauthorized|  | accuracy and     |  | accessible when |
+|  | access           |  | trustworthiness  |  | needed          |
+|  |                  |  |                  |  |                  |
+|  +------------------+  +------------------+  +------------------+
+|                                                                 |
++================================================================+
+```
+
+### CIA Decision Questions
+
+| Aspect | Key Questions | Common Controls |
+|--------|---------------|-----------------|
+| **Confidentiality** | Who can see this data? Is it encrypted at rest? In transit? Are access logs kept? | Encryption, access controls, data classification |
+| **Integrity** | Can this be tampered with? Is it signed/validated? Are changes tracked? Who can modify? | Hashing, digital signatures, audit logs, checksums |
+| **Availability** | What if this fails? Is there redundancy? What's the recovery time? Rate limiting? | Redundancy, backups, failover, load balancing |
+
+### CIA Impact Template
+
+When documenting security decisions, include:
+
+```
++------------------------------------------+
+|           SECURITY DECISION               |
++------------------------------------------+
+| Confidentiality: [measures taken]         |
+| Integrity: [validation/signing]           |
+| Availability: [redundancy/failover]       |
++------------------------------------------+
+```
+
+### CIA + OWASP Mapping
+
+| OWASP Risk | Primary CIA Impact |
+|------------|-------------------|
+| A01 Broken Access Control | Confidentiality |
+| A02 Security Misconfiguration | All three |
+| A03 Injection | Integrity, Confidentiality |
+| A04 Insecure Design | All three |
+| A05 Logging Failures | Integrity (audit trail) |
+| A06 Vulnerable Components | All three |
+| A07 Auth Failures | Confidentiality |
+| A08 Data Integrity Failures | Integrity |
+| A09 SSRF | Confidentiality |
+| A10 Exception Handling | Availability |
+
+**RULE-021 Requirement**: All security explanations by orchestrator MUST include CIA impact analysis.
+
+---
+
 ## OWASP Top 10 2025
 
 The OWASP Top 10 represents the most critical web application security risks:

@@ -31,7 +31,6 @@ Quick reference for routing:
 - **ticket-analyst-agent**: Requirements, scope
 - **browser-agent**: Interactive browser testing, Playwright MCP
 - **evaluator-agent**: Output verification, quality gate
-- **teacher-agent**: Learning assistance, Socratic tutoring
 
 ## MANDATORY COMPLIANCE CHECKLIST
 
@@ -255,6 +254,98 @@ Apply these to ensure quality decomposition:
 │ 6. Proceed to next subtask or synthesize results        │
 └─────────────────────────────────────────────────────────┘
 ```
+
+---
+
+## ORCHESTRATION STRATEGY PROTOCOL (RULE-022)
+
+Before spawning agents, I design the OPTIMAL orchestration strategy for the best possible results.
+
+### Strategy Template (Required in context.md)
+
+```markdown
+## Orchestration Strategy
+
+### 1. Agent Selection Optimization
+| Agent | Needed? | Reason | Model |
+|-------|---------|--------|-------|
+| [agent] | YES/NO | [why optimal or not] | opus/sonnet |
+
+### 2. Sequence Optimization
+- Pattern: [Sequential | Parallel | Hybrid]
+- Critical Path: [agent] → [agent] → [agent]
+- Parallelizable: [agent] + [agent]
+- Bottleneck: [what limits speed]
+
+### 3. Quality Maximization
+- [ ] evaluator-agent after: [which step]
+- [ ] standards-validator-agent after: [which step]
+- [ ] reviewer-agent (Opus) final check: YES/NO
+
+### 4. Efficiency Optimization
+- Context usage estimate: [%]
+- Batching needed: YES/NO
+- /compact before execution: YES/NO
+```
+
+### Optimization Questions (Answer BEFORE Spawning)
+
+1. **"What agent combination produces the BEST result?"** (not just acceptable)
+2. **"What sequence maximizes output quality?"**
+3. **"Where are the quality gates that prevent rework?"**
+4. **"How do I get Opus-level quality on critical decisions?"**
+
+### Quality Gate Placement Patterns
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│              OPTIMAL QUALITY GATE PLACEMENT                 │
+├─────────────────────────────────────────────────────────────┤
+│                                                             │
+│  DESIGN PHASE:                                              │
+│  architect-agent (Opus) → standards-validator-agent         │
+│                                                             │
+│  IMPLEMENTATION PHASE:                                      │
+│  [impl-agent] → evaluator-agent → [next step or fix]        │
+│                                                             │
+│  FINAL PHASE:                                               │
+│  reviewer-agent (Opus) → COMPLETE                           │
+│                                                             │
+│  HIGH-RISK TASKS (auth, payments, data):                    │
+│  security-agent → [impl] → security-agent (re-verify)       │
+│                                                             │
+└─────────────────────────────────────────────────────────────┘
+```
+
+### Model Selection Matrix
+
+| Task Type | Use Opus | Use Sonnet | Rationale |
+|-----------|----------|------------|-----------|
+| Architecture decisions | Always | Never | Design cascades everywhere |
+| Requirements analysis | Always | Never | Wrong understanding = wrong result |
+| Final code review | Always | Never | Last quality gate |
+| Implementation | If complex | Default | Balance cost/quality |
+| Documentation | Never | Always | Straightforward task |
+| Testing | Edge cases | Default | Complex scenarios need reasoning |
+| Exploration | Never | Always | Reading/searching task |
+
+### Parallel vs Sequential Decision
+
+```
+Use PARALLEL when:
+├── Tasks are independent
+├── No data dependencies
+├── Context allows (< 50% used)
+└── Example: security + test + performance audits
+
+Use SEQUENTIAL when:
+├── Output of A needed by B
+├── Design before implementation
+├── Review after changes
+└── Example: architect → workflow → test → review
+```
+
+**Cannot spawn agents until orchestration strategy documented in context.md.**
 
 ---
 
