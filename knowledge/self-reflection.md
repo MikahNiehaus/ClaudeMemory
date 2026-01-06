@@ -1,166 +1,94 @@
 # Agent Self-Reflection Protocol
 
-TRIGGER: reflection, confidence, verify, check output, hallucination, accuracy
+<knowledge-base name="self-reflection" version="1.0">
+<triggers>reflection, confidence, verify, check output, hallucination, accuracy</triggers>
+<overview>Self-reflection is critical before finalizing output. Research shows "all types of self-reflection improve LLM agent performance" and helps catch hallucinations.</overview>
 
-## Overview
+<when-to-reflect>ALWAYS - before producing any final output</when-to-reflect>
 
-Self-reflection is a critical step that all agents MUST perform before finalizing output. Research shows "all types of self-reflection improve performance of LLM agents" and helps catch hallucinations and errors.
+<self-reflection-checklist>
+  <check name="Task Alignment">
+    <item>Does output address the ACTUAL task requested?</item>
+    <item>Have I stayed within my domain scope?</item>
+    <item>Did I answer what was asked, not assumed?</item>
+  </check>
+  <check name="Assumption Check">
+    <item>What assumptions have I made?</item>
+    <item>Are any assumptions unverified?</item>
+    <item>Should I state assumptions explicitly?</item>
+  </check>
+  <check name="Error Analysis">
+    <item>What could be wrong with my analysis?</item>
+    <item>What edge cases might I have missed?</item>
+    <item>Would a senior engineer spot issues?</item>
+  </check>
+  <check name="Completeness Check">
+    <item>Have I addressed all parts of request?</item>
+    <item>Are there gaps in my response?</item>
+    <item>Did I forget required output sections?</item>
+  </check>
+</self-reflection-checklist>
 
-## When to Self-Reflect
+<confidence-assessment>
+  <level name="HIGH" criteria="All assertions verified, sources checked, no significant assumptions" action="Proceed with COMPLETE"/>
+  <level name="MEDIUM" criteria="Some unverified assumptions, minor uncertainty" action="Note assumptions in handoff"/>
+  <level name="LOW" criteria="Significant uncertainty, guessing required" action="Consider NEEDS_INPUT instead"/>
+</confidence-assessment>
 
-**ALWAYS** - before producing any final output, run through this checklist.
-
-## Self-Reflection Checklist
-
-### 1. Task Alignment
-- Does my output address the ACTUAL task requested?
-- Have I stayed within my domain scope?
-- Did I answer what was asked, not what I assumed was asked?
-
-### 2. Assumption Check
-- What assumptions have I made?
-- Are any assumptions unverified?
-- Should I state assumptions explicitly in my output?
-
-### 3. Error Analysis
-- What could be wrong with my analysis?
-- What edge cases might I have missed?
-- Would a senior engineer spot any issues?
-
-### 4. Completeness Check
-- Have I addressed all parts of the request?
-- Are there any gaps in my response?
-- Did I forget any required output sections?
-
-### 5. Confidence Assessment
-
-| Level | Criteria | Action |
-|-------|----------|--------|
-| **HIGH** | All assertions verified, sources checked, no significant assumptions | Proceed with COMPLETE |
-| **MEDIUM** | Some unverified assumptions, minor uncertainty | Note assumptions in handoff |
-| **LOW** | Significant uncertainty, guessing required | Consider NEEDS_INPUT instead |
-
-## Required Output Format
-
-Every agent status MUST include confidence:
-
-```markdown
+<required-output-format><![CDATA[
 ## Agent Status
-
 **Status**: [COMPLETE | BLOCKED | NEEDS_INPUT]
 **Confidence**: [HIGH | MEDIUM | LOW]
 **Confidence Reasoning**: [1-2 sentences explaining why]
-```
+]]></required-output-format>
 
-## Rules
+<rules>
+  <rule>LOW confidence + critical task → Report NEEDS_INPUT, not COMPLETE</rule>
+  <rule>If errors found during reflection → FIX before finalizing</rule>
+  <rule>Confidence without reasoning = invalid output</rule>
+  <rule>Never skip self-reflection for "simple" tasks</rule>
+</rules>
 
-1. **LOW confidence + critical task → Report NEEDS_INPUT**, not COMPLETE
-2. **If you find errors during reflection → FIX** before finalizing
-3. **Confidence without reasoning = invalid output**
-4. **Never skip self-reflection** for "simple" tasks
+<anti-hallucination-patterns>
+  <pattern name="Source Verification">
+    <check>Did I cite specific file paths and line numbers?</check>
+    <check>Did I verify by reading actual source?</check>
+    <check>Am I stating facts or making inferences?</check>
+  </pattern>
+  <pattern name="Uncertainty Expression">
+    <rule>Use "likely", "possibly", "based on X" when uncertain</rule>
+    <rule>Never state uncertain things as facts</rule>
+    <rule>Clearly mark inferences vs observations</rule>
+  </pattern>
+  <pattern name="Knowledge Boundaries">
+    <check>Am I operating within training knowledge?</check>
+    <check>Should I recommend web research?</check>
+    <check>Am I making up details I don't know?</check>
+  </pattern>
+</anti-hallucination-patterns>
 
-## Anti-Hallucination Patterns
+<model-selection>
+  <model name="Opus 4.5" strength="Deep reasoning, complex analysis" cost="$5/$25">
+    <use-for>Architecture decisions, complex bug analysis, final code review</use-for>
+  </model>
+  <model name="Sonnet 4.5" strength="Balanced intelligence, coding" cost="$3/$15">
+    <use-for>Standard development, frontend/UI, research synthesis</use-for>
+  </model>
+  <model name="Haiku 4.5" strength="Speed, high-volume tasks" cost="$1/$5">
+    <use-for>Parallel subtasks, quick exploration, high-volume validation</use-for>
+  </model>
+  <orchestration-pattern>
+    <step>Sonnet creates plan and decomposes</step>
+    <step>Haiku instances execute subtasks in parallel</step>
+    <step>Opus reviews critical/complex results</step>
+  </orchestration-pattern>
+</model-selection>
 
-### Pattern 1: Source Verification
-- Did I cite specific file paths and line numbers?
-- Did I verify the information by reading the actual source?
-- Am I stating facts or making inferences?
+<context-length-guidance>
+  <scenario tokens="&lt;10K">Any model suitable</scenario>
+  <scenario tokens="10K-50K">Sonnet preferred</scenario>
+  <scenario tokens=">50K">Sonnet or Opus (Haiku "loses track fast")</scenario>
+  <scenario tokens=">200K">Sonnet with 1M context beta</scenario>
+</context-length-guidance>
 
-### Pattern 2: Uncertainty Expression
-- Use "likely", "possibly", "based on X" when uncertain
-- Never state uncertain things as facts
-- Clearly mark inferences vs observations
-
-### Pattern 3: Knowledge Boundaries
-- Am I operating within my training knowledge?
-- Should I recommend web research for current information?
-- Am I making up details I don't actually know?
-
-## Integration with Agent Output
-
-Reference this file from `agents/_shared-output.md`:
-- Behavioral Guideline #9: Self-reflect before finalizing
-- Behavioral Guideline #10: Report confidence level
-
-## Examples
-
-### Good Self-Reflection
-```markdown
-## Self-Reflection
-
-### Task Alignment
-- Task asked to find authentication bugs
-- I reviewed auth files and identified 3 potential issues
-- Stayed within security domain scope
-
-### Assumption Check
-- Assumed JWT tokens are used (verified in config.ts:45)
-- Assumed standard OWASP patterns apply
-- Should verify: is rate limiting required?
-
-### Error Analysis
-- Might have missed auth flows in newer modules
-- Should grep for additional auth patterns
-
-### Confidence Assessment
-**Confidence**: MEDIUM
-**Reasoning**: Found clear issues but only reviewed 4 of 12 auth-related files
-```
-
-### Bad Self-Reflection (Missing Reasoning)
-```markdown
-## Self-Reflection
-
-**Confidence**: HIGH
-```
-This is invalid - confidence must have reasoning.
-
----
-
-## Model Selection Guidance
-
-Different models are suited for different tasks. Claude 4 models form a tiered, interconnected family designed for orchestrated agentic work.
-
-### Model Characteristics
-
-| Model | Strength | Context | Cost ($/M tokens) |
-|-------|----------|---------|-------------------|
-| **Opus 4.5** | Deep reasoning, complex analysis | 200K | $5/$25 |
-| **Sonnet 4.5** | Balanced intelligence, coding | 200K (1M beta) | $3/$15 |
-| **Haiku 4.5** | Speed, high-volume tasks | 200K | $1/$5 |
-
-### When to Use Each Model
-
-| Use Case | Model | Rationale |
-|----------|-------|-----------|
-| Architecture decisions | Opus | Deep reasoning needed |
-| Complex bug analysis | Opus | Multi-step investigation |
-| Final code review (pre-merge) | Opus | Catches subtle bugs |
-| Standard development tasks | Sonnet | Best balance of capability/cost |
-| Frontend/UI implementation | Sonnet | Excels at pixel-perfect layouts |
-| Research synthesis | Sonnet | Good at combining sources |
-| Parallel subtask execution | Haiku | Fast, cost-effective at scale |
-| Quick file exploration | Haiku | Speed matters more than depth |
-| High-volume validation | Haiku | 90% of Sonnet performance, 5x speed |
-
-### Orchestration Pattern
-
-The recommended pattern for complex tasks:
-1. **Sonnet** creates plan and decomposes into subtasks
-2. **Haiku** instances execute subtasks in parallel
-3. **Opus** reviews critical/complex results
-
-### Context Length Considerations
-
-| Scenario | Recommendation |
-|----------|---------------|
-| Short conversation (<10K tokens) | Any model suitable |
-| Medium (10K-50K tokens) | Sonnet preferred |
-| Long session (>50K tokens) | Sonnet or Opus (Haiku "loses track fast") |
-| Ultra-long (>200K tokens) | Sonnet with 1M context beta |
-
-When spawning agents, orchestrator should specify model based on:
-1. Task complexity (simple → haiku, complex → opus)
-2. Required depth (shallow → haiku, deep → opus)
-3. Session length (short → any, long → sonnet/opus)
-4. Cost sensitivity (budget-constrained → haiku)
+</knowledge-base>

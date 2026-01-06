@@ -180,6 +180,47 @@
   </applies-to>
 </rule>
 
+<rule id="RULE-022" name="Mandatory Best Practices Review">
+  <trigger>When reviewer-agent or any agent performs code review</trigger>
+  <condition>Review output includes Best Practices Assessment section</condition>
+  <action>Reject review, require Best Practices Assessment with all subsections</action>
+  <required-subsections>
+    <subsection name="SOLID Compliance">
+      <check id="SRP">Single responsibility verified</check>
+      <check id="OCP">Open/closed verified</check>
+      <check id="LSP">Liskov substitution verified</check>
+      <check id="ISP">Interface segregation verified</check>
+      <check id="DIP">Dependency inversion verified</check>
+    </subsection>
+    <subsection name="GoF Patterns">
+      <check>Patterns identified and validated</check>
+      <check>Anti-patterns flagged</check>
+    </subsection>
+    <subsection name="OOP Best Practices">
+      <check>Composition over inheritance</check>
+      <check>Encapsulation maintained</check>
+      <check>Cohesion/coupling assessed</check>
+    </subsection>
+    <subsection name="Clean Code">
+      <check>Naming conventions</check>
+      <check>Function single responsibility</check>
+      <check>No magic numbers</check>
+      <check>DRY principle</check>
+    </subsection>
+    <subsection name="Metrics">
+      <check>Complexity ≤ 10</check>
+      <check>Method length ≤ 40</check>
+      <check>Class length ≤ 300</check>
+    </subsection>
+  </required-subsections>
+  <verdict-required>PASS | PASS_WITH_WARNINGS | FAIL</verdict-required>
+  <applies-to>
+    <agent>reviewer-agent</agent>
+    <agent>architect-agent</agent>
+    <agent>standards-validator-agent</agent>
+  </applies-to>
+</rule>
+
 </rules>
 
 <rules severity="WARN">

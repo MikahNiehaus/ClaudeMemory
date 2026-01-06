@@ -1,80 +1,72 @@
 # Code Self-Critique Protocol
 
-TRIGGER: critique, self-review, code review, line-by-line, assumptions, edge cases, trade-offs
+<knowledge-base name="code-critique" version="1.0">
+<triggers>critique, self-review, code review, line-by-line, assumptions, edge cases, trade-offs</triggers>
+<overview>Every agent that produces code changes MUST self-critique before finalizing. Ensures quality and surfaces issues before they become problems.</overview>
 
-## Overview
+<when-to-critique>
+  <trigger>After writing ANY code (new functions, bug fixes, refactors)</trigger>
+  <trigger>Before reporting COMPLETE status</trigger>
+  <trigger>Before handing off to another agent</trigger>
+</when-to-critique>
 
-Every agent that produces code changes MUST self-critique before finalizing. This ensures code quality and surfaces issues before they become problems.
+<line-by-line-checklist>
+  <category name="Purpose">
+    <check>Does this line serve a clear, necessary purpose?</check>
+    <check>Could this be removed without breaking functionality?</check>
+    <check>Is the intent clear to someone reading it for the first time?</check>
+  </category>
+  <category name="Simplicity">
+    <check>Is there a simpler way to achieve this?</check>
+    <check>Am I over-engineering this?</check>
+    <check>Would a built-in function/library handle this better?</check>
+  </category>
+  <category name="Correctness">
+    <check>What assumptions does this line make?</check>
+    <check>What inputs would break this?</check>
+    <check>Are edge cases handled (null, empty, negative, overflow)?</check>
+  </category>
+  <category name="Abstraction">
+    <check>Is this the right abstraction level?</check>
+    <check>Should this be extracted into a separate function?</check>
+    <check>Is this too generic or too specific?</check>
+  </category>
+  <category name="Safety">
+    <check>Could this cause a security vulnerability?</check>
+    <check>Is user input properly validated/sanitized?</check>
+    <check>Are errors handled appropriately?</check>
+  </category>
+</line-by-line-checklist>
 
-## When to Critique
+<required-output-sections>
+  <section name="Line-by-Line Review Table">
+    <column>Line/Block</column>
+    <column>Purpose</column>
+    <column>Critique</column>
+    <column>Fix Applied</column>
+  </section>
 
-- After writing ANY code (new functions, bug fixes, refactors)
-- Before reporting COMPLETE status
-- Before handing off to another agent
+  <section name="Assumptions Made">
+    <item>Data format assumptions</item>
+    <item>Environment assumptions</item>
+    <item>Caller behavior assumptions</item>
+    <item>State assumptions</item>
+  </section>
 
-## Line-by-Line Review Checklist
+  <section name="Edge Cases Not Covered">
+    <item>Why not handled (out of scope, rare, acceptable risk)</item>
+    <item>What would happen if that edge case occurred</item>
+  </section>
 
-For each significant line or block added, ask:
+  <section name="Trade-offs Accepted">
+    <item>Readability vs performance</item>
+    <item>Simplicity vs flexibility</item>
+    <item>Speed vs thoroughness</item>
+    <item>Memory vs CPU</item>
+  </section>
+</required-output-sections>
 
-### Purpose
-- [ ] Does this line serve a clear, necessary purpose?
-- [ ] Could this be removed without breaking functionality?
-- [ ] Is the intent clear to someone reading it for the first time?
-
-### Simplicity
-- [ ] Is there a simpler way to achieve this?
-- [ ] Am I over-engineering this?
-- [ ] Would a built-in function/library handle this better?
-
-### Correctness
-- [ ] What assumptions does this line make?
-- [ ] What inputs would break this?
-- [ ] Are edge cases handled (null, empty, negative, overflow)?
-
-### Abstraction
-- [ ] Is this the right abstraction level?
-- [ ] Should this be extracted into a separate function?
-- [ ] Is this too generic or too specific?
-
-### Safety
-- [ ] Could this cause a security vulnerability?
-- [ ] Is user input properly validated/sanitized?
-- [ ] Are errors handled appropriately?
-
-## What to Document
-
-Your self-critique output MUST include:
-
-### 1. Line-by-Line Review Table
-
-```markdown
-| Line/Block | Purpose | Critique | Fix Applied |
-|------------|---------|----------|-------------|
-| `[code snippet]` | [why it exists] | [issue found or "Sound"] | [fix applied or "None"] |
-```
-
-### 2. Assumptions Made
-List every assumption your code relies on:
-- Data format assumptions
-- Environment assumptions
-- Caller behavior assumptions
-- State assumptions
-
-### 3. Edge Cases Not Covered
-Be honest about what's NOT handled:
-- Why it's not handled (out of scope, rare, acceptable risk)
-- What would happen if that edge case occurred
-
-### 4. Trade-offs Accepted
-Document what you sacrificed for what gain:
-- Readability vs performance
-- Simplicity vs flexibility
-- Speed vs thoroughness
-- Memory vs CPU
-
-## Example Good Critique
-
-```markdown
+<example type="good"><![CDATA[
 ## Self-Critique
 
 | Code | Purpose | Critique | Fix Applied |
@@ -96,11 +88,9 @@ Document what you sacrificed for what gain:
 **Trade-offs Accepted**:
 - Chose `Promise.all` over sequential for speed, accepting fail-fast behavior
 - Used in-memory filtering over database query for simplicity
-```
+]]></example>
 
-## Example Bad Critique (Don't Do This)
-
-```markdown
+<example type="bad"><![CDATA[
 ## Self-Critique
 
 The code looks good. I checked everything and it should work.
@@ -108,63 +98,43 @@ The code looks good. I checked everything and it should work.
 **Assumptions**: None
 **Edge Cases**: All handled
 **Trade-offs**: None
-```
+]]></example>
 
-Why it's bad:
-- Too vague - doesn't examine specific code
-- "Looks good" isn't a critique
-- "None" is almost never true
-- Doesn't help the reader understand the code's limits
+<anti-patterns>
+  <anti-pattern name="Vague">
+    <bad>This might have issues</bad>
+    <good>Line 15 assumes `data.items` exists - will throw if missing</good>
+  </anti-pattern>
+  <anti-pattern name="Over-Critique">
+    <bad>Nitpicking every style choice</bad>
+    <good>Focus on correctness, security, maintainability</good>
+  </anti-pattern>
+  <anti-pattern name="Skip It">
+    <bad>This is simple code, no critique needed</bad>
+    <good>Even simple code can have hidden assumptions</good>
+  </anti-pattern>
+  <anti-pattern name="Defensive">
+    <bad>This is the best possible approach</bad>
+    <good>I chose X over Y because Z, but Y would work if [conditions]</good>
+  </anti-pattern>
+</anti-patterns>
 
-## Critique Anti-Patterns
+<confidence-guidelines>
+  <impact finding="All assumptions verified" level="+HIGH"/>
+  <impact finding="Unverified assumptions exist" level="MEDIUM max"/>
+  <impact finding="Known unhandled edge cases" level="MEDIUM max"/>
+  <impact finding="Significant trade-offs" level="Note in reasoning"/>
+  <impact finding="Security concerns found" level="LOW until resolved"/>
+  <impact finding="Blocking issues found" level="BLOCKED status"/>
+</confidence-guidelines>
 
-### Don't Be Vague
-- BAD: "This might have issues"
-- GOOD: "Line 15 assumes `data.items` exists - will throw if missing"
+<completion-checklist>
+  <item>Reviewed each significant line/block</item>
+  <item>Documented all assumptions</item>
+  <item>Listed unhandled edge cases</item>
+  <item>Noted trade-offs made</item>
+  <item>Applied fixes for issues found</item>
+  <item>Updated confidence level based on findings</item>
+</completion-checklist>
 
-### Don't Over-Critique
-- BAD: Nitpicking every style choice
-- GOOD: Focus on correctness, security, and maintainability
-
-### Don't Skip It
-- BAD: "This is simple code, no critique needed"
-- GOOD: Even simple code can have hidden assumptions
-
-### Don't Be Defensive
-- BAD: "This is the best possible approach"
-- GOOD: "I chose X over Y because Z, but Y would work if [conditions]"
-
-## Integration with Self-Reflection
-
-Code critique is part of the larger self-reflection protocol (see `knowledge/self-reflection.md`):
-
-1. **Task Alignment**: Does the code solve the actual problem?
-2. **Code Critique**: Line-by-line review (this document)
-3. **Confidence Assessment**: HIGH/MEDIUM/LOW based on critique findings
-4. **Handoff Notes**: Key limitations for next agent
-
-## Confidence Level Guidelines
-
-Based on your critique findings:
-
-| Finding | Confidence Impact |
-|---------|-------------------|
-| All assumptions verified | +HIGH |
-| Unverified assumptions exist | MEDIUM max |
-| Known unhandled edge cases | MEDIUM max |
-| Significant trade-offs | Note in reasoning |
-| Security concerns found | LOW until resolved |
-| Blocking issues found | BLOCKED status |
-
-## Quick Reference Checklist
-
-Before marking code COMPLETE:
-
-```
-□ Reviewed each significant line/block
-□ Documented all assumptions
-□ Listed unhandled edge cases
-□ Noted trade-offs made
-□ Applied fixes for issues found
-□ Updated confidence level based on findings
-```
+</knowledge-base>

@@ -1,395 +1,175 @@
 # Code Exploration Knowledge Base
 
-TRIGGER: explore, codebase, understand, find, where, how does, architecture, structure, dependencies, navigate, search code
-
-## Overview
-
-Systematic code exploration produces reliable understanding faster than ad-hoc browsing. This knowledge base provides techniques for efficiently navigating codebases of any size.
-
-## Core Principles
-
-1. **Read-only first**: Understand before modifying
-2. **Structured exploration**: Use systematic patterns, not random browsing
-3. **Pattern recognition**: Look for recurring structures across files
-4. **Dependency awareness**: Understand relationships, not just individual files
-5. **Incremental depth**: Start broad, drill down as needed
-6. **Context preservation**: Always note file paths and line numbers
-
-## Exploration Workflows
-
-### Quick Codebase Overview (< 5 minutes)
-
-```
-1. Check README and docs/
-2. List top-level directories
-3. Find entry points (main, index, app, server)
-4. Identify configuration (package.json, pyproject.toml, Cargo.toml)
-5. Count and categorize source files
-```
-
-**Output**: High-level structure map, tech stack, entry points
-
-### Feature Understanding (5-15 minutes)
-
-```
-1. Identify feature entry point (API route, UI component, command)
-2. Trace imports and dependencies
-3. Map call chain through execution path
-4. Find related tests
-5. Check for configuration/feature flags
-```
-
-**Output**: Execution flow diagram, key files list, test locations
-
-### Dependency Analysis (10-20 minutes)
-
-```
-1. Start from target file/module
-2. Map all direct imports
-3. Recursively map transitive dependencies
-4. Identify circular dependencies
-5. Find common utilities/shared code
-6. Calculate dependency depth
-```
-
-**Output**: Dependency graph, coupling analysis, shared code identification
-
-### Architecture Discovery (20-30 minutes)
-
-```
-1. Identify layer boundaries (UI, API, business logic, data)
-2. Map module/package structure
-3. Find abstraction patterns (interfaces, base classes)
-4. Trace cross-cutting concerns (logging, auth, errors)
-5. Identify external integrations
-6. Document architectural patterns
-```
-
-**Output**: Layer diagram, pattern catalog, integration points
-
-## File Discovery Techniques
-
-### Glob Pattern Reference
-
-| Pattern | Finds | Use For |
-|---------|-------|---------|
-| `**/*.ts` | All TypeScript files | Language-specific search |
-| `src/**/*` | All source files | Source vs. config separation |
-| `**/test*/**` | Test directories | Finding test coverage |
-| `**/*Controller*` | Controller files | MVC pattern discovery |
-| `**/*.{ts,tsx}` | TS and TSX files | React project exploration |
-| `!**/node_modules/**` | Exclude deps | Avoiding package bloat |
-
-### Common Entry Point Patterns
-
-```
-# JavaScript/TypeScript
-**/index.{js,ts}
-**/main.{js,ts}
-**/app.{js,ts}
-**/server.{js,ts}
-
-# Python
-**/__main__.py
-**/main.py
-**/app.py
-**/wsgi.py
-
-# Go
-**/main.go
-**/cmd/**
-
-# Rust
-**/main.rs
-**/lib.rs
-```
-
-## Content Search Techniques
-
-### Grep Pattern Reference
-
-| Goal | Pattern | Notes |
-|------|---------|-------|
-| Class definition | `class\s+ClassName` | Works for most languages |
-| Function definition | `function\s+name` or `def\s+name` | JS vs Python |
-| Import statements | `import.*ModuleName` | Find usage |
-| TODO/FIXME comments | `TODO\|FIXME\|HACK` | Technical debt |
-| API endpoints | `@(Get\|Post\|Put)` or `router\.(get\|post)` | Route discovery |
-| Error handling | `catch\|except\|rescue` | Exception patterns |
-| Configuration | `process\.env\|os\.environ` | Environment usage |
-
-### Regex Tips for Code Search
-
-```
-# Match function calls (with arguments)
-functionName\([^)]*\)
-
-# Match method chains
-\.methodName\(
-
-# Match class inheritance
-class\s+\w+\s+extends\s+(\w+)
-
-# Match interface implementation
-implements\s+(\w+)
-
-# Match decorators/annotations
-@\w+
-
-# Match generic types
-<\w+>
-```
-
-## Dependency Mapping
-
-### Internal Dependency Analysis
-
-```
-For each file in scope:
-  1. Extract import statements
-  2. Resolve relative paths to absolute
-  3. Group by module/package
-  4. Build adjacency list
-  5. Calculate incoming/outgoing connections
-  6. Identify circular dependencies
-```
-
-### Dependency Metrics
-
-| Metric | What It Measures | High Value Means |
-|--------|------------------|------------------|
-| Afferent coupling (Ca) | Incoming dependencies | Many dependents (stable) |
-| Efferent coupling (Ce) | Outgoing dependencies | Many dependencies (unstable) |
-| Instability (Ce/(Ca+Ce)) | Change likelihood | 0=stable, 1=unstable |
-| Abstractness | Abstract vs concrete | High=abstract, Low=concrete |
-
-### Circular Dependency Detection
-
-```
-1. Build directed graph of imports
-2. Run DFS from each node
-3. Track visited nodes in current path
-4. Cycle found when visiting already-in-path node
-5. Report cycle with full path
-```
-
-## Call Graph Construction
-
-### Static Analysis Approach
-
-```
-1. Parse source files into AST
-2. Identify function/method definitions
-3. Walk AST for call expressions
-4. Resolve callee to definition
-5. Build caller → callee edges
-6. Handle dynamic dispatch conservatively
-```
-
-### Practical Call Tracing
-
-When full AST parsing isn't available:
-
-```
-1. Grep for function definition
-2. Grep for function name followed by (
-3. Filter to actual calls (not definitions)
-4. Note file and line for each call
-5. Repeat recursively for callees
-```
-
-## Pattern Recognition
-
-### Common Code Patterns to Find
-
-| Pattern | Search Strategy | Example |
-|---------|-----------------|---------|
-| Factory | `Factory`, `create`, `make` | `UserFactory.create()` |
-| Singleton | `instance`, `getInstance` | `Logger.getInstance()` |
-| Observer | `subscribe`, `on`, `emit` | `eventEmitter.on('event')` |
-| Repository | `Repository`, `find`, `save` | `userRepository.find()` |
-| Service | `Service`, suffixed classes | `AuthService.validate()` |
-| Controller | `Controller`, route handlers | `UserController.list()` |
-| Middleware | `use`, `next` | `app.use(authMiddleware)` |
-
-### Layer Identification
-
-```
-Presentation Layer:
-  - Components, Views, Templates
-  - Route handlers, Controllers
-  - Search: **/components/**, **/views/**, **/*Controller*
-
-Application Layer:
-  - Services, Use Cases
-  - Orchestration logic
-  - Search: **/services/**, **/usecases/**
-
-Domain Layer:
-  - Entities, Value Objects
-  - Business rules
-  - Search: **/domain/**, **/entities/**, **/models/**
-
-Infrastructure Layer:
-  - Repositories, Adapters
-  - External integrations
-  - Search: **/infrastructure/**, **/adapters/**, **/repositories/**
-```
-
-## Large Codebase Strategies
-
-### Handling 100K+ Line Codebases
-
-1. **Never read all files**: Use targeted search
-2. **Start at boundaries**: Entry points, APIs, tests
-3. **Follow data flow**: Input → processing → output
-4. **Trust package boundaries**: Don't drill into every module
-5. **Sample patterns**: Find 2-3 examples, assume pattern holds
-
-### Chunking Strategies
-
-```
-1. Divide by module/package first
-2. Explore each module independently
-3. Map inter-module dependencies
-4. Focus on integration points
-5. Summarize, don't enumerate
-```
-
-### Information Overload Prevention
-
-- Set explicit scope boundaries before starting
-- Time-box exploration phases
-- Write findings as you go (don't hold in memory)
-- Stop when you have enough to answer the question
-- Accept "good enough" understanding for initial exploration
-
-## Output Standards
-
-### Always Include
-
-1. **File paths**: Absolute or repo-relative paths
-2. **Line numbers**: Specific line references
-3. **Code context**: Relevant snippets (not full files)
-4. **Relationships**: How files/functions connect
-5. **Next steps**: What to explore next
-
-### Formatting for Clarity
-
-```markdown
-## Finding: [Title]
-
-**Location**: `src/services/auth.ts:42`
-
-**Code**:
-\`\`\`typescript
-function validateToken(token: string): boolean {
-  // Token validation logic
-}
-\`\`\`
-
-**Called by**:
-- `src/middleware/auth.ts:15` - Auth middleware
-- `src/routes/api.ts:88` - Protected routes
-
-**Calls**:
-- `src/utils/jwt.ts:decode()` - Token parsing
-```
-
-## Common Mistakes to Avoid
-
-### Exploration Anti-Patterns
-
-1. **Reading files linearly**: Code isn't a novel; jump around
-2. **Ignoring tests**: Tests show intended usage
-3. **Missing configuration**: Config often explains behavior
-4. **Skipping README**: Often contains crucial context
-5. **Over-exploring**: Stop when you have enough
-
-### Search Anti-Patterns
-
-1. **Too broad**: `*.*` returns too much noise
-2. **Too literal**: Missing variations in naming
-3. **Wrong language**: Searching Python patterns in JS
-4. **Ignoring case**: `User` vs `user` both matter
-
-## Integration with Other Agents
-
-### Handoff to Debug Agent
-```
+<knowledge-base name="code-exploration" version="1.0">
+<triggers>explore, codebase, understand, find, where, how does, architecture, structure, dependencies, navigate, search code</triggers>
+<overview>Systematic code exploration produces reliable understanding faster than ad-hoc browsing. Techniques for navigating codebases of any size.</overview>
+
+<core-principles>
+  <principle>Read-only first: Understand before modifying</principle>
+  <principle>Structured exploration: Use systematic patterns, not random browsing</principle>
+  <principle>Pattern recognition: Look for recurring structures across files</principle>
+  <principle>Dependency awareness: Understand relationships, not just individual files</principle>
+  <principle>Incremental depth: Start broad, drill down as needed</principle>
+  <principle>Context preservation: Always note file paths and line numbers</principle>
+</core-principles>
+
+<exploration-workflows>
+  <workflow name="Quick Overview" duration="&lt;5 min">
+    <step>Check README and docs/</step>
+    <step>List top-level directories</step>
+    <step>Find entry points (main, index, app, server)</step>
+    <step>Identify configuration (package.json, pyproject.toml)</step>
+    <step>Count and categorize source files</step>
+    <output>High-level structure map, tech stack, entry points</output>
+  </workflow>
+  <workflow name="Feature Understanding" duration="5-15 min">
+    <step>Identify feature entry point (API route, UI component)</step>
+    <step>Trace imports and dependencies</step>
+    <step>Map call chain through execution path</step>
+    <step>Find related tests</step>
+    <step>Check for configuration/feature flags</step>
+    <output>Execution flow diagram, key files list, test locations</output>
+  </workflow>
+  <workflow name="Dependency Analysis" duration="10-20 min">
+    <step>Start from target file/module</step>
+    <step>Map all direct imports</step>
+    <step>Recursively map transitive dependencies</step>
+    <step>Identify circular dependencies</step>
+    <step>Find common utilities/shared code</step>
+    <output>Dependency graph, coupling analysis</output>
+  </workflow>
+  <workflow name="Architecture Discovery" duration="20-30 min">
+    <step>Identify layer boundaries (UI, API, business, data)</step>
+    <step>Map module/package structure</step>
+    <step>Find abstraction patterns (interfaces, base classes)</step>
+    <step>Trace cross-cutting concerns (logging, auth, errors)</step>
+    <step>Identify external integrations</step>
+    <output>Layer diagram, pattern catalog, integration points</output>
+  </workflow>
+</exploration-workflows>
+
+<glob-patterns>
+  <pattern glob="**/*.ts" finds="All TypeScript files" use="Language-specific search"/>
+  <pattern glob="src/**/*" finds="All source files" use="Source vs config separation"/>
+  <pattern glob="**/test*/**" finds="Test directories" use="Finding test coverage"/>
+  <pattern glob="**/*Controller*" finds="Controller files" use="MVC pattern discovery"/>
+  <pattern glob="**/*.{ts,tsx}" finds="TS and TSX files" use="React project exploration"/>
+  <pattern glob="!**/node_modules/**" finds="Exclude deps" use="Avoiding package bloat"/>
+</glob-patterns>
+
+<entry-point-patterns>
+  <language name="JavaScript/TypeScript">**/index.{js,ts}, **/main.{js,ts}, **/app.{js,ts}, **/server.{js,ts}</language>
+  <language name="Python">**/__main__.py, **/main.py, **/app.py, **/wsgi.py</language>
+  <language name="Go">**/main.go, **/cmd/**</language>
+  <language name="Rust">**/main.rs, **/lib.rs</language>
+</entry-point-patterns>
+
+<grep-patterns>
+  <pattern goal="Class definition" regex="class\s+ClassName"/>
+  <pattern goal="Function definition" regex="function\s+name or def\s+name"/>
+  <pattern goal="Import statements" regex="import.*ModuleName"/>
+  <pattern goal="TODO/FIXME comments" regex="TODO|FIXME|HACK"/>
+  <pattern goal="API endpoints" regex="@(Get|Post|Put) or router\.(get|post)"/>
+  <pattern goal="Error handling" regex="catch|except|rescue"/>
+  <pattern goal="Configuration" regex="process\.env|os\.environ"/>
+</grep-patterns>
+
+<dependency-metrics>
+  <metric name="Afferent coupling (Ca)" measures="Incoming dependencies" high-means="Many dependents (stable)"/>
+  <metric name="Efferent coupling (Ce)" measures="Outgoing dependencies" high-means="Many dependencies (unstable)"/>
+  <metric name="Instability" formula="Ce/(Ca+Ce)" range="0=stable, 1=unstable"/>
+  <metric name="Abstractness" measures="Abstract vs concrete" range="High=abstract, Low=concrete"/>
+</dependency-metrics>
+
+<layer-identification>
+  <layer name="Presentation">
+    <contains>Components, Views, Templates, Route handlers, Controllers</contains>
+    <search>**/components/**, **/views/**, **/*Controller*</search>
+  </layer>
+  <layer name="Application">
+    <contains>Services, Use Cases, Orchestration logic</contains>
+    <search>**/services/**, **/usecases/**</search>
+  </layer>
+  <layer name="Domain">
+    <contains>Entities, Value Objects, Business rules</contains>
+    <search>**/domain/**, **/entities/**, **/models/**</search>
+  </layer>
+  <layer name="Infrastructure">
+    <contains>Repositories, Adapters, External integrations</contains>
+    <search>**/infrastructure/**, **/adapters/**, **/repositories/**</search>
+  </layer>
+</layer-identification>
+
+<pattern-recognition>
+  <pattern name="Factory" search="Factory, create, make" example="UserFactory.create()"/>
+  <pattern name="Singleton" search="instance, getInstance" example="Logger.getInstance()"/>
+  <pattern name="Observer" search="subscribe, on, emit" example="eventEmitter.on('event')"/>
+  <pattern name="Repository" search="Repository, find, save" example="userRepository.find()"/>
+  <pattern name="Service" search="Service, suffixed classes" example="AuthService.validate()"/>
+  <pattern name="Controller" search="Controller, route handlers" example="UserController.list()"/>
+  <pattern name="Middleware" search="use, next" example="app.use(authMiddleware)"/>
+</pattern-recognition>
+
+<large-codebase-strategies>
+  <strategy>Never read all files: Use targeted search</strategy>
+  <strategy>Start at boundaries: Entry points, APIs, tests</strategy>
+  <strategy>Follow data flow: Input → processing → output</strategy>
+  <strategy>Trust package boundaries: Don't drill into every module</strategy>
+  <strategy>Sample patterns: Find 2-3 examples, assume pattern holds</strategy>
+  <strategy>Set explicit scope boundaries before starting</strategy>
+  <strategy>Time-box exploration phases</strategy>
+  <strategy>Write findings as you go (don't hold in memory)</strategy>
+  <strategy>Stop when you have enough to answer the question</strategy>
+</large-codebase-strategies>
+
+<output-standards>
+  <always-include>
+    <item>File paths: Absolute or repo-relative paths</item>
+    <item>Line numbers: Specific line references</item>
+    <item>Code context: Relevant snippets (not full files)</item>
+    <item>Relationships: How files/functions connect</item>
+    <item>Next steps: What to explore next</item>
+  </always-include>
+</output-standards>
+
+<anti-patterns>
+  <exploration>
+    <bad>Reading files linearly: Code isn't a novel; jump around</bad>
+    <bad>Ignoring tests: Tests show intended usage</bad>
+    <bad>Missing configuration: Config often explains behavior</bad>
+    <bad>Skipping README: Often contains crucial context</bad>
+    <bad>Over-exploring: Stop when you have enough</bad>
+  </exploration>
+  <search>
+    <bad>Too broad: *.* returns too much noise</bad>
+    <bad>Too literal: Missing variations in naming</bad>
+    <bad>Wrong language: Searching Python patterns in JS</bad>
+    <bad>Ignoring case: User vs user both matter</bad>
+  </search>
+</anti-patterns>
+
+<handoff-templates>
+  <handoff to="debug-agent"><![CDATA[
 "Exploration found the bug likely in these files:
 - src/auth/validate.ts:42 - Token parsing
 - src/middleware/auth.ts:15 - Middleware invocation
 Call chain: request → middleware → validate → [error]"
-```
-
-### Handoff to Architect Agent
-```
+]]></handoff>
+  <handoff to="architect-agent"><![CDATA[
 "Codebase uses layered architecture:
 - Presentation: React components in /src/components
 - Application: Services in /src/services
 - Domain: Models in /src/domain
 - Infrastructure: Repositories in /src/data
-
-Current coupling issues found in /src/services/user.ts
-which directly imports repository implementation."
-```
-
-### Handoff to Test Agent
-```
+Current coupling issues found in /src/services/user.ts"
+]]></handoff>
+  <handoff to="test-agent"><![CDATA[
 "Test coverage analysis:
 - Unit tests in __tests__/ directories (co-located)
 - Integration tests in /tests/integration/
 - Missing coverage: /src/services/payment.ts has no tests
 - Test patterns: Jest, describe/it structure, mock factories"
-```
+]]></handoff>
+</handoff-templates>
 
-## Quick Reference Card
-
-### Start Exploration
-```bash
-# Structure overview
-Glob: ** (top level)
-Read: README.md, package.json
-
-# Entry points
-Glob: **/main.* **/index.* **/app.*
-Grep: "createServer" or "listen("
-
-# Key abstractions
-Grep: "class\s+\w+" or "interface\s+\w+"
-```
-
-### Find Specific Code
-```bash
-# Definition
-Grep: "function targetName" or "def targetName"
-Grep: "class TargetName"
-
-# Usage
-Grep: "import.*TargetName"
-Grep: "TargetName\("
-```
-
-### Trace Dependencies
-```bash
-# Imports in file
-Read: target file, extract import statements
-
-# Who imports target
-Grep: "from ['\"]\./path/to/target"
-Grep: "import.*from.*target"
-```
-
-### Architecture Mapping
-```bash
-# Layers
-Glob: **/components/** **/services/** **/domain/**
-
-# External deps
-Read: package.json dependencies
-Grep: "require\|import.*from ['\"]\w"
-
-# Integration points
-Grep: "fetch\|axios\|http\|database"
-```
+</knowledge-base>

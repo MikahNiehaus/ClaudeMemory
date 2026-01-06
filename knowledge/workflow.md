@@ -1,181 +1,98 @@
 # Development Workflow & Reliable Execution Guide
 
-> **TRIGGER**: Use this documentation when implementing features, executing development tasks, working on complex multi-step implementations, or when you need to ensure thorough and safe code execution.
+<knowledge-base name="workflow" version="1.0">
+<triggers>implement, execute, development, multi-step, feature, workflow, execution</triggers>
+<overview>Claude 4.x follows instructions precisely but won't go "above and beyond" unless told. Structure prompts like managing a brilliant but inexperienced developer who needs clear boundaries, systematic processes, and mandatory verification.</overview>
 
-## Core Principle
+<failure-patterns>
+  <pattern name="Premature stopping">
+    <problem>Completes part of task, moves on</problem>
+    <solution>Structured progress tracking with checkpoints</solution>
+  </pattern>
+  <pattern name="Test manipulation">
+    <problem>Modifies tests to match buggy code</problem>
+    <solution>TDD workflow with tests committed first</solution>
+  </pattern>
+  <pattern name="Context drift">
+    <problem>Forgets earlier instructions</problem>
+    <solution>Recursive self-display of rules</solution>
+  </pattern>
+  <pattern name="Scope creep">
+    <problem>Makes "improvements" beyond request</problem>
+    <solution>Explicit scope boundaries</solution>
+  </pattern>
+  <pattern name="Skipping verification">
+    <problem>Assumes tests pass without running</problem>
+    <solution>Mandatory test execution at each phase</solution>
+  </pattern>
+</failure-patterns>
 
-Claude 4.x models follow instructions precisely but won't go "above and beyond" unless explicitly told to. Structure prompts like you're managing a brilliant but inexperienced developer who needs clear boundaries, systematic processes, and mandatory verification steps.
+<plan-before-execute>
+  <phase name="Explore">
+    <step>Read relevant files</step>
+    <step>Understand current architecture patterns</step>
+    <step>Identify relevant existing modules</step>
+    <step>List integration points</step>
+    <step>Identify potential risks</step>
+  </phase>
+  <phase name="Plan">
+    <step>Create detailed step-by-step approach</step>
+    <step>Document modules to create/modify with rationale</step>
+    <step>Define testing strategy</step>
+    <step>Create rollback plan</step>
+    <step>Save to plan.md and wait for approval</step>
+  </phase>
+  <phase name="Implement">
+    <step>Execute with verification at each stage</step>
+    <step>Run tests and fix failures</step>
+    <step>Check integration with existing code</step>
+    <step>Update plan.md progress</step>
+    <step>Ask for review before next phase</step>
+  </phase>
+  <phase name="Commit">
+    <step>Document changes</step>
+    <step>Create PR with updated documentation</step>
+  </phase>
+</plan-before-execute>
 
-## Common Failure Patterns to Prevent
+<tdd-workflow>
+  <step order="1">Write tests FIRST based on expected input-output pairs</step>
+  <step order="2">Run tests and confirm they FAIL</step>
+  <step order="3">Commit tests when satisfied with coverage</step>
+  <step order="4">Implement functionality to make tests pass</step>
+  <step order="5">Run tests and confirm they PASS</step>
+  <step order="6">Commit the working implementation</step>
+  <critical-rule>It is UNACCEPTABLE to remove, comment out, or edit tests to make them pass. Tests define requirements. If a test fails, fix the CODE, never the test.</critical-rule>
+</tdd-workflow>
 
-| Pattern | Problem | Solution |
-|---------|---------|----------|
-| Premature stopping | Completes part of task, moves on | Structured progress tracking with checkpoints |
-| Test manipulation | Modifies tests to match buggy code | TDD workflow with tests committed first |
-| Context drift | Forgets earlier instructions | Recursive self-display of rules |
-| Scope creep | Makes "improvements" beyond request | Explicit scope boundaries |
-| Skipping verification | Assumes tests pass without running | Mandatory test execution at each phase |
+<database-safety>
+  <before-any-operation>
+    <step>Identify environment by checking environment variables</step>
+    <step>Analyze connection strings for production indicators</step>
+    <step>Confirm database name matches expected patterns</step>
+    <step>Verify appropriate permissions</step>
+  </before-any-operation>
+  <operation-matrix>
+    <operation type="READ" dev="Proceed" staging="Proceed" prod="Proceed"/>
+    <operation type="WRITE" dev="Proceed" staging="Warn" prod="Warn"/>
+    <operation type="DESTRUCTIVE" dev="Warn" staging="Block" prod="REFUSE"/>
+    <operation type="SCHEMA" dev="Migrations only" staging="Migrations only" prod="Migrations only"/>
+  </operation-matrix>
+  <production-indicators>prod, production, .rds.amazonaws.com, .database.windows.net</production-indicators>
+  <safe-indicators>localhost, 127.0.0.1, dev, test, _dev_, _test_, .local</safe-indicators>
+</database-safety>
 
-## The CLAUDE.md File
-
-Create a CLAUDE.md file in your project root that establishes:
-
-1. **Purpose section**: Why these rules exist
-2. **Priority rules**: Using MUST, SHOULD, SHOULD NOT
-3. **Implementation patterns**: Specific to your codebase
-4. **Test requirements**: Exact commands and coverage expectations
-5. **Blocked operations**: What Claude should never do
-6. **Custom commands**: Reusable workflow templates
-
-### Example Structure
-```markdown
-# Project Rules
-
-## Purpose
-Ensure maintainability, safety, and team velocity.
-
-## Absolute Rules (MUST)
-- MUST run tests after every code change
-- MUST use dependency injection for all services
-- MUST NOT modify tests to make them pass
-
-## Patterns
-- Repository pattern for data access
-- Use existing error handling in /src/errors/
-
-## Blocked Operations
-- Never DELETE without WHERE clause
-- Never access production database
-```
-
-## Plan-Before-Execute Workflow
-
-**Never jump straight to coding.** Follow this sequence:
-
-### Phase 1: Explore
-- Read relevant files
-- Understand current architecture patterns
-- Identify relevant existing modules
-- List integration points
-- Identify potential risks
-
-### Phase 2: Plan
-- Create detailed step-by-step approach
-- Document modules to create/modify with rationale
-- Identify new abstractions needed
-- Define testing strategy
-- Create rollback plan
-- **Save to plan.md and wait for approval**
-
-### Phase 3: Implement
-- Execute with verification at each stage
-- Run tests and fix failures
-- Check integration with existing code
-- Update plan.md progress
-- Ask for review before next phase
-
-### Phase 4: Commit
-- Document changes
-- Create PR with updated documentation
-
-## Test-Driven Development (TDD) Workflow
-
-### The Correct Sequence
-
-1. **Write tests FIRST** based on expected input-output pairs
-   - Be explicit about following TDD to avoid mock implementations
-
-2. **Run tests and confirm they FAIL**
-   - Do NOT write implementation code yet
-   - Verify failure message describes missing behavior
-
-3. **Commit tests** when satisfied with coverage
-
-4. **Implement** functionality to make tests pass
-   - Do NOT modify tests during this phase
-
-5. **Run tests and confirm they PASS**
-   - Iterate on failures
-   - Show final test output
-
-6. **Commit** the working implementation
-
-### Critical Rule
-```
-It is UNACCEPTABLE to remove, comment out, or edit tests to make them pass.
-Tests define requirements. If a test fails, fix the CODE, never the test.
-```
-
-## Database Safety Protocol
-
-### Before ANY Database Operation
-
-1. **Identify environment** by checking environment variables
-2. **Analyze connection strings** for production indicators
-3. **Confirm database name** matches expected patterns
-4. **Verify appropriate permissions**
-
-### Environment Verification Output
-```
-Environment: DEVELOPMENT
-Database: myapp_dev_john
-Host: localhost
-Safety Level: SAFE - Proceed with caution
-```
-
-### Operation Classification Matrix
-
-| Operation Type | Development | Staging | Production |
-|---------------|-------------|---------|------------|
-| READ | Proceed | Proceed | Proceed |
-| WRITE | Proceed | Warn | Warn |
-| DESTRUCTIVE | Warn | Block | REFUSE |
-| SCHEMA | Migrations only | Migrations only | Migrations only |
-
-### Connection String Validation
-
-Check for production indicators:
-- `prod`, `production` in connection string
-- `.rds.amazonaws.com`
-- `.database.windows.net`
-
-Require safe indicators:
-- `localhost`, `127.0.0.1`
-- `dev`, `test`, `_dev_`, `_test_`
-- `.local`
-
-## Explicit Thoroughness Requests
-
-Claude 4.x requires explicit instructions for comprehensive solutions:
-
-**Instead of:** "Create an analytics dashboard"
-
-**Use:** "Create an analytics dashboard that:
-- Includes filtering, sorting, export, and real-time updates
-- Follows Clean Architecture with separation of concerns
-- Uses dependency injection for testability
-- Includes comprehensive error handling
-- Goes beyond basics to create fully-featured implementation"
-
-## Circuit Breakers
-
-Prevent runaway token consumption:
-
-```
+<circuit-breakers><![CDATA[
 If tests fail, iterate to fix them. Maximum 5 attempts.
 If all 5 attempts fail without resolution:
 - STOP
 - Summarize what you tried
 - Explain why it's failing
 - Ask for human guidance
-```
+]]></circuit-breakers>
 
-## State Tracking for Long Sessions
-
-Create persistent files to maintain continuity:
-
-### progress.json
-```json
+<state-tracking>
+  <file name="progress.json"><![CDATA[
 {
   "current_phase": "implementation",
   "completed_tasks": ["setup", "models", "api"],
@@ -183,35 +100,17 @@ Create persistent files to maintain continuity:
   "next_tasks": ["testing", "documentation"],
   "blockers": []
 }
-```
+]]></file>
+  <new-session-steps>
+    <step>Verify directory (pwd)</step>
+    <step>Read progress.json</step>
+    <step>Review recent git history</step>
+    <step>Run tests</step>
+    <step>Continue from next task</step>
+  </new-session-steps>
+</state-tracking>
 
-### For New Sessions
-1. Verify directory (`pwd`)
-2. Read progress.json
-3. Review recent git history
-4. Run tests
-5. Continue from next task
-
-## Context Management
-
-### When to Compact/Reset
-- Use `/compact` when above 150K tokens (75% capacity)
-- Use `/clear` between unrelated tasks
-- Start fresh sessions for completely new features
-
-### Preventing Context Drift
-
-Add to CLAUDE.md:
-```
-At the end of every response, reproduce the safety rules verbatim
-within <rules_reminder> tags to keep them fresh in context.
-```
-
-## Scope Control
-
-Prevent scope creep with explicit boundaries:
-
-```
+<scope-control><![CDATA[
 Fix ONLY the code directly related to [specific issue].
 Do NOT:
 - Refactor unrelated code
@@ -221,108 +120,34 @@ Do NOT:
 After making changes:
 - Run ONLY the tests for [affected module]
 - Report what changed and what tests you ran
-```
+]]></scope-control>
 
-## Iterative Development Phases
+<anti-patterns-to-forbid>
+  <pattern name="God Objects">Classes over 200 lines doing multiple things</pattern>
+  <pattern name="Anemic Domain Models">All logic in services, none in domain</pattern>
+  <pattern name="Circular Dependencies">A imports B imports A</pattern>
+  <pattern name="Missing Error Handling">Only happy path implemented</pattern>
+  <pattern name="Hardcoded Configuration">Magic strings/numbers</pattern>
+  <pattern name="Tight Coupling">Direct concrete dependencies</pattern>
+  <pattern name="Layer Violations">Domain calling infrastructure</pattern>
+</anti-patterns-to-forbid>
 
-### Multi-Turn Conversation Pattern
+<verification-checklist>
+  <item>Architecture violations?</item>
+  <item>Missing error handling for edge cases?</item>
+  <item>Security vulnerabilities?</item>
+  <item>Performance bottlenecks?</item>
+  <item>Test coverage gaps?</item>
+  <item>Anti-patterns present?</item>
+</verification-checklist>
 
-**Turn 1 - Analysis:**
-"I need to implement [FEATURE]. First, analyze WITHOUT writing code:
-1. Read files in [DIRECTORY]
-2. Understand current architecture patterns
-3. Identify relevant existing modules
-4. List integration points
-5. Identify potential risks
-Provide summary with recommendations."
+<session-start-checklist>
+  <item>Read CLAUDE.md for project rules</item>
+  <item>Check progress.json for current state</item>
+  <item>Review recent git commits</item>
+  <item>Run existing tests to establish baseline</item>
+  <item>Identify task scope and boundaries</item>
+  <item>Create/update todo list for tracking</item>
+</session-start-checklist>
 
-**Turn 2 - Design:**
-"Based on your analysis, create detailed plan:
-1. Modules to create/modify (with rationale)
-2. New abstractions needed
-3. Database schema changes
-4. API contract changes
-5. Testing strategy
-6. Rollback plan
-Save to plan.md. Wait for approval before coding."
-
-**Turn 3 - Implementation:**
-"Implement Phase 1 of plan.md: [SPECIFIC STEPS].
-After implementation:
-1. Run tests and fix failures
-2. Check integration with existing code
-3. Update plan.md progress
-4. Ask for review before Phase 2"
-
-## XML Tag Structure for Prompts
-
-Claude was trained with XML tags, making it exceptionally good at parsing structured prompts:
-
-```xml
-<context>
-System description and constraints
-</context>
-
-<current_state>
-Existing code and patterns
-</current_state>
-
-<desired_state>
-Goal and requirements
-</desired_state>
-
-<safety_requirements>
-Non-negotiable constraints
-</safety_requirements>
-
-<verification_steps>
-How to confirm correctness
-</verification_steps>
-```
-
-## Anti-Patterns to Explicitly Forbid
-
-In CLAUDE.md, explicitly prohibit:
-
-- **God Objects**: Classes over 200 lines doing multiple things
-- **Anemic Domain Models**: All logic in services, none in domain
-- **Circular Dependencies**: A imports B imports A
-- **Missing Error Handling**: Only happy path implemented
-- **Hardcoded Configuration**: Magic strings/numbers
-- **Tight Coupling**: Direct concrete dependencies
-- **Layer Violations**: Domain calling infrastructure
-
-## Verification Checklist
-
-After code generation, verify:
-
-1. Architecture violations?
-2. Missing error handling for edge cases?
-3. Security vulnerabilities?
-4. Performance bottlenecks?
-5. Test coverage gaps?
-6. Anti-patterns present?
-
-## CI/CD Environment Parity
-
-When creating configurations, specify both contexts:
-
-"Create a deployment script that works both:
-- Locally for developer testing (using local Docker)
-- In CI/CD pipeline (using hosted agents)
-
-Requirements:
-- Detect execution context (local vs CI)
-- Use environment-appropriate authentication
-- Provide clear logging for debugging in both contexts
-- Include validation steps that work locally
-- Document how to test locally before committing"
-
-## Quick Reference: Session Start Checklist
-
-- [ ] Read CLAUDE.md for project rules
-- [ ] Check progress.json for current state
-- [ ] Review recent git commits
-- [ ] Run existing tests to establish baseline
-- [ ] Identify task scope and boundaries
-- [ ] Create/update todo list for tracking
+</knowledge-base>

@@ -1,369 +1,253 @@
 # Software Architecture Best Practices
 
-> **TRIGGER**: Use this documentation when designing systems, making architectural decisions, reviewing code structure, implementing design patterns, or when asked about SOLID, Clean Architecture, or best practices.
+<knowledge-base name="architecture" version="1.0">
+<triggers>architecture, SOLID, Clean Architecture, design pattern, DDD, hexagonal, coupling, cohesion</triggers>
+<overview>System design, architectural decisions, SOLID principles, Clean Architecture, DDD, and best practices.</overview>
 
-## SOLID Principles
+<solid-principles>
+  <principle id="SRP" name="Single Responsibility">
+    <rule>A class should have only one reason to change</rule>
+    <bad>ReportGenerator that generates AND formats reports</bad>
+    <good>Separate ReportGenerator and ReportFormatter</good>
+  </principle>
+  <principle id="OCP" name="Open/Closed">
+    <rule>Open for extension, closed for modification</rule>
+    <bad>Modifying Shape class for each new shape type</bad>
+    <good>Shape interface with new implementations for each type</good>
+  </principle>
+  <principle id="LSP" name="Liskov Substitution">
+    <rule>Subtypes must be substitutable for base types</rule>
+    <bad>Square extending Rectangle but breaking setWidth/setHeight</bad>
+    <good>Rethink hierarchy or use composition</good>
+  </principle>
+  <principle id="ISP" name="Interface Segregation">
+    <rule>Many specific interfaces over one general-purpose interface</rule>
+    <bad>Single Worker interface with developer, tester, manager methods</bad>
+    <good>Separate Developer, Tester, Manager interfaces</good>
+  </principle>
+  <principle id="DIP" name="Dependency Inversion">
+    <rule>Depend on abstractions, not concrete implementations</rule>
+    <bad>NotificationService directly depends on EmailSender</bad>
+    <good>Depend on IMessageSender interface</good>
+  </principle>
+</solid-principles>
 
-### Single Responsibility Principle (SRP)
-A class should have only one reason to change.
+<clean-architecture>
+  <layers>
+    <layer rank="1" name="Entities" position="innermost">Enterprise business rules</layer>
+    <layer rank="2" name="Use Cases">Application business rules</layer>
+    <layer rank="3" name="Interface Adapters">Controllers, presenters, gateways</layer>
+    <layer rank="4" name="Frameworks &amp; Drivers" position="outermost">DB, Web, UI</layer>
+  </layers>
+  <dependency-rule>Source code dependencies must only point inward</dependency-rule>
+  <rules>
+    <rule>Inner circles contain policies</rule>
+    <rule>Outer circles contain mechanisms</rule>
+    <rule>Business logic never imports from frameworks</rule>
+  </rules>
+</clean-architecture>
 
-**Bad:** `ReportGenerator` that generates AND formats reports
-**Good:** Separate `ReportGenerator` and `ReportFormatter`
+<hexagonal-architecture name="Ports &amp; Adapters">
+  <concept name="Ports">Interfaces defining interactions</concept>
+  <concept name="Adapters">Implementations connecting to actual technologies</concept>
+  <port type="Driving">External actors interact with app (REST APIs, CLI)</port>
+  <port type="Driven">App interacts with external systems (databases, queues)</port>
+</hexagonal-architecture>
 
-### Open/Closed Principle (OCP)
-Open for extension, closed for modification.
+<ddd-concepts>
+  <concept name="Ubiquitous Language">Shared vocabulary between developers and domain experts</concept>
+  <concept name="Entities">Objects with unique identity (Customer, Order)</concept>
+  <concept name="Value Objects">Defined by attributes, no identity (Money, Address)</concept>
+  <concept name="Aggregates">Cluster of domain objects with consistency boundary</concept>
+  <concept name="Aggregate Root">Entry point to aggregate (Order contains OrderItems)</concept>
+  <concept name="Bounded Context">Explicit boundary where domain model applies</concept>
+</ddd-concepts>
 
-**Bad:** Modifying `Shape` class for each new shape type
-**Good:** `Shape` interface with new implementations for each type
+<design-patterns>
+  <category name="Creational">
+    <pattern name="Factory Method">Encapsulates instantiation</pattern>
+    <pattern name="Builder">Separates complex construction from representation</pattern>
+    <pattern name="Singleton">Single instance (prefer DI over singletons)</pattern>
+  </category>
+  <category name="Structural">
+    <pattern name="Adapter">Converts incompatible interfaces</pattern>
+    <pattern name="Decorator">Dynamically adds responsibilities</pattern>
+    <pattern name="Facade">Simplifies complex subsystems</pattern>
+  </category>
+  <category name="Behavioral">
+    <pattern name="Strategy">Encapsulates interchangeable algorithms</pattern>
+    <pattern name="Observer">One-to-many notification of state changes</pattern>
+    <pattern name="Command">Encapsulates requests as objects (undo/redo)</pattern>
+  </category>
+</design-patterns>
 
-### Liskov Substitution Principle (LSP)
-Subtypes must be substitutable for base types.
-
-**Bad:** `Square` extending `Rectangle` but breaking setWidth/setHeight behavior
-**Good:** Rethink hierarchy or use composition
-
-### Interface Segregation Principle (ISP)
-Many specific interfaces over one general-purpose interface.
-
-**Bad:** Single `Worker` interface with developer, tester, and manager methods
-**Good:** Separate `Developer`, `Tester`, `Manager` interfaces
-
-### Dependency Inversion Principle (DIP)
-Depend on abstractions, not concrete implementations.
-
-**Bad:** `NotificationService` directly depends on `EmailSender`
-**Good:** Depend on `IMessageSender` interface
-
-## Clean Architecture
-
-Organize code in concentric layers where dependencies only point inward:
-
-```
-┌─────────────────────────────────────────┐
-│  Frameworks & Drivers (outermost)       │
-│  ┌─────────────────────────────────┐    │
-│  │  Interface Adapters              │    │
-│  │  ┌─────────────────────────┐    │    │
-│  │  │  Use Cases               │    │    │
-│  │  │  ┌─────────────────┐    │    │    │
-│  │  │  │  Entities       │    │    │    │
-│  │  │  │  (innermost)    │    │    │    │
-│  │  │  └─────────────────┘    │    │    │
-│  │  └─────────────────────────┘    │    │
-│  └─────────────────────────────────┘    │
-└─────────────────────────────────────────┘
-```
-
-**The Dependency Rule:** Source code dependencies must only point inward.
-- Inner circles contain policies
-- Outer circles contain mechanisms
-- Business logic never imports from frameworks
-
-## Hexagonal Architecture (Ports & Adapters)
-
-Core application communicates with outside world through:
-- **Ports**: Interfaces defining interactions
-- **Adapters**: Implementations connecting to actual technologies
-
-**Driving Ports:** External actors interact with your app (REST APIs, CLI)
-**Driven Ports:** Your app interacts with external systems (databases, queues)
-
-## Domain-Driven Design (DDD) Concepts
-
-| Concept | Description |
-|---------|-------------|
-| **Ubiquitous Language** | Shared vocabulary between developers and domain experts |
-| **Entities** | Objects with unique identity (Customer, Order) |
-| **Value Objects** | Defined by attributes, no identity (Money, Address) |
-| **Aggregates** | Cluster of domain objects with consistency boundary |
-| **Aggregate Root** | Entry point to aggregate (Order contains OrderItems) |
-| **Bounded Context** | Explicit boundary where domain model applies |
-
-## Design Patterns Quick Reference
-
-### Creational
-- **Factory Method**: Encapsulates instantiation
-- **Builder**: Separates complex construction from representation
-- **Singleton**: Single instance (prefer DI over singletons)
-
-### Structural
-- **Adapter**: Converts incompatible interfaces
-- **Decorator**: Dynamically adds responsibilities
-- **Facade**: Simplifies complex subsystems
-
-### Behavioral
-- **Strategy**: Encapsulates interchangeable algorithms
-- **Observer**: One-to-many notification of state changes
-- **Command**: Encapsulates requests as objects (undo/redo)
-
-## Dependency Injection
-
-**Always prefer constructor injection** - makes dependencies explicit and immutable.
-
-```python
-# Bad - creates own dependency
+<dependency-injection>
+  <rule>Always prefer constructor injection - makes dependencies explicit and immutable</rule>
+  <example type="bad"><![CDATA[
 class OrderService:
     def __init__(self):
         self.repo = OrderRepository()  # tight coupling
-
-# Good - dependency injected
+]]></example>
+  <example type="good"><![CDATA[
 class OrderService:
     def __init__(self, repo: IOrderRepository):
         self.repo = repo  # loose coupling, testable
-```
+]]></example>
+</dependency-injection>
 
-## Core Principles
+<core-principles>
+  <principle id="DRY" name="Don't Repeat Yourself">
+    <rule>Every piece of knowledge has single representation</rule>
+    <note>Focus on knowledge duplication, not just textual similarity</note>
+  </principle>
+  <principle id="KISS" name="Keep It Simple, Stupid">
+    <rule>Simplest solution that works is often best</rule>
+    <note>Avoid premature optimization</note>
+  </principle>
+  <principle id="YAGNI" name="You Aren't Gonna Need It">
+    <rule>Don't implement functionality before it's needed</rule>
+    <note>Balance with good design that makes adding features easy</note>
+  </principle>
+  <principle id="Coupling">
+    <goal>Low coupling - modules can be understood in isolation</goal>
+  </principle>
+  <principle id="Cohesion">
+    <goal>High cohesion - all elements contribute to single purpose</goal>
+  </principle>
+</core-principles>
 
-### DRY (Don't Repeat Yourself)
-Every piece of knowledge has single representation. Focus on **knowledge** duplication, not just textual similarity.
+<code-organization>
+  <structure name="Layered" use="by technical role">controllers/, models/, services/, repositories/</structure>
+  <structure name="Feature-based" use="by domain" recommended="true">users/, products/, orders/, payments/</structure>
+  <module-guidelines>
+    <guideline>Single responsibility</guideline>
+    <guideline>Loose coupling with other modules</guideline>
+    <guideline>High internal cohesion</guideline>
+    <guideline>Clear interfaces</guideline>
+    <guideline>No circular dependencies</guideline>
+  </module-guidelines>
+</code-organization>
 
-### KISS (Keep It Simple, Stupid)
-Simplest solution that works is often best. Avoid premature optimization.
+<naming-conventions>
+  <convention type="Classes" style="PascalCase, nouns">UserManager, PaymentProcessor</convention>
+  <convention type="Functions" style="camelCase, verbs">calculateTotal, validateInput</convention>
+  <convention type="Booleans" style="Predicates">isActive, hasPermission, canEdit</convention>
+  <convention type="Collections" style="Plurals">users, orderItems</convention>
+  <convention type="Constants" style="SCREAMING_SNAKE">MAX_RETRY_COUNT, API_TIMEOUT</convention>
+  <best-practices>
+    <practice>Be descriptive (numberOfActiveUsers not count)</practice>
+    <practice>Reveal intent (timeoutInMilliseconds not timeout)</practice>
+    <practice>Avoid abbreviations (except id, url, etc.)</practice>
+    <practice>Consistent vocabulary (pick fetch/retrieve/get and stick)</practice>
+    <practice>Add business context (premiumCustomer not type1Customer)</practice>
+  </best-practices>
+</naming-conventions>
 
-### YAGNI (You Aren't Gonna Need It)
-Don't implement functionality before it's needed. Balance with good design that makes adding features easy.
+<testing-trophy>
+  <level percent="10%" name="Static Analysis">TypeScript, ESLint</level>
+  <level percent="20%" name="Unit Tests">Individual functions in isolation</level>
+  <level percent="70%" name="Integration Tests" focus="main">Multiple units working together</level>
+  <level percent="10%" name="E2E Tests">Complete user workflows</level>
+  <structure>
+    <rule>Mirror source structure in tests/ directory</rule>
+    <rule>Name: component.test.js or user-flow.integration.test.js</rule>
+    <rule>Use Arrange-Act-Assert pattern</rule>
+    <rule>Keep tests independent</rule>
+  </structure>
+</testing-trophy>
 
-### Coupling & Cohesion
-- **Low coupling**: Modules can be understood in isolation
-- **High cohesion**: All elements contribute to single purpose
+<quality-metrics>
+  <metric name="Cyclomatic Complexity">
+    <range min="1" max="10">Simple, low risk</range>
+    <range min="11" max="20">Moderate complexity</range>
+    <range min="21" max="50">Complex, high risk</range>
+    <range min="51" max="999">Untestable - refactor immediately</range>
+  </metric>
+  <size-guidelines>
+    <guideline type="Functions" max="50 lines" ideal="20 lines"/>
+    <guideline type="Classes" max="400 statements"/>
+    <guideline type="Files" max="500-1000 lines"/>
+  </size-guidelines>
+</quality-metrics>
 
-## Code Organization
+<anti-patterns>
+  <anti-pattern name="God Object" problem="Class doing too much (&gt;200 lines)" solution="Split by responsibility"/>
+  <anti-pattern name="Anemic Domain" problem="All logic in services" solution="Put behavior in domain objects"/>
+  <anti-pattern name="Circular Dependencies" problem="A imports B imports A" solution="Dependency injection, events"/>
+  <anti-pattern name="Missing Error Handling" problem="Only happy path" solution="Handle all edge cases"/>
+  <anti-pattern name="Hardcoded Config" problem="Magic strings/numbers" solution="Environment variables, config files"/>
+  <anti-pattern name="Tight Coupling" problem="Direct concrete dependencies" solution="Depend on abstractions"/>
+  <anti-pattern name="Layer Violations" problem="Domain calling infrastructure" solution="Respect dependency direction"/>
+</anti-patterns>
 
-### File Structure Options
+<security-architecture>
+  <principles>
+    <principle name="Defense in depth">Multiple security layers</principle>
+    <principle name="Least privilege">Minimum permissions necessary</principle>
+    <principle name="Security by design">Threat modeling during design</principle>
+    <principle name="Zero trust">Never trust, always verify</principle>
+  </principles>
+  <checklist>
+    <item>Strong authentication (MFA where possible)</item>
+    <item>Authorization checks on every protected resource</item>
+    <item>All inputs validated server-side</item>
+    <item>Output encoding to prevent XSS</item>
+    <item>Sensitive data encrypted at rest and in transit</item>
+    <item>Security events logged</item>
+    <item>No sensitive data in logs or error messages</item>
+  </checklist>
+</security-architecture>
 
-**Layered (by technical role):**
-```
-src/
-  controllers/
-  models/
-  services/
-  repositories/
-```
+<red-flags>
+  <category name="Code">
+    <flag>Hard-coded credentials</flag>
+    <flag>SQL queries concatenated with user input</flag>
+    <flag>No input validation on external data</flag>
+    <flag>Exceptions caught and ignored</flag>
+    <flag>Functions over 100 lines</flag>
+  </category>
+  <category name="Architecture">
+    <flag>Circular dependencies between modules</flag>
+    <flag>Business logic in presentation layer</flag>
+    <flag>No abstraction for external services</flag>
+    <flag>Single point of failure</flag>
+  </category>
+  <category name="Security">
+    <flag>Authentication bypassable</flag>
+    <flag>Sensitive data logged</flag>
+    <flag>HTTPS not enforced</flag>
+    <flag>Unpatched dependencies with known CVEs</flag>
+  </category>
+</red-flags>
 
-**Feature-based (by domain) - recommended for larger projects:**
-```
-src/
-  users/
-  products/
-  orders/
-  payments/
-```
-
-### Module Guidelines
-- Single responsibility
-- Loose coupling with other modules
-- High internal cohesion
-- Clear interfaces
-- No circular dependencies
-
-## Naming Conventions
-
-| Type | Convention | Examples |
-|------|------------|----------|
-| Classes | PascalCase, nouns | `UserManager`, `PaymentProcessor` |
-| Functions | camelCase, verbs | `calculateTotal`, `validateInput` |
-| Booleans | Predicates | `isActive`, `hasPermission`, `canEdit` |
-| Collections | Plurals | `users`, `orderItems` |
-| Constants | SCREAMING_SNAKE | `MAX_RETRY_COUNT`, `API_TIMEOUT` |
-
-### Best Practices
-- Be descriptive (`numberOfActiveUsers` not `count`)
-- Reveal intent (`timeoutInMilliseconds` not `timeout`)
-- Avoid abbreviations (except `id`, `url`, etc.)
-- Consistent vocabulary (pick `fetch`/`retrieve`/`get` and stick with it)
-- Add business context (`premiumCustomer` not `type1Customer`)
-
-## Testing Organization
-
-### Testing Trophy (Kent C. Dodds)
-- **Static Analysis (10%)**: TypeScript, ESLint
-- **Unit Tests (20%)**: Individual functions in isolation
-- **Integration Tests (70%)**: Multiple units working together - **main focus**
-- **E2E Tests (10%)**: Complete user workflows
-
-### Test Structure
-- Mirror source structure in `tests/` directory
-- Name: `component.test.js` or `user-flow.integration.test.js`
-- Use Arrange-Act-Assert pattern
-- Keep tests independent
-
-## Structured Chain-of-Thought (SCoT) for Code Generation
-
-Before implementing, break down using programming structures:
-
-```
-SEQUENCE: Operations in execution order
-  validate input → check inventory → calculate price → process payment
-
-BRANCH: Decision points and conditions
-  if inventory low → backorder
-  if payment fails → rollback
-
-LOOP: Iterations needed
-  for each order item → calculate line total
-```
-
-Then implement following this structure.
-
-## Prompting for Architecture
-
-### Context + Motivation Pattern
-
-```xml
-<context>
-System: E-commerce platform
-Scale: 50K daily users, 20% monthly growth
-Stack: Python 3.11, FastAPI, PostgreSQL
-</context>
-
-<architectural_principles>
-- Clean Architecture with separation of concerns
-- Repository pattern for data access
-- Dependency injection for testability
-- Domain events for cross-service communication
-</architectural_principles>
-
-<task>
-Design the inventory service following our patterns.
-Explain architectural decisions and alignment with principles.
-</task>
-```
-
-## Code Quality Patterns
-
-### Code Clustering
-```
-domain/         # Pure functions (no side effects, deterministic)
-infrastructure/ # Side effects (database, API, file I/O)
-application/    # Orchestration (coordinates pure + side effects)
-```
-
-### Intermediate Abstraction Pattern
-Protect business logic from third-party libraries:
-
-```python
-# Port (abstraction)
-class EmailService(ABC):
-    @abstractmethod
-    def send(self, to: str, subject: str, body: str): pass
-
-# Adapter (implementation)
-class SendGridAdapter(EmailService):
-    def send(self, to: str, subject: str, body: str):
-        # SendGrid-specific implementation
-```
-
-## Anti-Patterns to Avoid
-
-| Anti-Pattern | Problem | Solution |
-|--------------|---------|----------|
-| God Object | Class doing too much (>200 lines) | Split by responsibility |
-| Anemic Domain | All logic in services | Put behavior in domain objects |
-| Circular Dependencies | A imports B imports A | Dependency injection, events |
-| Missing Error Handling | Only happy path | Handle all edge cases |
-| Hardcoded Config | Magic strings/numbers | Environment variables, config files |
-| Tight Coupling | Direct concrete dependencies | Depend on abstractions |
-| Layer Violations | Domain calling infrastructure | Respect dependency direction |
-
-## Quality Metrics
-
-### Cyclomatic Complexity
-- 1-10: Simple, low risk
-- 11-20: Moderate complexity
-- 21-50: Complex, high risk
-- >50: Untestable - **refactor immediately**
-
-### Size Guidelines
-- Functions: <50 lines (ideal <20)
-- Classes: <400 statements
-- Files: <500-1000 lines
-
-## Security Architecture
-
-### Principles
-- **Defense in depth**: Multiple security layers
-- **Least privilege**: Minimum permissions necessary
-- **Security by design**: Threat modeling during design
-- **Zero trust**: Never trust, always verify
-
-### Checklist
-- [ ] Strong authentication (MFA where possible)
-- [ ] Authorization checks on every protected resource
-- [ ] All inputs validated server-side
-- [ ] Output encoding to prevent XSS
-- [ ] Sensitive data encrypted at rest and in transit
-- [ ] Security events logged
-- [ ] No sensitive data in logs or error messages
-
-## API Design
-
-### RESTful Principles
-- Use nouns for resources, not verbs
-- HTTP methods: GET (read), POST (create), PUT (replace), PATCH (update), DELETE (remove)
-- Proper status codes: 200, 201, 400, 401, 404, 500
-
-### API Checklist
-- [ ] Consistent naming conventions
-- [ ] Versioning included (`/api/v1/`)
-- [ ] Pagination, filtering, sorting supported
-- [ ] Rate limiting implemented
-- [ ] HTTPS only
-- [ ] Comprehensive documentation with examples
-
-## Architecture Decision Records (ADRs)
-
-Use for significant decisions. MADR format:
-
-```markdown
-# ADR-001: Authentication Approach
+<adr-template title="Architecture Decision Records"><![CDATA[
+# ADR-XXX: [Title]
 
 ## Status
-Accepted
+[Proposed | Accepted | Deprecated | Superseded]
 
 ## Context
-Need to implement user authentication for e-commerce platform.
-Team has limited DevOps capacity. 3-month timeline to MVP.
+[Problem and constraints]
 
 ## Options Considered
-1. Self-hosted (Keycloak)
-2. Managed (Auth0)
-3. Custom implementation
+1. [Option A]
+2. [Option B]
+3. [Option C]
 
 ## Decision
-Auth0 (managed service)
+[Chosen option]
 
 ## Consequences
-+ Faster implementation
-+ Reduced operational burden
-- Vendor lock-in
-- Monthly cost
-```
++ [Positive outcomes]
+- [Negative outcomes]
+]]></adr-template>
 
-## Red Flags Requiring Immediate Action
+<validation-rules>
+  <rule>Functions should do one thing</rule>
+  <rule>Keep abstractions at consistent levels</rule>
+  <rule>Dependencies should point inward</rule>
+  <rule>Fail fast on invalid state</rule>
+  <rule>Prefer composition over inheritance</rule>
+</validation-rules>
 
-### Code
-- Hard-coded credentials
-- SQL queries concatenated with user input
-- No input validation on external data
-- Exceptions caught and ignored
-- Functions over 100 lines
-
-### Architecture
-- Circular dependencies between modules
-- Business logic in presentation layer
-- No abstraction for external services
-- Single point of failure
-
-### Security
-- Authentication bypassable
-- Sensitive data logged
-- HTTPS not enforced
-- Unpatched dependencies with known CVEs
-
-## Validation Rules
-
-- Functions should do one thing
-- Keep abstractions at consistent levels
-- Dependencies should point inward
-- Fail fast on invalid state
-- Prefer composition over inheritance
+</knowledge-base>

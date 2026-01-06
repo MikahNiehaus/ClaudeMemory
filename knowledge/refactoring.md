@@ -1,344 +1,138 @@
 # Code Refactoring Best Practices
 
-TRIGGER: refactor, code smell, technical debt, clean code, legacy code, extract method, duplication
-
-## Overview
-
-Refactoring is the process of changing code structure without changing behavior. The goal is to make code easier to understand, maintain, and extend while preserving its functionality.
-
-## Why Refactor?
-
-- **Reduce technical debt** - Developers spend 13.5 hours/week on technical debt (Stack Overflow 2023)
-- **Enable feature development** - Clean code is easier to extend
-- **Improve understanding** - Refactored code documents intent
-- **Reduce bugs** - Simpler code has fewer hiding places for bugs
-- **Faster development** - Elite teams deploy 208x more frequently
-
----
-
-## When to Refactor
-
-### Trigger Thresholds
-| Metric | Threshold | Action |
-|--------|-----------|--------|
-| Method length | >40 lines | Extract Method |
-| Cyclomatic complexity | >10 | Simplify conditionals |
-| Parameter count | >4 | Introduce Parameter Object |
-| Class size | >300 lines | Extract Class |
-| Duplication | >3 occurrences | Extract common code |
-
-### Refactoring Opportunities
-- **Before adding features** - Clean foundation first
-- **When fixing bugs** - "Boy Scout Rule" - leave code cleaner
-- **During code review** - Spot improvement opportunities
-- **When understanding code** - Refactor to clarify
-- **Scheduled tech debt sprints** - Dedicated improvement time
-
-### When NOT to Refactor
-- No test coverage (write tests first)
-- Close to deadline (risky timing)
-- Code being replaced soon
-- Working code that won't change
-- During active feature development in same code
-
----
-
-## The Refactoring Process
-
-### Red-Green-Refactor (TDD)
-1. **Red**: Write a failing test
-2. **Green**: Write minimal code to pass
-3. **Refactor**: Improve structure, keep tests green
-
-### Safe Refactoring Steps
-1. **Ensure test coverage** - Can't refactor safely without tests
-2. **Commit current state** - Rollback point
-3. **Make one change** - Single refactoring at a time
-4. **Run tests** - Verify behavior preserved
-5. **Commit** - Save progress
-6. **Repeat** - Next refactoring
-
-### Strangler Fig Pattern (Legacy Systems)
-For large-scale modernization:
-1. Identify a small piece to modernize
-2. Build new implementation alongside old
-3. Redirect traffic to new code
-4. Remove old code when no longer used
-5. Repeat for next piece
-
----
-
-## Code Smells Catalog
-
-### Bloaters
-Code that has grown too large.
-
-#### Long Method
-**Signs**: Method >20-30 lines, needs comments to explain sections
-**Fix**: Extract Method - pull sections into named methods
-```python
-# Before: Long method with comments
-def process_order(order):
-    # Validate
-    if not order.items: raise Error()
-    if not order.customer: raise Error()
-    # Calculate
-    total = 0
-    for item in order.items:
-        total += item.price * item.quantity
-    # Discount
-    if order.customer.premium:
-        total *= 0.9
-    return total
-
-# After: Small methods with descriptive names
-def process_order(order):
-    validate(order)
-    total = calculate_total(order.items)
-    return apply_discount(total, order.customer)
-```
-
-#### Large Class
-**Signs**: Class >300 lines, multiple responsibilities
-**Fix**: Extract Class - split into focused classes
-
-#### Long Parameter List
-**Signs**: >3-4 parameters, related parameters travel together
-**Fix**: Introduce Parameter Object
-```python
-# Before
-def create_user(name, email, street, city, state, zip_code):
-    pass
-
-# After
-@dataclass
-class Address:
-    street: str
-    city: str
-    state: str
-    zip_code: str
-
-def create_user(name, email, address: Address):
-    pass
-```
-
-#### Primitive Obsession
-**Signs**: Using primitives for domain concepts (string for phone number)
-**Fix**: Replace Primitive with Object
-```python
-# Before
-phone = "555-123-4567"
-
-# After
-class PhoneNumber:
-    def __init__(self, number):
-        self.validate(number)
-        self.number = number
-```
-
-### Dispensables
-Code that could be removed.
-
-#### Duplicate Code
-**Signs**: Same code in multiple places
-**Fix**: Extract Method or Extract Class
-```python
-# Before: Duplicated validation
-def process_a():
-    if not data: raise Error()
-    if len(data) > 100: raise Error()
-    # ... process A
-
-def process_b():
-    if not data: raise Error()
-    if len(data) > 100: raise Error()
-    # ... process B
-
-# After: Extracted validation
-def validate_data(data):
-    if not data: raise Error()
-    if len(data) > 100: raise Error()
-
-def process_a():
-    validate_data(data)
-    # ... process A
-```
-
-#### Dead Code
-**Signs**: Unreachable code, unused variables/methods
-**Fix**: Delete it - version control has history
-
-#### Comments Explaining What
-**Signs**: Comments describing what code does (not why)
-**Fix**: Refactor code to be self-documenting
-```python
-# Before: Comment explains what
-# Loop through users and check if active
-for user in users:
-    if user.status == 'active':
-        active_users.append(user)
-
-# After: Code explains itself
-active_users = [u for u in users if u.is_active()]
-```
-
-### Couplers
-Excessive dependencies between classes.
-
-#### Feature Envy
-**Signs**: Method uses another class's data more than its own
-**Fix**: Move Method to the class it envies
-```python
-# Before: Phone logic in Person
-class Person:
-    def format_phone(self):
-        return f"({self.phone.area}) {self.phone.number}"
-
-# After: Phone logic in Phone
-class Phone:
-    def format(self):
-        return f"({self.area}) {self.number}"
-```
-
-#### Message Chains
-**Signs**: a.getB().getC().getD()
-**Fix**: Hide Delegate - add method to intermediate class
-
----
-
-## Refactoring Techniques
-
-### Extract Method
-**When**: Code fragment that can be grouped together
-**How**:
-1. Create new method with descriptive name
-2. Copy extracted code to new method
-3. Replace original code with method call
-4. Pass needed variables as parameters
-5. Return results if needed
-
-### Extract Class
-**When**: Class doing too many things
-**How**:
-1. Identify subset of fields/methods that belong together
-2. Create new class for that subset
-3. Move fields and methods
-4. Update original class to delegate to new class
-
-### Inline Method
-**When**: Method body is as clear as its name
-**How**:
-1. Ensure method isn't overridden
-2. Replace all calls with method body
-3. Delete the method
-
-### Replace Temp with Query
-**When**: Temp variable holds result of expression
-**How**:
-1. Extract expression into method
-2. Replace temp references with method calls
-3. Remove temp declaration
-
-### Introduce Parameter Object
-**When**: Group of parameters that travel together
-**How**:
-1. Create class for the parameter group
-2. Update callers to pass object instead
-3. Move behavior that operates on parameters to the object
-
-### Replace Conditional with Polymorphism
-**When**: Conditional logic based on type
-**How**:
-1. Create class hierarchy
-2. Move each conditional branch to subclass method
-3. Replace conditional with polymorphic call
-
----
-
-## Measuring Refactoring Success
-
-### Metrics to Track
-| Metric | Tool | Target |
-|--------|------|--------|
-| Cyclomatic Complexity | SonarQube | <10 per method |
-| Code Duplication | SonarQube | <3% |
-| Method Length | Linter | <40 lines |
-| Test Coverage | Coverage tools | >80% |
-| Coupling | SonarQube | Low between modules |
-
-### Qualitative Signs
-- Easier to understand when reading
-- Faster to make changes
-- Fewer bugs in modified areas
-- Tests are clearer
-- Less "fear" when touching code
-
----
-
-## Technical Debt Prioritization
-
-### Debt Quadrant (Martin Fowler)
-| | Reckless | Prudent |
-|---|----------|---------|
-| **Deliberate** | "We don't have time for design" | "We must ship now and deal with consequences" |
-| **Inadvertent** | "What's layering?" | "Now we know how we should have done it" |
-
-### Prioritization Matrix
-| Priority | Criteria | Action |
-|----------|----------|--------|
-| P0 | Blocks feature work | Refactor immediately |
-| P1 | Causes bugs regularly | Schedule soon |
-| P2 | Slows development | Plan for tech debt sprint |
-| P3 | Code smell, no impact | Address opportunistically |
-
----
-
-## Tools
-
-### Static Analysis
-- **SonarQube** - Comprehensive code quality
-- **ESLint/Pylint** - Language-specific linting
-- **CodeClimate** - Automated code review
-- **Semgrep** - Pattern-based analysis
-
-### IDE Refactoring Support
-Modern IDEs (VS Code, IntelliJ, PyCharm) provide:
-- Extract Method/Variable/Class
-- Rename with references
-- Move/Copy
-- Inline
-- Change Signature
-
-### AI-Assisted Refactoring
-- AI tools can identify patterns and suggest refactorings
-- 20-30% faster refactoring with AI assistance (McKinsey)
-- Still requires human judgment on what to refactor
-
----
-
-## Common Mistakes
-
-### Refactoring Anti-Patterns
-1. **Big Bang Rewrite** - Replacing everything at once
-2. **Refactoring Without Tests** - No safety net
-3. **Gold Plating** - Perfecting working code unnecessarily
-4. **Mixing with Feature Work** - Confuses code review
-5. **Not Committing Often** - Loses rollback points
-6. **Ignoring Test Code** - Tests need refactoring too
-7. **Premature Refactoring** - Optimizing code you don't understand
-
-### How to Avoid
-- Write tests first
-- Commit after each successful refactoring
-- Separate refactoring commits from feature commits
-- Refactor test code with production code
-- Understand before improving
-
----
-
-## References
-
-- [Refactoring: Improving the Design of Existing Code](https://martinfowler.com/books/refactoring.html) - Martin Fowler
-- [Refactoring Guru](https://refactoring.guru/refactoring) - Online catalog
-- [Working Effectively with Legacy Code](https://www.oreilly.com/library/view/working-effectively-with/0131177052/) - Michael Feathers
-- [Industrial Logic Smells to Refactorings Cheatsheet](https://www.industriallogic.com/blog/smells-to-refactorings-cheatsheet/)
+<knowledge-base name="refactoring" version="1.0">
+<triggers>refactor, code smell, technical debt, clean code, legacy code, extract method, duplication</triggers>
+<overview>Changing code structure without changing behavior. Goal: easier to understand, maintain, and extend.</overview>
+
+<why-refactor>
+  <reason stat="13.5 hrs/week on tech debt">Reduce technical debt</reason>
+  <reason>Enable feature development - clean code is easier to extend</reason>
+  <reason>Improve understanding - refactored code documents intent</reason>
+  <reason>Reduce bugs - simpler code has fewer hiding places</reason>
+  <reason stat="208x deploy frequency">Faster development for elite teams</reason>
+</why-refactor>
+
+<trigger-thresholds>
+  <threshold metric="Method length" value=">40 lines" action="Extract Method"/>
+  <threshold metric="Cyclomatic complexity" value=">10" action="Simplify conditionals"/>
+  <threshold metric="Parameter count" value=">4" action="Introduce Parameter Object"/>
+  <threshold metric="Class size" value=">300 lines" action="Extract Class"/>
+  <threshold metric="Duplication" value=">3 occurrences" action="Extract common code"/>
+</trigger-thresholds>
+
+<when-to-refactor>
+  <do>Before adding features - clean foundation first</do>
+  <do>When fixing bugs - "Boy Scout Rule" - leave code cleaner</do>
+  <do>During code review - spot improvement opportunities</do>
+  <do>When understanding code - refactor to clarify</do>
+  <do>Scheduled tech debt sprints - dedicated improvement time</do>
+  <do-not>No test coverage (write tests first)</do-not>
+  <do-not>Close to deadline (risky timing)</do-not>
+  <do-not>Code being replaced soon</do-not>
+  <do-not>Working code that won't change</do-not>
+</when-to-refactor>
+
+<safe-refactoring-process>
+  <step order="1">Ensure test coverage - can't refactor safely without tests</step>
+  <step order="2">Commit current state - rollback point</step>
+  <step order="3">Make one change - single refactoring at a time</step>
+  <step order="4">Run tests - verify behavior preserved</step>
+  <step order="5">Commit - save progress</step>
+  <step order="6">Repeat - next refactoring</step>
+</safe-refactoring-process>
+
+<strangler-fig-pattern use="Legacy Systems">
+  <step>Identify small piece to modernize</step>
+  <step>Build new implementation alongside old</step>
+  <step>Redirect traffic to new code</step>
+  <step>Remove old code when no longer used</step>
+  <step>Repeat for next piece</step>
+</strangler-fig-pattern>
+
+<code-smells>
+  <category name="Bloaters">
+    <smell name="Long Method" signs="Method >20-30 lines, needs comments" fix="Extract Method"/>
+    <smell name="Large Class" signs="Class >300 lines, multiple responsibilities" fix="Extract Class"/>
+    <smell name="Long Parameter List" signs=">3-4 parameters" fix="Introduce Parameter Object"/>
+    <smell name="Primitive Obsession" signs="Using primitives for domain concepts" fix="Replace Primitive with Object"/>
+  </category>
+  <category name="Dispensables">
+    <smell name="Duplicate Code" signs="Same code in multiple places" fix="Extract Method or Class"/>
+    <smell name="Dead Code" signs="Unreachable code, unused variables" fix="Delete it"/>
+    <smell name="Comments Explaining What" signs="Comments describing what code does" fix="Refactor to be self-documenting"/>
+  </category>
+  <category name="Couplers">
+    <smell name="Feature Envy" signs="Method uses another class's data more than its own" fix="Move Method"/>
+    <smell name="Message Chains" signs="a.getB().getC().getD()" fix="Hide Delegate"/>
+  </category>
+</code-smells>
+
+<refactoring-techniques>
+  <technique name="Extract Method">
+    <when>Code fragment that can be grouped together</when>
+    <how>Create new method with descriptive name, move code, replace with call</how>
+  </technique>
+  <technique name="Extract Class">
+    <when>Class doing too many things</when>
+    <how>Identify subset of fields/methods, create new class, move them, delegate</how>
+  </technique>
+  <technique name="Inline Method">
+    <when>Method body is as clear as its name</when>
+    <how>Replace all calls with method body, delete method</how>
+  </technique>
+  <technique name="Replace Temp with Query">
+    <when>Temp variable holds result of expression</when>
+    <how>Extract expression into method, replace temp with calls</how>
+  </technique>
+  <technique name="Introduce Parameter Object">
+    <when>Group of parameters that travel together</when>
+    <how>Create class for parameter group, update callers</how>
+  </technique>
+  <technique name="Replace Conditional with Polymorphism">
+    <when>Conditional logic based on type</when>
+    <how>Create class hierarchy, move branches to subclass methods</how>
+  </technique>
+</refactoring-techniques>
+
+<success-metrics>
+  <metric name="Cyclomatic Complexity" tool="SonarQube" target="&lt;10 per method"/>
+  <metric name="Code Duplication" tool="SonarQube" target="&lt;3%"/>
+  <metric name="Method Length" tool="Linter" target="&lt;40 lines"/>
+  <metric name="Test Coverage" tool="Coverage tools" target="&gt;80%"/>
+  <qualitative-signs>
+    <sign>Easier to understand when reading</sign>
+    <sign>Faster to make changes</sign>
+    <sign>Fewer bugs in modified areas</sign>
+    <sign>Less "fear" when touching code</sign>
+  </qualitative-signs>
+</success-metrics>
+
+<tech-debt-prioritization>
+  <priority level="P0" criteria="Blocks feature work" action="Refactor immediately"/>
+  <priority level="P1" criteria="Causes bugs regularly" action="Schedule soon"/>
+  <priority level="P2" criteria="Slows development" action="Plan for tech debt sprint"/>
+  <priority level="P3" criteria="Code smell, no impact" action="Address opportunistically"/>
+</tech-debt-prioritization>
+
+<anti-patterns>
+  <anti-pattern name="Big Bang Rewrite" problem="Replacing everything at once"/>
+  <anti-pattern name="Refactoring Without Tests" problem="No safety net"/>
+  <anti-pattern name="Gold Plating" problem="Perfecting working code unnecessarily"/>
+  <anti-pattern name="Mixing with Feature Work" problem="Confuses code review"/>
+  <anti-pattern name="Not Committing Often" problem="Loses rollback points"/>
+  <anti-pattern name="Ignoring Test Code" problem="Tests need refactoring too"/>
+  <anti-pattern name="Premature Refactoring" problem="Optimizing code you don't understand"/>
+</anti-patterns>
+
+<tools>
+  <tool category="Static Analysis">SonarQube, ESLint/Pylint, CodeClimate, Semgrep</tool>
+  <tool category="IDE Support">Extract Method/Variable/Class, Rename with references, Move/Copy, Inline, Change Signature</tool>
+</tools>
+
+<references>
+  <ref name="Refactoring" author="Martin Fowler" url="https://martinfowler.com/books/refactoring.html"/>
+  <ref name="Refactoring Guru" url="https://refactoring.guru/refactoring"/>
+  <ref name="Working Effectively with Legacy Code" author="Michael Feathers"/>
+</references>
+
+</knowledge-base>

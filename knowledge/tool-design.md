@@ -1,310 +1,152 @@
 # Tool Design for AI Agents
 
-TRIGGER: tool, MCP, tool definition, API, function, parameter, tool use, tool call
+<knowledge-base name="tool-design" version="1.0">
+<triggers>tool, MCP, tool definition, API, function, parameter, tool use, tool call</triggers>
+<overview>Well-designed tools dramatically improve agent performance. Poorly designed tools waste tokens and cause errors.</overview>
 
-## Overview
+<core-principles>
+  <principle name="Clear Naming">
+    <do name="search_orders_by_customer_id" description="Search for orders placed by a specific customer. Returns order summaries with IDs, dates, and totals."/>
+    <dont name="search" description="Search for things"/>
+    <rule>Use explicit, unambiguous names</rule>
+  </principle>
 
-Tools are the primary building blocks of agent execution. Well-designed tools dramatically improve agent performance; poorly designed tools waste tokens and cause errors.
-
-## Core Principles
-
-### Principle 1: Clear Naming and Descriptions
-
-**DO**: Use explicit, unambiguous names
-```json
-{
-  "name": "search_orders_by_customer_id",
-  "description": "Search for orders placed by a specific customer. Returns order summaries with IDs, dates, and totals."
-}
-```
-
-**DON'T**: Use vague or ambiguous names
-```json
-{
-  "name": "search",
-  "description": "Search for things"
-}
-```
-
-### Principle 2: Self-Documenting Parameters
-
-**DO**: Include type hints, examples, and constraints
-```json
-{
-  "parameters": {
-    "customer_id": {
-      "type": "string",
-      "description": "Customer UUID (e.g., 'cust_abc123'). Must be 12 characters.",
-      "pattern": "^cust_[a-z0-9]{8}$"
-    },
-    "status_filter": {
-      "type": "string",
-      "enum": ["pending", "shipped", "delivered", "cancelled"],
-      "description": "Filter orders by status. Defaults to all statuses."
-    }
+  <principle name="Self-Documenting Parameters">
+    <do><![CDATA[{
+  "customer_id": {
+    "type": "string",
+    "description": "Customer UUID (e.g., 'cust_abc123'). Must be 12 characters.",
+    "pattern": "^cust_[a-z0-9]{8}$"
+  },
+  "status_filter": {
+    "type": "string",
+    "enum": ["pending", "shipped", "delivered", "cancelled"]
   }
-}
-```
+}]]></do>
+    <dont><![CDATA[{ "id": { "type": "string" } }]]></dont>
+    <rule>Include type hints, examples, constraints</rule>
+  </principle>
 
-**DON'T**: Leave parameters underdocumented
-```json
-{
-  "parameters": {
-    "id": { "type": "string" },
-    "status": { "type": "string" }
-  }
-}
-```
-
-### Principle 3: Actionable Error Messages
-
-**DO**: Return specific, correctable errors
-```json
-{
+  <principle name="Actionable Error Messages">
+    <do><![CDATA[{
   "error": true,
   "message": "Invalid date format. Expected YYYY-MM-DD, got '12/25/2024'",
-  "suggestion": "Use '2024-12-25' instead",
-  "example": "search_orders(start_date='2024-12-25')"
-}
-```
+  "suggestion": "Use '2024-12-25' instead"
+}]]></do>
+    <dont><![CDATA[{ "error": true, "code": "E_INVALID_PARAM" }]]></dont>
+    <rule>Return specific, correctable errors</rule>
+  </principle>
 
-**DON'T**: Return opaque error codes
-```json
-{
-  "error": true,
-  "code": "E_INVALID_PARAM"
-}
-```
+  <principle name="Token-Efficient Responses">
+    <do>Return order_id, customer_name, total, status, total_count, has_more</do>
+    <dont>Return 50+ fields including internal UUIDs, timestamps in ms, carrier IDs</dont>
+    <rule>Return only high-signal information</rule>
+  </principle>
+</core-principles>
 
-### Principle 4: Token-Efficient Responses
+<response-design>
+  <pagination>
+    <param name="limit" default="20" max="100">Max results</param>
+    <param name="offset" default="0">Skip N results</param>
+    <param name="cursor">For cursor-based pagination</param>
+    <response-fields>results, total_count, has_more, next_cursor</response-fields>
+  </pagination>
 
-**DO**: Return only high-signal information
-```json
-{
-  "orders": [
-    {
-      "order_id": "ord_123",
-      "customer_name": "John Doe",
-      "total": "$99.00",
-      "status": "shipped"
-    }
-  ],
-  "total_count": 42,
-  "has_more": true
-}
-```
+  <format-control>
+    <option name="concise">Names and IDs only (default)</option>
+    <option name="detailed">Full metadata</option>
+  </format-control>
 
-**DON'T**: Return everything
-```json
-{
-  "orders": [
-    {
-      "order_uuid": "550e8400-e29b-41d4-a716-446655440000",
-      "customer_uuid": "...",
-      "internal_status_code": 3,
-      "created_at_timestamp_ms": 1702483200000,
-      "updated_at_timestamp_ms": 1702569600000,
-      "shipping_carrier_internal_id": "...",
-      // ... 50 more fields
-    }
-  ]
-}
-```
+  <identifier-preferences>
+    <prefer for="display">name, title</prefer>
+    <avoid for="display">uuid, internal_id</avoid>
+    <prefer for="type">file_type: "image"</prefer>
+    <avoid for="type">mime_type: "image/jpeg"</avoid>
+    <prefer for="dates">created: "2024-12-12"</prefer>
+    <avoid for="dates">created_ms: 1702358400000</avoid>
+  </identifier-preferences>
+</response-design>
 
-## Response Design
+<tool-scope>
+  <anti-pattern name="One Tool Per Endpoint">
+    <bad>create_user, get_user, update_user_email, update_user_name, update_user_settings, delete_user, list_users, search_users... (20+ tools)</bad>
+    <good>manage_user (create, update, delete), search_users (list, filter, paginate)</good>
+  </anti-pattern>
 
-### Pagination and Filtering
+  <when-to-split>Different authentication, very different use cases, complex params per operation</when-to-split>
+  <when-to-combine>Same entity different operations, logically sequential, same error patterns</when-to-combine>
 
-For large result sets, implement:
+  <namespacing>
+    <good>github_repos_search, github_repos_create, github_issues_list</good>
+    <bad>searchRepos, createRepo, listIssues, create_issue</bad>
+  </namespacing>
+</tool-scope>
 
-```markdown
-## Pagination Pattern
+<error-handling>
+  <error-categories>
+    <category code="400" name="Invalid Input" action="Fix parameters, retry"/>
+    <category code="404" name="Not Found" action="Try different search"/>
+    <category code="429" name="Rate Limited" action="Wait, retry"/>
+    <category code="401/403" name="Auth Failed" action="Report BLOCKED"/>
+    <category code="500+" name="Server Error" action="Retry with backoff"/>
+  </error-categories>
 
-Parameters:
-- `limit`: Max results (default: 20, max: 100)
-- `offset`: Skip N results (default: 0)
-- `cursor`: For cursor-based pagination
-
-Response includes:
-- `results`: Array of items
-- `total_count`: Total available
-- `has_more`: Boolean for more pages
-- `next_cursor`: If cursor-based
-```
-
-### Response Format Control
-
-Offer format options for different needs:
-
-```json
-{
-  "response_format": {
-    "type": "string",
-    "enum": ["concise", "detailed"],
-    "description": "concise: names and IDs only. detailed: full metadata",
-    "default": "concise"
-  }
-}
-```
-
-### Semantic vs Technical Identifiers
-
-| Use Case | Prefer | Avoid |
-|----------|--------|-------|
-| Display to user | `name`, `title` | `uuid`, `internal_id` |
-| Type classification | `file_type: "image"` | `mime_type: "image/jpeg"` |
-| Status | `status: "active"` | `status_code: 1` |
-| Dates | `created: "2024-12-12"` | `created_ms: 1702358400000` |
-
-Only include technical identifiers when needed for downstream API calls.
-
-## Tool Scope Design
-
-### Right-Sizing Tools
-
-**Anti-pattern**: One tool per API endpoint
-```
-- create_user
-- get_user
-- update_user_email
-- update_user_name
-- update_user_settings
-- delete_user
-- list_users
-- search_users
-... (20 more tools)
-```
-
-**Better**: Consolidated workflow-oriented tools
-```
-- manage_user (create, update, delete)
-- search_users (list, filter, paginate)
-```
-
-### When to Split vs Combine
-
-| Split When | Combine When |
-|------------|--------------|
-| Different authentication needed | Same entity, different operations |
-| Very different use cases | Logically sequential operations |
-| Complex parameters per operation | Simple, related queries |
-| Different error handling needed | Same error patterns |
-
-### Meaningful Namespacing
-
-Group related tools with prefixes:
-
-```
-# Good namespacing
-github_repos_search
-github_repos_create
-github_issues_list
-github_issues_create
-
-# Poor namespacing
-searchRepos
-createRepo
-listIssues
-create_issue
-```
-
-## Error Handling Design
-
-### Error Categories
-
-| Category | HTTP Code | Agent Action |
-|----------|-----------|--------------|
-| Invalid Input | 400 | Fix parameters, retry |
-| Not Found | 404 | Try different search |
-| Rate Limited | 429 | Wait, retry |
-| Auth Failed | 401/403 | Report BLOCKED |
-| Server Error | 500+ | Retry with backoff |
-
-### Steering Through Errors
-
-Errors can guide agents toward better behavior:
-
-```json
-{
+  <steering-example><![CDATA[{
   "error": true,
   "message": "Search returned 10,000+ results",
-  "suggestion": "Add filters to narrow results. Try adding date_range or status filters.",
-  "tip": "Smaller, targeted searches are more efficient than broad searches"
-}
-```
+  "suggestion": "Add filters to narrow results. Try date_range or status filters.",
+  "tip": "Smaller, targeted searches are more efficient"
+}]]></steering-example>
+</error-handling>
 
-## Token Budget Awareness
+<token-budget>
+  <definition-costs>
+    <component name="Tool name + description" tokens="50-100"/>
+    <component name="Each parameter" tokens="20-50"/>
+    <component name="Enum values" tokens="5-10 each"/>
+    <component name="Examples in description" tokens="30-50 each"/>
+  </definition-costs>
 
-### Tool Definition Costs
+  <optimization>
+    <strategy>Prune unused parameters</strategy>
+    <strategy>Collapse similar tools</strategy>
+    <strategy>Default sensible values</strategy>
+    <strategy>Lazy loading: only include advanced tools when needed</strategy>
+  </optimization>
 
-| Component | Approximate Tokens |
-|-----------|-------------------|
-| Tool name + description | 50-100 |
-| Each parameter | 20-50 |
-| Enum values | 5-10 each |
-| Examples in description | 30-50 each |
+  <multi-server-costs>
+    <setup servers="1" tools="5" tokens="~5K"/>
+    <setup servers="3" tools="15" tokens="~25K"/>
+    <setup servers="5" tools="30+" tokens="~55K"/>
+    <mitigation>Only connect servers needed for current task</mitigation>
+  </multi-server-costs>
+</token-budget>
 
-### Optimization Strategies
-
-1. **Prune unused parameters**: Remove rarely-used optional params
-2. **Collapse similar tools**: Combine tools with overlapping functionality
-3. **Default sensible values**: Reduce required parameters
-4. **Lazy loading**: Only include advanced tools when needed
-
-### Multi-Server Concerns
-
-Multiple MCP servers can consume significant context before conversations start:
-
-| Setup | Approximate Token Cost |
-|-------|----------------------|
-| 1 server, 5 tools | ~5K tokens |
-| 3 servers, 15 tools | ~25K tokens |
-| 5 servers, 30+ tools | ~55K tokens |
-
-**Mitigation**: Only connect servers needed for current task.
-
-## Evaluation-Driven Improvement
-
-### Testing Tools
-
-Create realistic test scenarios:
-
-```markdown
-## Tool Test Scenario
-
+<evaluation>
+  <test-scenario><![CDATA[
 Task: Find all failed orders from last week
-Expected tool sequence:
-1. search_orders(status="failed", date_range="last_7_days")
-2. If >20 results: paginate with cursor
+Expected: search_orders(status="failed", date_range="last_7_days")
+If >20 results: paginate with cursor
+Success: Finds all (precision), no unnecessary calls (efficiency), handles pagination
+]]></test-scenario>
 
-Success criteria:
-- Finds all failed orders (precision)
-- No unnecessary calls (efficiency)
-- Handles pagination correctly
-```
+  <usage-patterns>
+    <pattern symptom="Many retries with param changes" problem="Unclear parameter spec" fix="Add examples"/>
+    <pattern symptom="Redundant tool calls" problem="Missing pagination" fix="Add pagination"/>
+    <pattern symptom="Wrong tool selection" problem="Ambiguous names" fix="Improve descriptions"/>
+    <pattern symptom="Large response handling" problem="Missing truncation" fix="Add limits"/>
+  </usage-patterns>
 
-### Analyzing Tool Usage
+  <refinement-cycle>
+    <step>Run evaluation scenarios</step>
+    <step>Analyze failure patterns</step>
+    <step>Identify tool rough edges</step>
+    <step>Refine descriptions/parameters</step>
+    <step>Re-evaluate</step>
+    <step>Repeat until metrics improve</step>
+  </refinement-cycle>
+</evaluation>
 
-Watch for these patterns in transcripts:
+<source>Writing Tools for Agents - anthropic.com/engineering</source>
 
-| Pattern | Problem | Fix |
-|---------|---------|-----|
-| Many retries with param changes | Unclear parameter spec | Add examples |
-| Redundant tool calls | Missing pagination | Add pagination |
-| Wrong tool selection | Ambiguous names | Improve descriptions |
-| Large response handling | Missing truncation | Add limits |
-
-### Iterative Refinement
-
-1. Run evaluation scenarios
-2. Analyze failure patterns
-3. Identify tool rough edges
-4. Refine descriptions/parameters
-5. Re-evaluate
-6. Repeat until metrics improve
-
----
-
-*"Even small refinements to tool descriptions can yield dramatic improvements."* - Anthropic
-
-**Source**: [Writing Tools for Agents](https://www.anthropic.com/engineering/writing-tools-for-agents)
+</knowledge-base>

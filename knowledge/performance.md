@@ -1,456 +1,186 @@
 # Performance Optimization Knowledge Base
 
-TRIGGER: performance, profiling, benchmark, optimization, bottleneck, latency, throughput, slow, memory leak, load test
-
-## Overview
-
-Performance optimization follows a systematic process: measure, identify, optimize, verify. This knowledge base provides techniques for finding and fixing performance problems across languages and platforms.
-
-## Core Principles
-
-1. **Measure before optimizing**: Never guess at performance problems
-2. **Profile in production-like conditions**: Use realistic data and load
-3. **Focus on hot paths**: 80% of time is in 20% of code
-4. **Optimize the right metric**: Latency vs throughput vs resource usage
-5. **Verify improvements**: Measure after every change
-6. **Consider trade-offs**: Speed vs memory vs complexity vs maintainability
-
-## Performance Metrics
-
-### Latency Metrics
-| Metric | Meaning | Target |
-|--------|---------|--------|
-| **p50 (median)** | Half of requests faster | User-facing: < 100ms |
-| **p90** | 90% of requests faster | User-facing: < 200ms |
-| **p99** | 99% of requests faster | User-facing: < 500ms |
-| **p99.9** | 99.9% of requests faster | Critical paths: < 1s |
-| **Average** | Mean response time | Misleading - don't optimize for this |
-
-### Throughput Metrics
-| Metric | Meaning | Considerations |
-|--------|---------|----------------|
-| **RPS** | Requests per second | Depends on request complexity |
-| **TPS** | Transactions per second | Database-focused |
-| **QPS** | Queries per second | Search/database systems |
-| **Bandwidth** | Data transferred per second | Network-bound systems |
-
-### Resource Metrics
-| Metric | Warning Threshold | Critical Threshold |
-|--------|-------------------|-------------------|
-| **CPU** | > 70% sustained | > 90% |
-| **Memory** | > 80% | > 95% |
-| **Disk I/O** | > 80% utilization | > 95% |
-| **Network** | > 70% bandwidth | > 90% |
-| **DB Connections** | > 80% pool | > 95% |
-
-## Profiling Tools by Language
-
-### Python
-```
-CPU Profiling:
-- cProfile (built-in): python -m cProfile -s cumtime script.py
-- py-spy: py-spy record -o profile.svg -- python script.py
-- line_profiler: @profile decorator for line-by-line
-
-Memory Profiling:
-- memory_profiler: @profile decorator
-- tracemalloc: Built-in allocation tracking
-- objgraph: Object reference visualization
-
-Async Profiling:
-- yappi: Supports asyncio/threading
-```
-
-### JavaScript/Node.js
-```
-CPU Profiling:
-- Node --inspect + Chrome DevTools
-- clinic.js: clinic doctor/flame/bubbleprof
-- 0x: Flame graph generation
-
-Memory Profiling:
-- --inspect + Chrome DevTools heap snapshots
-- memwatch-next: Leak detection
-- heapdump: On-demand heap snapshots
-
-Production:
-- Node --prof for V8 profiling
-- process.memoryUsage() for monitoring
-```
-
-### Java
-```
-CPU Profiling:
-- async-profiler: Low-overhead sampling
-- JFR (Java Flight Recorder): Built into JDK
-- VisualVM: GUI profiler
-
-Memory Profiling:
-- jmap: Heap dumps
-- MAT (Memory Analyzer Tool): Heap analysis
-- JFR: Allocation tracking
-
-GC Analysis:
-- -Xlog:gc*: GC logging
-- GCViewer: Log visualization
-```
-
-### Go
-```
-CPU Profiling:
-- pprof: import _ "net/http/pprof"
-- go test -bench -cpuprofile
-- go tool pprof (flame graphs)
-
-Memory Profiling:
-- pprof heap profiles
-- go test -bench -memprofile
-- runtime.ReadMemStats()
-
-Tracing:
-- go tool trace
-- runtime/trace package
-```
-
-### Rust
-```
-CPU Profiling:
-- perf + flamegraph
-- cargo-flamegraph
-- samply
-
-Memory Profiling:
-- heaptrack
-- valgrind --tool=massif
-- DHAT (Valgrind)
-
-Benchmarking:
-- criterion.rs
-- cargo bench
-```
-
-## Bottleneck Types
-
-### CPU-Bound
-**Symptoms**:
-- High CPU usage (> 80%)
-- Latency scales with request complexity
-- More CPU cores help
-
-**Common Causes**:
-- Inefficient algorithms (O(n²) when O(n log n) possible)
-- Excessive string concatenation
-- Regex in hot paths
-- JSON/XML parsing in loops
-- Cryptographic operations
-
-**Solutions**:
-- Improve algorithm complexity
-- Cache computed results
-- Use native/compiled code for hot paths
-- Parallelize across cores
-
-### Memory-Bound
-**Symptoms**:
-- High memory usage
-- GC pauses affecting latency
-- OOM errors under load
-
-**Common Causes**:
-- Memory leaks (unclosed resources, growing caches)
-- Large object graphs
-- Excessive allocations in loops
-- Unbounded caches/queues
-
-**Solutions**:
-- Object pooling
-- Streaming instead of loading all in memory
-- Bounded caches with eviction
-- Fix leaks (weak references, proper cleanup)
-
-### I/O-Bound
-**Symptoms**:
-- High disk/network utilization
-- CPU relatively idle
-- Latency dominated by external calls
-
-**Common Causes**:
-- Synchronous I/O blocking threads
-- Many small I/O operations
-- Missing connection pooling
-- Large file reads/writes
-
-**Solutions**:
-- Async I/O
-- Batching requests
-- Connection pooling
-- Caching responses
-- Compression
-
-### Database-Bound
-**Symptoms**:
-- Slow queries in profiler
-- High database CPU/I/O
-- Lock contention
-
-**Common Causes**:
-- Missing indexes
-- N+1 query patterns
-- Full table scans
-- Lock contention
-- Too many round trips
-
-**Solutions**:
-- Add appropriate indexes
-- Eager loading / JOIN optimization
-- Query caching
-- Read replicas
-- Connection pooling
-- Batch operations
-
-## Caching Strategies
-
-### Cache Levels
-```
-L1: Application memory (fastest, limited size)
-L2: Local cache (Redis, Memcached on same machine)
-L3: Distributed cache (shared Redis cluster)
-L4: CDN (for static/semi-static content)
-```
-
-### Cache Patterns
-
-**Cache-Aside (Lazy Loading)**:
-```
-1. Check cache
-2. If miss, load from source
-3. Store in cache
-4. Return data
-```
-Good for: Read-heavy, tolerates stale data
-
-**Write-Through**:
-```
-1. Write to cache AND source together
-2. Read always from cache
-```
-Good for: Consistency required, write volume manageable
-
-**Write-Behind**:
-```
-1. Write to cache immediately
-2. Async write to source
-```
-Good for: Write-heavy, can tolerate eventual consistency
-
-### Cache Invalidation
-```
-Time-based (TTL): Simple but may serve stale data
-Event-based: Complex but always fresh
-Version-based: Add version to cache key
-```
-
-### Cache Sizing
-```
-Hit Rate Target: > 90% for most caches
-Memory Budget: Don't exceed available RAM
-Eviction Policy: LRU for general use, LFU for skewed access patterns
-```
-
-## Load Testing
-
-### Test Types
-| Type | Purpose | Duration |
-|------|---------|----------|
-| **Smoke** | Verify system works | Minutes |
-| **Load** | Normal expected traffic | 30-60 min |
-| **Stress** | Find breaking point | Until failure |
-| **Soak** | Find memory leaks | Hours/days |
-| **Spike** | Handle sudden traffic | Burst patterns |
-
-### Tools
-```
-HTTP Load Testing:
-- k6 (modern, scriptable)
-- Apache JMeter (GUI, enterprise)
-- wrk (simple, fast)
-- Locust (Python-based)
-- Artillery (Node.js)
-
-Database Load:
-- pgbench (PostgreSQL)
-- mysqlslap (MySQL)
-- sysbench (general)
-```
-
-### Load Test Design
-```
-1. Define scenarios (user journeys, not just endpoints)
-2. Set realistic think times between requests
-3. Use production-like data volumes
-4. Ramp up gradually (don't spike immediately)
-5. Monitor all components (app, DB, cache, network)
-6. Run long enough to see patterns (30+ minutes)
-```
-
-## Database Optimization
-
-### Index Strategy
-```sql
--- Create indexes for:
--- 1. WHERE clause columns
--- 2. JOIN columns
--- 3. ORDER BY columns
--- 4. Columns with high selectivity
-
--- Avoid indexes on:
--- 1. Small tables
--- 2. Columns updated frequently
--- 3. Low cardinality columns (boolean, status)
-```
-
-### Query Optimization Checklist
-- [ ] EXPLAIN/EXPLAIN ANALYZE the query
-- [ ] Check for full table scans
-- [ ] Verify indexes are being used
-- [ ] Look for implicit type conversions
-- [ ] Check for N+1 patterns
-- [ ] Consider query caching
-- [ ] Batch multiple small queries
-
-### Connection Pooling
-```
-Pool Size Formula:
-connections = (core_count * 2) + spindle_count
-
-Example: 8 cores, SSD:
-connections = (8 * 2) + 1 = 17
-
-Start conservative, increase based on monitoring
-```
-
-## Memory Optimization
-
-### Allocation Reduction
-```python
-# Bad: Creates new string each iteration
-result = ""
-for item in items:
-    result += str(item)
-
-# Good: Single allocation
-result = "".join(str(item) for item in items)
-```
-
-### Object Pooling
-```python
-# Pool reusable objects instead of allocating/deallocating
-class ObjectPool:
-    def __init__(self, factory, max_size=100):
-        self._pool = []
-        self._factory = factory
-        self._max_size = max_size
-
-    def acquire(self):
-        if self._pool:
-            return self._pool.pop()
-        return self._factory()
-
-    def release(self, obj):
-        if len(self._pool) < self._max_size:
-            self._pool.append(obj)
-```
-
-### Memory Leak Detection
-```
-Signs of memory leaks:
-1. Memory grows over time under constant load
-2. GC runs more frequently
-3. Eventually OOM or severe slowdown
-
-Common causes:
-1. Event listeners not removed
-2. Caches without bounds
-3. Closures capturing large objects
-4. Circular references (in ref-counted languages)
-5. Global/static collections growing
-```
-
-## Concurrency Optimization
-
-### Thread Pool Sizing
-```
-CPU-bound work:
-threads = number_of_cores
-
-I/O-bound work:
-threads = number_of_cores * (1 + wait_time/compute_time)
-
-Example: 8 cores, 100ms wait, 10ms compute:
-threads = 8 * (1 + 100/10) = 88 threads
-```
-
-### Lock Optimization
-```
-Strategies:
-1. Reduce lock scope (hold briefly)
-2. Use read-write locks for read-heavy workloads
-3. Lock striping (multiple locks for different data segments)
-4. Lock-free data structures where possible
-5. Avoid nested locks (deadlock risk)
-```
-
-### Async Optimization
-```
-DO:
-- Use async for I/O operations
-- Batch concurrent requests
-- Use connection pooling
-
-DON'T:
-- Use async for CPU-bound work
-- Block in async code
-- Create unbounded concurrency
-```
-
-## Quick Reference: Optimization Checklist
-
-### Before Optimizing
-- [ ] Defined performance requirements (SLOs)
-- [ ] Established baseline metrics
-- [ ] Identified bottleneck with profiling data
-- [ ] Quantified expected improvement
-
-### During Optimization
-- [ ] Changed one thing at a time
-- [ ] Measured after each change
-- [ ] Verified no regressions in other areas
-- [ ] Documented what was changed and why
-
-### After Optimizing
-- [ ] Confirmed improvement meets requirements
-- [ ] Added performance tests to prevent regression
-- [ ] Updated documentation
-- [ ] Shared learnings with team
-
-## Anti-Patterns to Avoid
-
-### Premature Optimization
-- Optimizing without profiling data
-- Micro-optimizing rarely-executed code
-- Sacrificing readability for marginal gains
-
-### Over-Caching
-- Caching everything "just in case"
-- Not considering cache invalidation
-- Unbounded cache growth
-
-### Incorrect Parallelization
-- Parallelizing CPU-bound work beyond core count
-- Creating thread per request
-- Ignoring thread pool saturation
-
-### Ignoring Tail Latency
-- Only measuring averages
-- Not monitoring p99/p99.9
-- Missing timeout configurations
+<knowledge-base name="performance" version="1.0">
+<triggers>performance, profiling, benchmark, optimization, bottleneck, latency, throughput, slow, memory leak, load test</triggers>
+<overview>Measure, identify, optimize, verify. Finding and fixing performance problems across languages and platforms.</overview>
+
+<core-principles>
+  <principle>Measure before optimizing - never guess at performance problems</principle>
+  <principle>Profile in production-like conditions with realistic data and load</principle>
+  <principle>Focus on hot paths - 80% of time is in 20% of code</principle>
+  <principle>Optimize the right metric: latency vs throughput vs resource usage</principle>
+  <principle>Verify improvements - measure after every change</principle>
+  <principle>Consider trade-offs: speed vs memory vs complexity vs maintainability</principle>
+</core-principles>
+
+<latency-metrics>
+  <metric name="p50 (median)" meaning="Half of requests faster" target="User-facing: &lt; 100ms"/>
+  <metric name="p90" meaning="90% of requests faster" target="User-facing: &lt; 200ms"/>
+  <metric name="p99" meaning="99% of requests faster" target="User-facing: &lt; 500ms"/>
+  <metric name="p99.9" meaning="99.9% of requests faster" target="Critical paths: &lt; 1s"/>
+  <metric name="Average" meaning="Mean response time" warning="Misleading - don't optimize for this"/>
+</latency-metrics>
+
+<resource-thresholds>
+  <resource name="CPU" warning="&gt; 70% sustained" critical="&gt; 90%"/>
+  <resource name="Memory" warning="&gt; 80%" critical="&gt; 95%"/>
+  <resource name="Disk I/O" warning="&gt; 80% utilization" critical="&gt; 95%"/>
+  <resource name="Network" warning="&gt; 70% bandwidth" critical="&gt; 90%"/>
+  <resource name="DB Connections" warning="&gt; 80% pool" critical="&gt; 95%"/>
+</resource-thresholds>
+
+<profiling-tools>
+  <language name="Python">
+    <tool type="CPU">cProfile, py-spy, line_profiler</tool>
+    <tool type="Memory">memory_profiler, tracemalloc, objgraph</tool>
+    <tool type="Async">yappi (supports asyncio/threading)</tool>
+  </language>
+  <language name="JavaScript/Node.js">
+    <tool type="CPU">--inspect + Chrome DevTools, clinic.js, 0x</tool>
+    <tool type="Memory">heap snapshots, memwatch-next, heapdump</tool>
+    <tool type="Production">--prof for V8 profiling</tool>
+  </language>
+  <language name="Java">
+    <tool type="CPU">async-profiler, JFR (Java Flight Recorder), VisualVM</tool>
+    <tool type="Memory">jmap, MAT (Memory Analyzer Tool)</tool>
+    <tool type="GC">-Xlog:gc*, GCViewer</tool>
+  </language>
+  <language name="Go">
+    <tool type="CPU">pprof, go test -bench -cpuprofile</tool>
+    <tool type="Memory">pprof heap profiles, runtime.ReadMemStats()</tool>
+    <tool type="Tracing">go tool trace</tool>
+  </language>
+</profiling-tools>
+
+<bottleneck-types>
+  <type name="CPU-Bound">
+    <symptoms>High CPU (&gt;80%), latency scales with complexity, more cores help</symptoms>
+    <causes>Inefficient algorithms, string concatenation, regex in hot paths, JSON parsing in loops</causes>
+    <solutions>Improve algorithm complexity, cache computed results, parallelize</solutions>
+  </type>
+  <type name="Memory-Bound">
+    <symptoms>High memory usage, GC pauses, OOM errors under load</symptoms>
+    <causes>Memory leaks, large object graphs, excessive allocations, unbounded caches</causes>
+    <solutions>Object pooling, streaming, bounded caches with eviction, fix leaks</solutions>
+  </type>
+  <type name="I/O-Bound">
+    <symptoms>High disk/network utilization, CPU relatively idle</symptoms>
+    <causes>Synchronous I/O, many small operations, missing connection pooling</causes>
+    <solutions>Async I/O, batching requests, connection pooling, caching, compression</solutions>
+  </type>
+  <type name="Database-Bound">
+    <symptoms>Slow queries, high database CPU/I/O, lock contention</symptoms>
+    <causes>Missing indexes, N+1 queries, full table scans, lock contention</causes>
+    <solutions>Add indexes, eager loading/JOINs, query caching, read replicas, batching</solutions>
+  </type>
+</bottleneck-types>
+
+<caching-strategies>
+  <levels>
+    <level name="L1">Application memory (fastest, limited size)</level>
+    <level name="L2">Local cache (Redis/Memcached on same machine)</level>
+    <level name="L3">Distributed cache (shared Redis cluster)</level>
+    <level name="L4">CDN (for static/semi-static content)</level>
+  </levels>
+  <patterns>
+    <pattern name="Cache-Aside (Lazy Loading)">Check cache → miss → load from source → store → return</pattern>
+    <pattern name="Write-Through">Write to cache AND source together, read from cache</pattern>
+    <pattern name="Write-Behind">Write to cache immediately, async write to source</pattern>
+  </patterns>
+  <invalidation>
+    <strategy name="Time-based (TTL)">Simple but may serve stale data</strategy>
+    <strategy name="Event-based">Complex but always fresh</strategy>
+    <strategy name="Version-based">Add version to cache key</strategy>
+  </invalidation>
+  <sizing>
+    <guideline>Hit Rate Target: &gt; 90% for most caches</guideline>
+    <guideline>Eviction Policy: LRU for general use, LFU for skewed access</guideline>
+  </sizing>
+</caching-strategies>
+
+<load-testing>
+  <test-types>
+    <type name="Smoke" purpose="Verify system works" duration="Minutes"/>
+    <type name="Load" purpose="Normal expected traffic" duration="30-60 min"/>
+    <type name="Stress" purpose="Find breaking point" duration="Until failure"/>
+    <type name="Soak" purpose="Find memory leaks" duration="Hours/days"/>
+    <type name="Spike" purpose="Handle sudden traffic" duration="Burst patterns"/>
+  </test-types>
+  <tools>
+    <tool type="HTTP">k6, Apache JMeter, wrk, Locust, Artillery</tool>
+    <tool type="Database">pgbench (PostgreSQL), mysqlslap (MySQL), sysbench</tool>
+  </tools>
+  <design-guidelines>
+    <guideline>Define scenarios (user journeys, not just endpoints)</guideline>
+    <guideline>Set realistic think times between requests</guideline>
+    <guideline>Use production-like data volumes</guideline>
+    <guideline>Ramp up gradually (don't spike immediately)</guideline>
+    <guideline>Monitor all components (app, DB, cache, network)</guideline>
+    <guideline>Run long enough to see patterns (30+ minutes)</guideline>
+  </design-guidelines>
+</load-testing>
+
+<database-optimization>
+  <index-strategy>
+    <create-for>WHERE clause columns, JOIN columns, ORDER BY columns, high selectivity columns</create-for>
+    <avoid-for>Small tables, frequently updated columns, low cardinality (boolean, status)</avoid-for>
+  </index-strategy>
+  <connection-pooling>
+    <formula>connections = (core_count * 2) + spindle_count</formula>
+    <example>8 cores, SSD: (8 * 2) + 1 = 17 connections</example>
+    <note>Start conservative, increase based on monitoring</note>
+  </connection-pooling>
+  <query-checklist>
+    <item>EXPLAIN/EXPLAIN ANALYZE the query</item>
+    <item>Check for full table scans</item>
+    <item>Verify indexes are being used</item>
+    <item>Look for implicit type conversions</item>
+    <item>Check for N+1 patterns</item>
+    <item>Consider query caching</item>
+  </query-checklist>
+</database-optimization>
+
+<concurrency-optimization>
+  <thread-pool-sizing>
+    <rule type="CPU-bound">threads = number_of_cores</rule>
+    <rule type="I/O-bound">threads = cores * (1 + wait_time/compute_time)</rule>
+    <example>8 cores, 100ms wait, 10ms compute: 8 * (1 + 100/10) = 88 threads</example>
+  </thread-pool-sizing>
+  <lock-optimization>
+    <strategy>Reduce lock scope (hold briefly)</strategy>
+    <strategy>Use read-write locks for read-heavy workloads</strategy>
+    <strategy>Lock striping (multiple locks for different data segments)</strategy>
+    <strategy>Lock-free data structures where possible</strategy>
+    <strategy>Avoid nested locks (deadlock risk)</strategy>
+  </lock-optimization>
+</concurrency-optimization>
+
+<anti-patterns>
+  <anti-pattern name="Premature Optimization">Optimizing without profiling data, micro-optimizing rarely-executed code</anti-pattern>
+  <anti-pattern name="Over-Caching">Caching everything "just in case", unbounded cache growth</anti-pattern>
+  <anti-pattern name="Incorrect Parallelization">Parallelizing CPU-bound work beyond core count, thread per request</anti-pattern>
+  <anti-pattern name="Ignoring Tail Latency">Only measuring averages, not monitoring p99/p99.9</anti-pattern>
+</anti-patterns>
+
+<optimization-checklist>
+  <before>
+    <item>Defined performance requirements (SLOs)</item>
+    <item>Established baseline metrics</item>
+    <item>Identified bottleneck with profiling data</item>
+    <item>Quantified expected improvement</item>
+  </before>
+  <during>
+    <item>Changed one thing at a time</item>
+    <item>Measured after each change</item>
+    <item>Verified no regressions in other areas</item>
+    <item>Documented what was changed and why</item>
+  </during>
+  <after>
+    <item>Confirmed improvement meets requirements</item>
+    <item>Added performance tests to prevent regression</item>
+    <item>Updated documentation</item>
+    <item>Shared learnings with team</item>
+  </after>
+</optimization-checklist>
+
+</knowledge-base>

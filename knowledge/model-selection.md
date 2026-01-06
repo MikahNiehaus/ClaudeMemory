@@ -1,241 +1,137 @@
 # Model Selection Knowledge Base
 
-## Overview
+<knowledge-base name="model-selection" version="1.0">
+<triggers>model, opus, sonnet, haiku, escalate, complexity, which model</triggers>
+<overview>Two-tier model selection: Sonnet (default for 15 agents), Opus (critical checkpoints and complex reasoning). Priority: Quality > Accuracy > Token Cost.</overview>
 
-This system uses a **two-tier model selection** approach:
-- **Sonnet**: Default for most agents (15 of 18)
-- **Opus**: Reserved for critical checkpoints and complex reasoning
+<always-opus count="3">
+  <agent name="architect-agent" rationale="Design decisions cascade everywhere - bad architecture propagates through entire codebase"/>
+  <agent name="ticket-analyst-agent" rationale="Wrong understanding = building wrong thing entirely - first step errors cascade"/>
+  <agent name="reviewer-agent" rationale="Final quality gate before shipping - catches architecture, security, subtle bugs"/>
+</always-opus>
 
-**Priority**: Quality > Accuracy > Token Cost (no Haiku)
+<default-sonnet count="15">
+  <agent name="test-agent" notes="Escalate for complex mocking strategies"/>
+  <agent name="debug-agent" notes="Escalate for architectural bugs"/>
+  <agent name="workflow-agent" notes="Escalate for complex integrations"/>
+  <agent name="docs-agent"/>
+  <agent name="refactor-agent" notes="Escalate for large-scale refactors"/>
+  <agent name="research-agent"/>
+  <agent name="explore-agent"/>
+  <agent name="estimator-agent"/>
+  <agent name="ui-agent"/>
+  <agent name="performance-agent" notes="Escalate for system-wide optimization"/>
+  <agent name="security-agent" notes="Escalate for auth/payment logic"/>
+  <agent name="browser-agent"/>
+  <agent name="evaluator-agent"/>
+  <agent name="teacher-agent"/>
+  <agent name="compliance-agent"/>
+</default-sonnet>
 
----
-
-## Quick Reference
-
-### Always Opus (3 agents)
-
-| Agent | Rationale |
-|-------|-----------|
-| **architect-agent** | Design decisions cascade everywhere - bad architecture propagates through entire codebase |
-| **ticket-analyst-agent** | Wrong understanding = building wrong thing entirely - first step errors cascade |
-| **reviewer-agent** | Final quality gate before shipping - catches architecture, security, subtle bugs |
-
-### Default Sonnet (15 agents)
-
-| Agent | Notes |
-|-------|-------|
-| test-agent | Test writing; escalate for complex mocking strategies |
-| debug-agent | Root cause analysis; escalate for architectural bugs |
-| workflow-agent | Implementation; escalate for complex integrations |
-| docs-agent | Documentation |
-| refactor-agent | Code cleanup; escalate for large-scale refactors |
-| research-agent | Web research |
-| explore-agent | Codebase exploration |
-| estimator-agent | Story pointing |
-| ui-agent | Frontend work |
-| performance-agent | Profiling; escalate for system-wide optimization |
-| security-agent | Security audits; escalate for auth/payment logic |
-| browser-agent | Interactive testing |
-| evaluator-agent | Output verification |
-| teacher-agent | Explanations |
-| compliance-agent | Rule auditing |
-
----
-
-## Decision Tree
-
-```
+<decision-tree><![CDATA[
 Task arrives
     │
     ▼
-Is agent architect-agent, ticket-analyst-agent, or reviewer-agent?
-    │
-    ├─ YES ──────────────────────────────► Use Opus
-    │
-    └─ NO
-        │
-        ▼
-    Check Opus Escalation Triggers
-        │
-        ├─ ANY trigger matched? ──────────► Use Opus
-        │
-        └─ No triggers matched ───────────► Use Sonnet (default)
-```
+Is agent architect/ticket-analyst/reviewer?
+    ├─ YES → Use Opus
+    └─ NO → Check Opus Escalation Triggers
+              ├─ ANY trigger matched? → Use Opus
+              └─ No triggers → Use Sonnet (default)
+]]></decision-tree>
 
----
+<opus-escalation-triggers>
+  <trigger category="Agent Type">architect-agent, ticket-analyst-agent, reviewer-agent</trigger>
 
-## Opus Escalation Triggers
+  <trigger category="Complexity">
+    <condition>4+ domains in Planning Checklist</condition>
+    <condition>10+ subtasks decomposed</condition>
+    <condition>Multi-file architectural changes</condition>
+    <condition>Cross-cutting concerns (logging, auth, caching across modules)</condition>
+  </trigger>
 
-Use Opus instead of Sonnet if **ANY** of these conditions match:
+  <trigger category="Stakes">
+    <condition>Production deployment or live system</condition>
+    <condition>Payment processing logic</condition>
+    <condition>Authentication/authorization code</condition>
+    <condition>Sensitive data handling (PII, credentials, secrets)</condition>
+    <condition>Security-critical paths</condition>
+  </trigger>
 
-### By Agent Type (always Opus)
-- architect-agent
-- ticket-analyst-agent
-- reviewer-agent
+  <trigger category="Ambiguity">
+    <condition>Vague requirements ("make it better", "improve performance")</condition>
+    <condition>Conflicting constraints requiring trade-offs</condition>
+    <condition>Architectural decisions with long-term implications</condition>
+  </trigger>
 
-### By Complexity
-- 4+ domains identified in Planning Checklist
-- 10+ subtasks decomposed from request
-- Multi-file architectural changes
-- Cross-cutting concerns (logging, auth, caching across modules)
+  <trigger category="Reasoning Depth">
+    <condition>Multi-step autonomous decision chains</condition>
+    <condition>Complex debugging requiring system-wide understanding</condition>
+    <condition>Design pattern selection with trade-offs</condition>
+  </trigger>
 
-### By Stakes
-- Production deployment or live system changes
-- Payment processing logic
-- Authentication/authorization code
-- Sensitive data handling (PII, credentials, secrets)
-- Security-critical paths
+  <trigger category="Mid-Task Escalation">
+    <condition>Agent reports Confidence: LOW on critical subtask</condition>
+    <condition>Agent reports Status: BLOCKED with capability reason</condition>
+    <condition>Multiple failed tool calls (>3) on same operation</condition>
+    <condition>Agent explicitly requests deeper reasoning</condition>
+  </trigger>
+</opus-escalation-triggers>
 
-### By Ambiguity
-- Vague requirements needing interpretation ("make it better", "improve performance")
-- Conflicting constraints requiring trade-off decisions
-- Architectural decisions with long-term implications
+<complexity-scoring purpose="Edge cases when escalation decision is unclear">
+  <dimension name="Domains" sonnet="1-3 domains" opus="4+ domains"/>
+  <dimension name="Subtasks" sonnet="1-9 subtasks" opus="10+ subtasks"/>
+  <dimension name="Ambiguity" sonnet="Clear requirements" opus="Vague/interpretive"/>
+  <dimension name="Stakes" sonnet="Dev/test environment" opus="Production/sensitive"/>
+  <dimension name="Reasoning" sonnet="Linear/sequential" opus="Multi-step autonomous"/>
+  <threshold opus="Total 8+" sonnet="Total 5-7"/>
+  <override>Always-Opus agents use Opus regardless of score</override>
+</complexity-scoring>
 
-### By Reasoning Depth
-- Multi-step autonomous decision chains
-- Complex debugging requiring system-wide understanding
-- Design pattern selection with trade-offs
+<mid-task-escalation>
+  <scenario name="LOW Confidence on Critical Path">
+    <condition>Agent self-reflection reports LOW confidence</condition>
+    <condition>Subtask is on critical path (not exploratory)</condition>
+    <action>Retry same subtask with Opus</action>
+  </scenario>
+  <scenario name="BLOCKED with Capability Issue">
+    <condition>Status: BLOCKED</condition>
+    <condition>Reason suggests reasoning limitation</condition>
+    <action>Spawn Opus agent for same task</action>
+  </scenario>
+  <scenario name="Repeated Failures">
+    <condition>Same tool call fails 3+ times</condition>
+    <condition>Failures suggest reasoning issue</condition>
+    <action>Escalate to Opus</action>
+  </scenario>
+  <scenario name="Explicit Request">
+    <condition>Agent output includes: "This task may benefit from deeper reasoning"</condition>
+    <action>Honor the request, spawn Opus</action>
+  </scenario>
+</mid-task-escalation>
 
-### By Escalation (mid-task)
-- Agent reports `Confidence: LOW` on critical subtask
-- Agent reports `Status: BLOCKED` with capability-related reason
-- Multiple failed tool calls (>3) on same operation
-- Agent explicitly requests deeper reasoning
+<model-characteristics>
+  <model name="Opus" strength="Deep reasoning, complex analysis, nuanced judgment">
+    <best-for>Architecture, requirements, final review, high-stakes</best-for>
+    <avoid-for>High-volume simple tasks</avoid-for>
+  </model>
+  <model name="Sonnet" strength="Balanced intelligence, strong coding, efficient">
+    <best-for>Implementation, testing, debugging, documentation</best-for>
+    <avoid-for>Tasks requiring deep architectural reasoning</avoid-for>
+  </model>
+  <context-note>Both support 200K context; Sonnet has 1M beta; for >100K tokens, prefer Opus for synthesis</context-note>
+</model-characteristics>
 
----
+<anti-patterns>
+  <anti-pattern name="Use Opus to be safe" problem="Wastes usage" fix="Follow decision tree"/>
+  <anti-pattern name="Sonnet for everything" problem="Misses quality benefits" fix="Always-Opus agents exist for a reason"/>
+  <anti-pattern name="No visibility into usage" problem="Can't optimize" fix="Track in context.md"/>
+  <anti-pattern name="Ignoring escalation signals" problem="Agent confidence exists for a reason" fix="Honor LOW/BLOCKED"/>
+</anti-patterns>
 
-## Complexity Scoring (for edge cases)
+<integration>
+  <step phase="Planning">Identify agents, apply decision tree, document in context.md</step>
+  <step phase="Spawning">Include model: "opus" or "sonnet" parameter in Task tool</step>
+  <step phase="Monitoring">Watch for escalation triggers, update context.md if escalation</step>
+</integration>
 
-When escalation decision is unclear, score the task:
-
-| Dimension | Score 1 (Sonnet) | Score 2 (Opus) |
-|-----------|------------------|----------------|
-| **Domains** | 1-3 domains | 4+ domains |
-| **Subtasks** | 1-9 subtasks | 10+ subtasks |
-| **Ambiguity** | Clear requirements | Vague/interpretive |
-| **Stakes** | Dev/test environment | Production/sensitive |
-| **Reasoning** | Linear/sequential | Multi-step autonomous |
-
-**Scoring**:
-- Total **8+** → Use Opus
-- Total **5-7** → Use Sonnet (default)
-
-**Override**: Always-Opus agents (architect, ticket-analyst, reviewer) use Opus regardless of score.
-
----
-
-## Confidence-Based Mid-Task Escalation
-
-During agent execution, the orchestrator should escalate to Opus if:
-
-1. **LOW Confidence on Critical Path**
-   - Agent self-reflection reports LOW confidence
-   - Subtask is on critical path (not exploratory)
-   - Action: Retry same subtask with Opus
-
-2. **BLOCKED with Capability Issue**
-   - Status: BLOCKED
-   - Reason suggests reasoning limitation (not missing info)
-   - Action: Spawn Opus agent for same task
-
-3. **Repeated Failures**
-   - Same tool call fails 3+ times
-   - Failures suggest reasoning issue (not API/permission)
-   - Action: Escalate to Opus
-
-4. **Explicit Request**
-   - Agent output includes: "This task may benefit from deeper reasoning"
-   - Action: Honor the request, spawn Opus
-
-### Escalation Protocol
-
-```markdown
-## Escalation Record
-
-**Original Agent**: [agent-name] with Sonnet
-**Escalation Trigger**: [which trigger matched]
-**New Agent**: [agent-name] with Opus
-**Handoff Context**: [what the Sonnet agent discovered before escalation]
-```
-
----
-
-## Model Characteristics
-
-| Model | Strength | Best For | Avoid For |
-|-------|----------|----------|-----------|
-| **Opus** | Deep reasoning, complex analysis, nuanced judgment | Architecture, requirements, final review, high-stakes | High-volume simple tasks |
-| **Sonnet** | Balanced intelligence, strong coding, efficient | Implementation, testing, debugging, documentation | Tasks requiring deep architectural reasoning |
-
-### Token Context Considerations
-
-- Both models support 200K context
-- Sonnet has 1M context beta (if enabled)
-- For ultra-long sessions (>100K tokens accumulated), prefer Opus for synthesis tasks
-
----
-
-## Cost Tracking Template
-
-Add to `workspace/[task-id]/context.md`:
-
-```markdown
-## Model Usage
-
-| Agent | Model | Rationale | Est. Tokens |
-|-------|-------|-----------|-------------|
-| [agent] | [opus/sonnet] | [why this model] | ~Xk |
-
-**Opus Usage**: X agents ([list])
-**Sonnet Usage**: X agents ([list])
-**Escalations**: [count and reasons]
-```
-
----
-
-## Anti-Patterns
-
-| Anti-Pattern | Why It's Wrong | Correct Approach |
-|--------------|----------------|------------------|
-| "Use Opus to be safe" | Wastes usage, no quality benefit for simple tasks | Follow decision tree |
-| "Sonnet for everything" | Misses quality benefits on critical tasks | Always-Opus agents exist for a reason |
-| No visibility into usage | Can't optimize what you can't measure | Track in context.md |
-| Ignoring escalation signals | Agent confidence exists for a reason | Honor LOW confidence, BLOCKED |
-| "Quick task, skip the check" | All tasks deserve appropriate resources | Run decision tree every time |
-
----
-
-## Integration Points
-
-### Where Model Selection Happens
-
-1. **Planning Phase** (in orchestrator)
-   - Identify which agents needed
-   - Apply decision tree to each agent
-   - Document in Plan section of context.md
-
-2. **Agent Spawning** (Task tool)
-   - Include `model: "opus"` or `model: "sonnet"` parameter
-   - Include rationale in agent prompt
-
-3. **Mid-Task Monitoring** (during execution)
-   - Watch for escalation triggers
-   - Update context.md if escalation occurs
-
-### Task Tool Spawn Template
-
-```markdown
-Use the Task tool with:
-- subagent_type: "general-purpose"
-- model: "[opus|sonnet]"  ← REQUIRED
-- prompt: [agent instructions including model rationale]
-```
-
----
-
-## Related Knowledge Bases
-
-- `knowledge/self-reflection.md` - Confidence levels and self-assessment
-- `knowledge/error-recovery.md` - Error handling and escalation
-- `knowledge/context-engineering.md` - Token budget management
-- `knowledge/rule-enforcement.md` - Compliance checking
+</knowledge-base>

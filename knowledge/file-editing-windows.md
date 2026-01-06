@@ -1,142 +1,84 @@
 # File Editing on Windows - Known Issues and Workarounds
 
-TRIGGER: file edit, write file, unexpectedly modified, edit error, windows
+<knowledge-base name="file-editing-windows" version="1.0">
+<triggers>file edit, write file, unexpectedly modified, edit error, windows</triggers>
+<overview>Critical Windows-specific bug in Claude Code causing "File has been unexpectedly modified" errors. Tracked in GitHub issues #7443, #7457, #10437, #12462, #12805.</overview>
 
-## Known Bug: "File has been unexpectedly modified"
+<symptoms>
+  <symptom>Edit/Write tools fail with "File has been unexpectedly modified"</symptom>
+  <symptom>Error occurs even immediately after reading the file</symptom>
+  <symptom>File was NOT actually modified by external process</symptom>
+  <symptom>More common with absolute paths</symptom>
+</symptoms>
 
-This is a critical Windows-specific bug in Claude Code (tracked in GitHub issues #7443, #7457, #10437, #12462, #12805).
+<root-causes suspected="true">
+  <cause>Windows/MINGW file system timestamp resolution differences</cause>
+  <cause>Line ending conversion (CRLF vs LF) detected as modification</cause>
+  <cause>File hash/tracking cache not persisting correctly</cause>
+  <cause>VSCode background processes (formatters, linters, file watchers)</cause>
+</root-causes>
 
-### Symptoms
-- Edit/Write tools fail with "File has been unexpectedly modified"
-- Error occurs even immediately after reading the file
-- The file was NOT actually modified by any external process
-- More common with absolute paths
+<workarounds>
+  <workaround priority="1" name="Use Relative Paths" primary="true">
+    <correct>./src/file.ts, agents/_shared-output.md</correct>
+    <wrong>C:/prj/ClaudeMemory/agents/_shared-output.md</wrong>
+    <rule>ALWAYS use relative paths (e.g., ./src/file.ts). DO NOT use absolute paths.</rule>
+  </workaround>
 
-### Root Causes (Suspected)
-1. Windows/MINGW file system timestamp resolution differences
-2. Line ending conversion (CRLF vs LF) detected as modification
-3. File hash/tracking cache not persisting correctly
-4. VSCode background processes (formatters, linters, file watchers)
+  <workaround priority="2" name="Retry Pattern">
+    <step>Wait 1-2 seconds</step>
+    <step>Read file again</step>
+    <step>Attempt edit immediately after read</step>
+    <step>If fails again, try next workaround</step>
+  </workaround>
 
----
-
-## Workarounds (In Order of Preference)
-
-### 1. Use Relative Paths (Primary Workaround)
-
-**ALWAYS use relative paths**, not absolute paths:
-
-```
-CORRECT: ./src/file.ts
-CORRECT: agents/_shared-output.md
-WRONG:   C:/prj/ClaudeMemory/agents/_shared-output.md
-```
-
-Add to agent prompts or CLAUDE.md:
-```
-When editing files, ALWAYS use relative paths (e.g., ./src/file.ts).
-DO NOT use absolute paths (e.g., C:/Users/project/src/file.ts).
-```
-
-### 2. Retry Pattern
-
-If first attempt fails:
-1. Wait 1-2 seconds
-2. Read file again
-3. Attempt edit immediately after read
-4. If fails again, try workaround #3
-
-### 3. Use Bash Commands Instead of Edit Tool
-
-When Edit tool fails repeatedly, fall back to Bash:
-
-**For simple replacements:**
-```bash
-sed -i 's/old_string/new_string/g' file.txt
-```
-
-**For appending content:**
-```bash
-cat >> file.txt << 'EOF'
+  <workaround priority="3" name="Use Bash Commands">
+    <for-replacements>sed -i 's/old_string/new_string/g' file.txt</for-replacements>
+    <for-appending><![CDATA[cat >> file.txt << 'EOF'
 New content here
-EOF
-```
-
-**For full file replacement (Python):**
-```bash
-python -c "
-content = '''
-Your file content here
-'''
+EOF]]></for-appending>
+    <for-full-replacement><![CDATA[python -c "
+content = '''Your file content here'''
 with open('file.txt', 'w', encoding='utf-8') as f:
     f.write(content)
-"
-```
+"]]></for-full-replacement>
+  </workaround>
 
-### 4. Create New File with Different Name
+  <workaround priority="4" name="Create New File">
+    <step>Create new file with different name</step>
+    <step>Write full content to new file</step>
+    <step>Delete old file: rm old_file.md</step>
+    <step>Rename new file: mv new_file.md old_file.md</step>
+  </workaround>
 
-If editing existing file fails:
-1. Create new file with different name
-2. Write full content to new file
-3. Delete old file (using Bash: `rm old_file.md`)
-4. Rename new file (using Bash: `mv new_file.md old_file.md`)
+  <workaround priority="5" name="Restart Claude Code">
+    <note>Temporarily resolves the issue but loses conversation context</note>
+  </workaround>
+</workarounds>
 
-### 5. Restart Claude Code
+<agent-guidelines>
+  <on-error>
+    <step attempt="1">Try with relative path</step>
+    <step attempt="2">Read file, immediately edit, don't wait</step>
+    <step attempt="3">Use Bash workaround</step>
+    <step attempt="all-fail">Report to user, suggest restart, offer new file alternative</step>
+  </on-error>
+  <preventive>
+    <rule>Always use relative paths in file operations</rule>
+    <rule>Don't batch multiple reads before edits</rule>
+    <rule>Edit immediately after reading</rule>
+    <rule>For critical files: Consider "new file + rename" pattern</rule>
+  </preventive>
+</agent-guidelines>
 
-If all else fails:
-- Suggest user restart Claude Code
-- This temporarily resolves the issue
-- Note: This loses conversation context
+<rule id="RULE-011" name="Windows File Edit Resilience" severity="WARN">
+  <trigger>When Edit/Write tool fails with "unexpectedly modified" error</trigger>
+  <condition>On Windows platform</condition>
+  <action>
+    <step>Retry with relative path</step>
+    <step>If fails, use Bash/sed workaround</step>
+    <step>If fails, report to user</step>
+  </action>
+</rule>
 
----
-
-## Agent Guidelines
-
-### When Encountering This Error
-
-1. **First attempt**: Try with relative path
-2. **Second attempt**: Read file, immediately edit, don't wait
-3. **Third attempt**: Use Bash workaround
-4. **If all fail**:
-   - Report to user
-   - Suggest restart
-   - Offer to write to new file instead
-
-### Preventive Measures
-
-1. **Always use relative paths** in file operations
-2. **Don't batch multiple reads** before edits
-3. **Edit immediately** after reading
-4. **For critical files**: Consider the "new file + rename" pattern
-
----
-
-## Rule Addition for CLAUDE.md
-
-Add this rule to handle the issue:
-
-```markdown
-### RULE-011: Windows File Edit Resilience
-- **ID**: RULE-011
-- **TRIGGER**: When Edit/Write tool fails with "unexpectedly modified" error
-- **CONDITION**: On Windows platform
-- **ACTION**:
-  1. Retry with relative path
-  2. If fails, use Bash/sed workaround
-  3. If fails, report to user
-- **SEVERITY**: WARN
-
-**Workaround Priority**:
-1. Use relative paths (./path/file.ext)
-2. Read immediately before edit
-3. Fall back to Bash commands
-4. Create new file + rename
-```
-
----
-
-## References
-
-- [GitHub Issue #7443](https://github.com/anthropics/claude-code/issues/7443) - Original detailed report
-- [GitHub Issue #12805](https://github.com/anthropics/claude-code/issues/12805) - Windows/MINGW specific
-- [Medium Workaround Article](https://medium.com/@yunjeongiya/the-elusive-claude-file-has-been-unexpectedly-modified-bug-a-workaround-solution-831182038d1d)
+</knowledge-base>

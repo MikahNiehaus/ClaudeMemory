@@ -1,365 +1,192 @@
 # Observability Knowledge Base
 
-TRIGGER: logging, metrics, tracing, monitoring, observability, alerts, telemetry, dashboard, APM
+<knowledge-base name="observability" version="1.0">
+<triggers>logging, metrics, tracing, monitoring, observability, alerts, telemetry, dashboard, APM</triggers>
+<overview>Observability is understanding internal system state by examining outputs. Three pillars: Logs (events), Metrics (measurements), Traces (request flows). Answer: What happened? How often? Where?</overview>
 
-## Overview
+<three-pillars>
+  <pillar name="Logs">
+    <what>Discrete events with context</what>
+    <when>Debugging, audit trails, error details</when>
+    <examples>Error messages, request logs, audit events</examples>
+  </pillar>
+  <pillar name="Metrics">
+    <what>Numerical measurements over time</what>
+    <when>Alerting, dashboards, capacity planning</when>
+    <examples>Request count, latency percentiles, CPU usage</examples>
+  </pillar>
+  <pillar name="Traces">
+    <what>Request flow through distributed systems</what>
+    <when>Understanding dependencies, latency breakdown</when>
+    <examples>API call → Service A → Database → Cache → Response</examples>
+  </pillar>
+</three-pillars>
 
-Observability is the ability to understand the internal state of a system by examining its outputs. The three pillars are **Logs** (events), **Metrics** (aggregated measurements), and **Traces** (request flows). Together they answer: What happened? How often? Where in the system?
-
-## The Three Pillars
-
-### Logs
-**What**: Discrete events with context
-**When to use**: Debugging, audit trails, error details
-**Examples**: Error messages, request logs, audit events
-
-### Metrics
-**What**: Numerical measurements over time
-**When to use**: Alerting, dashboards, capacity planning
-**Examples**: Request count, latency percentiles, CPU usage
-
-### Traces
-**What**: Request flow through distributed systems
-**When to use**: Understanding dependencies, latency breakdown
-**Examples**: API call → Service A → Database → Cache → Response
-
-## Structured Logging
-
-### Why Structure Matters
-```
-# Bad: Unstructured log
-ERROR: Failed to process order for user john
-
-# Good: Structured log (JSON)
-{
+<structured-logging>
+  <bad-example>ERROR: Failed to process order for user john</bad-example>
+  <good-example><![CDATA[{
   "level": "error",
   "message": "Failed to process order",
   "user_id": "user_123",
   "order_id": "order_456",
   "error_type": "PaymentDeclined",
-  "timestamp": "2025-12-05T14:30:00Z",
   "trace_id": "abc123"
-}
-```
+}]]></good-example>
+  <log-levels>
+    <level name="TRACE" usage="Very detailed debugging" example="Variable values in loops"/>
+    <level name="DEBUG" usage="Development debugging" example="Function entry/exit"/>
+    <level name="INFO" usage="Normal operations" example="Request completed"/>
+    <level name="WARN" usage="Potential problems" example="Retry attempted"/>
+    <level name="ERROR" usage="Operation failed" example="Exception caught"/>
+    <level name="FATAL" usage="Cannot continue" example="Startup failure"/>
+  </log-levels>
+  <best-practices>
+    <do>Include context (user_id, order_id, error_code)</do>
+    <do>Use correlation IDs (trace_id)</do>
+    <do>Log at boundaries (external API calls)</do>
+    <dont>Log without context ("Something went wrong")</dont>
+    <dont>Log sensitive data (passwords, API keys)</dont>
+    <dont>Log in loops (will flood)</dont>
+  </best-practices>
+</structured-logging>
 
-### Log Levels
-| Level | Usage | Examples |
-|-------|-------|----------|
-| **TRACE** | Very detailed debugging | Variable values in loops |
-| **DEBUG** | Development debugging | Function entry/exit, state changes |
-| **INFO** | Normal operations | Request completed, job started |
-| **WARN** | Potential problems | Retry attempted, deprecated API used |
-| **ERROR** | Operation failed | Exception caught, request failed |
-| **FATAL** | Application cannot continue | Startup failure, critical dependency down |
+<log-tools>
+  <tool name="ELK Stack" best-for="Self-hosted, full control"/>
+  <tool name="Datadog" best-for="Unified platform, integrated"/>
+  <tool name="Splunk" best-for="Enterprise, compliance"/>
+  <tool name="CloudWatch" best-for="AWS native"/>
+  <tool name="Loki" best-for="Kubernetes, cost-effective"/>
+</log-tools>
 
-### Logging Best Practices
+<metric-types>
+  <type name="Counter" behavior="Only increases (or resets)" example="http_requests_total{method,path,status}"/>
+  <type name="Gauge" behavior="Current value (up/down)" example="active_connections, memory_usage_bytes"/>
+  <type name="Histogram" behavior="Distribution of values" example="http_request_duration_seconds_bucket{le}"/>
+  <type name="Summary" behavior="Pre-calculated percentiles" example="http_request_duration_seconds{quantile}"/>
+</metric-types>
 
-**DO**:
-```python
-# Include context
-logger.error("Payment failed", extra={
-    "user_id": user.id,
-    "order_id": order.id,
-    "amount": order.total,
-    "error_code": e.code
-})
+<metric-methods>
+  <method name="RED" focus="Request">
+    <metric name="Rate">Requests per second</metric>
+    <metric name="Errors">Failed requests per second</metric>
+    <metric name="Duration">Request latency distribution</metric>
+  </method>
+  <method name="USE" focus="Resource">
+    <metric name="Utilization">% resource in use</metric>
+    <metric name="Saturation">Work queued/waiting</metric>
+    <metric name="Errors">Error count</metric>
+  </method>
+</metric-methods>
 
-# Use correlation IDs
-logger.info("Processing request", extra={"trace_id": request.trace_id})
+<essential-metrics>
+  <category name="Request">http_requests_total, http_request_duration_seconds, http_request_size_bytes</category>
+  <category name="Business">orders_processed_total, revenue_dollars_total, user_signups_total</category>
+  <category name="System">process_cpu_seconds_total, process_memory_bytes, process_open_fds</category>
+</essential-metrics>
 
-# Log at boundaries
-logger.info("External API call", extra={
-    "service": "payment-gateway",
-    "method": "POST",
-    "path": "/charge"
-})
-```
+<metric-tools>
+  <tool name="Prometheus" type="Pull-based TSDB" best-for="Kubernetes, microservices"/>
+  <tool name="Datadog" type="Push-based SaaS" best-for="Full stack monitoring"/>
+  <tool name="CloudWatch" type="AWS native" best-for="AWS services"/>
+  <tool name="InfluxDB" type="Push-based TSDB" best-for="IoT, high-cardinality"/>
+  <tool name="Grafana" type="Visualization" best-for="Dashboards"/>
+</metric-tools>
 
-**DON'T**:
-```python
-# No context
-logger.error("Something went wrong")
-
-# Sensitive data
-logger.info(f"User login: {password}")
-
-# High-cardinality in messages
-logger.info(f"Request from {ip_address}")  # Put in structured field instead
-
-# Excessive logging in loops
-for item in large_list:
-    logger.debug(f"Processing {item}")  # Will flood logs
-```
-
-### Log Aggregation Tools
-| Tool | Best For | Features |
-|------|----------|----------|
-| **ELK Stack** | Self-hosted, full control | Elasticsearch, Logstash, Kibana |
-| **Datadog** | Unified platform | Logs + metrics + traces integrated |
-| **Splunk** | Enterprise, compliance | Powerful search, security focus |
-| **CloudWatch** | AWS native | Integrated with AWS services |
-| **Loki** | Kubernetes, cost-effective | Prometheus-like labels, no indexing |
-
-## Metrics
-
-### Metric Types
-
-**Counter**: Only increases (or resets)
-```
-http_requests_total{method="GET", path="/api/users", status="200"}
-```
-
-**Gauge**: Current value (can go up or down)
-```
-active_connections{service="api"}
-memory_usage_bytes{instance="web-1"}
-```
-
-**Histogram**: Distribution of values
-```
-http_request_duration_seconds_bucket{le="0.1"}
-http_request_duration_seconds_bucket{le="0.5"}
-http_request_duration_seconds_bucket{le="1.0"}
-```
-
-**Summary**: Pre-calculated percentiles
-```
-http_request_duration_seconds{quantile="0.5"}
-http_request_duration_seconds{quantile="0.99"}
-```
-
-### Key Metrics to Track
-
-**RED Method** (Request-focused):
-- **R**ate: Requests per second
-- **E**rrors: Failed requests per second
-- **D**uration: Request latency distribution
-
-**USE Method** (Resource-focused):
-- **U**tilization: % resource in use
-- **S**aturation: Work queued/waiting
-- **E**rrors: Error count
-
-### Essential Application Metrics
-```
-# Request metrics
-http_requests_total{method, path, status}
-http_request_duration_seconds{method, path}
-http_request_size_bytes{method, path}
-
-# Business metrics
-orders_processed_total{status}
-revenue_dollars_total{product_type}
-user_signups_total{source}
-
-# System metrics
-process_cpu_seconds_total
-process_memory_bytes
-process_open_fds
-```
-
-### Metrics Tools
-| Tool | Type | Best For |
-|------|------|----------|
-| **Prometheus** | Pull-based TSDB | Kubernetes, microservices |
-| **Datadog** | Push-based SaaS | Full stack monitoring |
-| **CloudWatch** | AWS native | AWS services |
-| **InfluxDB** | Push-based TSDB | IoT, high-cardinality |
-| **Grafana** | Visualization | Dashboards, any data source |
-
-## Distributed Tracing
-
-### Concepts
-
-**Trace**: Full journey of a request through the system
-**Span**: Single operation within a trace
-**Context Propagation**: Passing trace IDs across services
-
-### Span Anatomy
-```json
-{
+<distributed-tracing>
+  <concepts>
+    <concept name="Trace">Full journey of request through system</concept>
+    <concept name="Span">Single operation within a trace</concept>
+    <concept name="Context Propagation">Passing trace IDs across services</concept>
+  </concepts>
+  <span-anatomy><![CDATA[{
   "trace_id": "abc123",
   "span_id": "span456",
   "parent_span_id": "span123",
   "operation_name": "database.query",
-  "start_time": "2025-12-05T14:30:00.000Z",
   "duration_ms": 45,
-  "status": "OK",
-  "attributes": {
-    "db.system": "postgresql",
-    "db.statement": "SELECT * FROM users WHERE id = ?",
-    "db.rows_affected": 1
-  }
-}
-```
+  "attributes": {"db.system": "postgresql"}
+}]]></span-anatomy>
+</distributed-tracing>
 
-### OpenTelemetry (OTel)
+<tracing-tools>
+  <tool name="Jaeger" type="Open source" best-for="Self-hosted, Kubernetes"/>
+  <tool name="Zipkin" type="Open source" best-for="Simpler setup"/>
+  <tool name="Datadog APM" type="SaaS" best-for="Full platform integration"/>
+  <tool name="AWS X-Ray" type="AWS native" best-for="AWS services"/>
+  <tool name="Honeycomb" type="SaaS" best-for="High-cardinality analysis"/>
+</tracing-tools>
 
-**The standard for observability instrumentation**
+<alerting>
+  <principles>
+    <principle>Alert on symptoms, not causes (API latency not DB CPU)</principle>
+    <principle>Include runbook links in annotations</principle>
+  </principles>
+  <severity-levels>
+    <level name="Critical" response="Wake someone up" examples="Service down, data loss"/>
+    <level name="Warning" response="Investigate soon" examples="Degraded performance"/>
+    <level name="Info" response="Business hours" examples="Unusual pattern"/>
+  </severity-levels>
+  <avoid-fatigue>
+    <strategy>Set realistic thresholds</strategy>
+    <strategy>Group related alerts</strategy>
+    <strategy>Require sustained condition</strategy>
+    <strategy>Have clear ownership</strategy>
+    <strategy>Regularly review and tune</strategy>
+  </avoid-fatigue>
+</alerting>
 
-```python
-# Python example
-from opentelemetry import trace
-from opentelemetry.sdk.trace import TracerProvider
-from opentelemetry.sdk.trace.export import BatchSpanProcessor
-from opentelemetry.exporter.otlp.proto.grpc.trace_exporter import OTLPSpanExporter
+<dashboard-design>
+  <types>
+    <type name="Executive" content="Business KPIs, health summary, trends"/>
+    <type name="Service Health" content="RED metrics, utilization, dependencies"/>
+    <type name="Debugging" content="Detailed metrics, logs, traces"/>
+  </types>
+  <best-practices>
+    <layout>Most important at top-left, group related, consistent time ranges</layout>
+    <visualization>Appropriate charts, show thresholds, avoid 3D, consistent colors</visualization>
+    <interactivity>Drill-down links, trace/log links, time adjustment, filtering</interactivity>
+  </best-practices>
+</dashboard-design>
 
-# Setup
-provider = TracerProvider()
-processor = BatchSpanProcessor(OTLPSpanExporter(endpoint="http://collector:4317"))
-provider.add_span_processor(processor)
-trace.set_tracer_provider(provider)
+<slos-slis>
+  <definitions>
+    <term name="SLI">Service Level Indicator - measurement of behavior</term>
+    <term name="SLO">Service Level Objective - target for SLI</term>
+    <term name="SLA">Service Level Agreement - contract with consequences</term>
+  </definitions>
+  <common-slis>
+    <sli name="Availability" calc="Successful/Total requests" good-slo="99.9%"/>
+    <sli name="Latency" calc="% requests &lt; threshold" good-slo="95% &lt; 200ms"/>
+    <sli name="Error Rate" calc="Errors/Total requests" good-slo="&lt; 0.1%"/>
+    <sli name="Throughput" calc="Requests per second" good-slo="> 1000 RPS"/>
+  </common-slis>
+  <error-budget>If SLO = 99.9%: Budget = 0.1% = 43.2 minutes/month downtime</error-budget>
+</slos-slis>
 
-# Usage
-tracer = trace.get_tracer(__name__)
+<implementation-checklist>
+  <category name="Logging">
+    <item>Structured JSON logging configured</item>
+    <item>Appropriate log levels defined</item>
+    <item>Correlation IDs propagated</item>
+    <item>Sensitive data excluded</item>
+    <item>Log aggregation configured</item>
+  </category>
+  <category name="Metrics">
+    <item>Key business metrics defined</item>
+    <item>RED metrics for services</item>
+    <item>USE metrics for resources</item>
+    <item>Grafana dashboards created</item>
+  </category>
+  <category name="Tracing">
+    <item>OpenTelemetry instrumented</item>
+    <item>Context propagation working</item>
+    <item>Sampling strategy defined</item>
+  </category>
+  <category name="Alerting">
+    <item>Critical alerts defined</item>
+    <item>Runbooks linked</item>
+    <item>On-call rotation set</item>
+  </category>
+</implementation-checklist>
 
-with tracer.start_as_current_span("process_order") as span:
-    span.set_attribute("order.id", order_id)
-    span.set_attribute("order.total", total)
-    # ... process order
-```
-
-### Tracing Tools
-| Tool | Type | Best For |
-|------|------|----------|
-| **Jaeger** | Open source | Self-hosted, Kubernetes |
-| **Zipkin** | Open source | Simpler setup |
-| **Datadog APM** | SaaS | Full platform integration |
-| **AWS X-Ray** | AWS native | AWS services |
-| **Honeycomb** | SaaS | High-cardinality analysis |
-
-## Alerting
-
-### Alert Design Principles
-
-**Alert on symptoms, not causes**:
-```
-# Bad: Alert on cause
-ALERT: Database CPU > 80%
-
-# Good: Alert on symptom
-ALERT: API latency p99 > 500ms
-```
-
-**Include runbook links**:
-```yaml
-alert: HighErrorRate
-annotations:
-  summary: "Error rate above 5%"
-  runbook_url: "https://runbooks.example.com/high-error-rate"
-```
-
-### Alert Severity Levels
-| Severity | Response | Examples |
-|----------|----------|----------|
-| **Critical** | Wake someone up | Service down, data loss |
-| **Warning** | Investigate soon | Degraded performance, disk filling |
-| **Info** | Review during business hours | Unusual pattern, threshold approaching |
-
-### Avoiding Alert Fatigue
-- Set realistic thresholds (not too sensitive)
-- Group related alerts
-- Require sustained condition before alerting
-- Have clear ownership for each alert
-- Regularly review and tune alerts
-
-## Dashboard Design
-
-### Dashboard Types
-
-**Executive/Overview**:
-- Business KPIs
-- System health summary
-- Trend indicators
-- No technical details
-
-**Service Health**:
-- RED metrics (Rate, Errors, Duration)
-- Resource utilization
-- Dependency status
-- Recent deployments
-
-**Debugging**:
-- Detailed metrics
-- Log panels
-- Trace links
-- Error breakdowns
-
-### Dashboard Best Practices
-```
-Layout:
-- Most important metrics at top-left
-- Group related panels
-- Use consistent time ranges
-- Include "last updated" indicator
-
-Visualization:
-- Use appropriate chart types
-- Show thresholds/SLOs on graphs
-- Avoid 3D charts
-- Use color consistently (red=bad, green=good)
-
-Interactivity:
-- Add drill-down links
-- Include trace/log links
-- Allow time range adjustment
-- Support filtering by dimension
-```
-
-## SLOs and SLIs
-
-### Definitions
-- **SLI** (Service Level Indicator): Measurement of service behavior
-- **SLO** (Service Level Objective): Target for SLI
-- **SLA** (Service Level Agreement): Contract with consequences
-
-### Common SLIs
-| SLI | Calculation | Good SLO |
-|-----|-------------|----------|
-| **Availability** | Successful requests / Total requests | 99.9% |
-| **Latency** | % requests < threshold | 95% < 200ms |
-| **Error Rate** | Errors / Total requests | < 0.1% |
-| **Throughput** | Requests processed per second | > 1000 RPS |
-
-### Error Budget
-```
-If SLO = 99.9% availability:
-Error budget = 100% - 99.9% = 0.1%
-
-Per month (30 days):
-Allowed downtime = 30 * 24 * 60 * 0.001 = 43.2 minutes
-```
-
-## Implementation Checklist
-
-### Logging Setup
-- [ ] Structured JSON logging configured
-- [ ] Appropriate log levels defined
-- [ ] Correlation IDs propagated
-- [ ] Sensitive data excluded
-- [ ] Log aggregation configured
-- [ ] Log retention policy set
-
-### Metrics Setup
-- [ ] Key business metrics defined
-- [ ] RED metrics for services
-- [ ] USE metrics for resources
-- [ ] Prometheus/metrics endpoint exposed
-- [ ] Grafana dashboards created
-- [ ] Cardinality limits enforced
-
-### Tracing Setup
-- [ ] OpenTelemetry instrumented
-- [ ] Context propagation working
-- [ ] Key operations traced
-- [ ] Sampling strategy defined
-- [ ] Trace collector deployed
-- [ ] Trace visualization configured
-
-### Alerting Setup
-- [ ] Critical alerts defined
-- [ ] Runbooks linked
-- [ ] On-call rotation set
-- [ ] Escalation policy defined
-- [ ] Alert testing completed
-- [ ] Alert review cadence scheduled
+</knowledge-base>

@@ -1,12 +1,9 @@
 # Shared Agent Output Format
 
-> All agents reference this for consistent output structure. Saves ~200 tokens per agent definition.
+<shared-standards version="1.0">
+<overview>All agents reference this for consistent output structure. Saves ~200 tokens per agent definition.</overview>
 
-## Required Status
-
-Every agent response MUST end with:
-
-```markdown
+<required-status><![CDATA[
 ---
 ## Agent Status
 
@@ -23,21 +20,15 @@ Every agent response MUST end with:
 - Options: [If applicable, list choices]
 
 **Handoff Notes**: [Key findings for next agent or orchestrator]
-```
+]]></required-status>
 
-## Status Definitions
+<status-definitions>
+  <status name="COMPLETE" meaning="Task finished successfully" action="Continue to next agent or synthesize"/>
+  <status name="BLOCKED" meaning="Cannot proceed" action="Route to unblocking agent or ask user"/>
+  <status name="NEEDS_INPUT" meaning="Need clarification" action="Ask user, then resume or re-spawn"/>
+</status-definitions>
 
-| Status | Meaning | Orchestrator Action |
-|--------|---------|---------------------|
-| COMPLETE | Task finished successfully | Continue to next agent or synthesize |
-| BLOCKED | Cannot proceed | Route to unblocking agent or ask user |
-| NEEDS_INPUT | Need clarification | Ask user, then resume or re-spawn |
-
-## Context Acknowledgment (REQUIRED for collaborative tasks)
-
-When working on a task with a task ID, you MUST confirm context was read:
-
-```markdown
+<context-acknowledgment required="true" when="collaborative tasks"><![CDATA[
 ---
 ## Context Acknowledgment
 
@@ -45,60 +36,25 @@ When working on a task with a task ID, you MUST confirm context was read:
 - **Context Path**: `workspace/[task-id]/context.md`
 - **Prior Agents**: [List agents who contributed before you, or "None"]
 - **Key Context Used**: [1-2 sentences: What you learned from prior work]
-```
+]]></context-acknowledgment>
 
-**Rules**:
-- If prior agents contributed → you MUST read context.md first
-- Report what you learned from prior context in your output
-- If you skip reading context, orchestrator will reject your output
+<behavioral-guidelines>
+  <guideline order="1">Read context FIRST: For collaborative tasks, read workspace/[task-id]/context.md before anything</guideline>
+  <guideline order="2">Read your definition: Load your agent file for role clarity</guideline>
+  <guideline order="3">Read knowledge base: Load domain expertise before acting</guideline>
+  <guideline order="4">Stay in scope: Only handle your domain, escalate others</guideline>
+  <guideline order="5">Be explicit: State assumptions, don't guess silently</guideline>
+  <guideline order="6">Document findings: Future agents may need your discoveries</guideline>
+  <guideline order="7">Fail fast: Report BLOCKED early, don't spin on impossible tasks</guideline>
+  <guideline order="8">Update parallel findings: If spawned in parallel, add findings immediately</guideline>
+  <guideline order="9">Self-reflect: Run self-reflection checklist before finalizing (knowledge/self-reflection.md)</guideline>
+  <guideline order="10">Report confidence: Include confidence level with reasoning in status</guideline>
+  <guideline order="11">Self-critique code: Review each line/block, document assumptions/edge cases (knowledge/code-critique.md)</guideline>
+  <guideline order="12">Teach with code: Explain WHY, alternatives rejected, concepts applied (knowledge/code-teaching.md)</guideline>
+  <guideline order="13">Validate standards: Verify SOLID, code metrics, patterns, OOP best practices (knowledge/coding-standards.md)</guideline>
+</behavioral-guidelines>
 
----
-
-## Behavioral Guidelines (All Agents)
-
-1. **Read context FIRST**: For collaborative tasks, read `workspace/[task-id]/context.md` before anything
-2. **Read your definition**: Load your agent file for role clarity
-3. **Read knowledge base**: Load domain expertise before acting
-4. **Stay in scope**: Only handle your domain, escalate others
-5. **Be explicit**: State assumptions, don't guess silently
-6. **Document findings**: Future agents may need your discoveries
-7. **Fail fast**: Report BLOCKED early, don't spin on impossible tasks
-8. **Update parallel findings**: If spawned in parallel, add your findings to context immediately
-9. **Self-reflect**: Run the self-reflection checklist before finalizing (see `knowledge/self-reflection.md`)
-10. **Report confidence**: Include confidence level (HIGH/MEDIUM/LOW) with reasoning in status
-11. **Self-critique code**: For code changes, review each line/block and document assumptions, edge cases, trade-offs (see `knowledge/code-critique.md`)
-12. **Teach with code**: For code changes, explain WHY this approach, alternatives rejected, concepts applied (see `knowledge/code-teaching.md`)
-13. **Validate standards**: For code changes, verify SOLID principles, code metrics, patterns, OOP best practices (see `knowledge/coding-standards.md`)
-
----
-
-## Self-Reflection Reference
-
-Before finalizing output, run through `knowledge/self-reflection.md` checklist:
-- Task alignment check
-- Assumption check
-- Error analysis
-- Confidence assessment
-
-**Status must include**:
-```markdown
-**Confidence**: [HIGH | MEDIUM | LOW]
-**Confidence Reasoning**: [Why this level]
-```
-
-See `knowledge/self-reflection.md` for full protocol.
-
----
-
-## Code Critique & Teaching (REQUIRED for code changes)
-
-If your output includes code changes (new code, bug fixes, refactoring), you MUST include this section.
-
-See `knowledge/code-critique.md` and `knowledge/code-teaching.md` for full protocols.
-
-### Self-Critique
-
-```markdown
+<code-critique-template required-for="code changes"><![CDATA[
 ## Self-Critique
 
 | Line/Block | Purpose | Critique | Fix Applied |
@@ -108,11 +64,9 @@ See `knowledge/code-critique.md` and `knowledge/code-teaching.md` for full proto
 **Assumptions Made**: [List assumptions the code relies on]
 **Edge Cases Not Covered**: [What's not handled and why]
 **Trade-offs Accepted**: [What you sacrificed for what gain]
-```
+]]></code-critique-template>
 
-### Teaching Explanation
-
-```markdown
+<teaching-template required-for="code changes"><![CDATA[
 ## Teaching
 
 **Why This Approach**:
@@ -128,28 +82,12 @@ See `knowledge/code-critique.md` and `knowledge/code-teaching.md` for full proto
 
 **What You Should Learn**:
 - [Key insight 1]
-- [Key insight 2]
 
 **Questions to Think About**:
 - [Socratic question about the code]
-```
+]]></teaching-template>
 
-**Rules**:
-- RULE-016 requires BOTH sections for any code changes
-- Missing sections will cause orchestrator to reject output
-- Even "simple" code changes need critique and teaching
-
----
-
-## Standards Compliance (REQUIRED for code changes)
-
-If your output includes code changes, you MUST validate against coding standards per RULE-017.
-
-See `knowledge/coding-standards.md` for complete validation criteria.
-
-### Standards Compliance Check
-
-```markdown
+<standards-compliance-template required-for="code changes"><![CDATA[
 ## Standards Compliance Check
 
 ### SOLID Principles
@@ -182,36 +120,27 @@ See `knowledge/coding-standards.md` for complete validation criteria.
 |-----------|----------|-------|----------|
 | [SOLID/Metric/Pattern/OOP] | [file:line] | [description] | [H/M/L] |
 
-### Fixes Applied
-[How violations were addressed, or "No violations found"]
-
 ### Standards Verdict
 **Verdict**: [PASS / PASS_WITH_WARNINGS / FAIL]
-```
+]]></standards-compliance-template>
 
-**Verdicts**:
-- **PASS**: All standards met → proceed to COMPLETE
-- **PASS_WITH_WARNINGS**: Minor issues, acceptable → proceed, note for future
-- **FAIL**: Significant violations → must fix before COMPLETE
+<verdict-definitions>
+  <verdict name="PASS">All standards met → proceed to COMPLETE</verdict>
+  <verdict name="PASS_WITH_WARNINGS">Minor issues, acceptable → proceed, note for future</verdict>
+  <verdict name="FAIL">Significant violations → must fix before COMPLETE</verdict>
+</verdict-definitions>
 
-**Rules**:
-- RULE-017 requires this section for any code changes
-- Missing sections will cause orchestrator to reject output
-- For complex code, orchestrator may spawn standards-validator-agent
+<model-selection>
+  <model agent="architect-agent" type="opus" rationale="Design decisions cascade"/>
+  <model agent="ticket-analyst-agent" type="opus" rationale="Requirements understanding critical"/>
+  <model agent="reviewer-agent" type="opus" rationale="Final quality gate"/>
+  <model agent="all others (15)" type="sonnet" rationale="Escalate on LOW confidence"/>
+  <escalation-note>If you report LOW confidence or BLOCKED, orchestrator may retry with Opus</escalation-note>
+</model-selection>
 
----
+<rules-enforced>
+  <rule id="RULE-016">Self-Critique and Teaching sections required for code changes</rule>
+  <rule id="RULE-017">Standards Compliance Check required for code changes</rule>
+</rules-enforced>
 
-## Model Selection Reference
-
-**Two-Tier System** (No Haiku - quality over speed):
-
-| Agent | Model | Rationale |
-|-------|-------|-----------|
-| architect-agent | **Opus** | Design decisions cascade |
-| ticket-analyst-agent | **Opus** | Requirements understanding critical |
-| reviewer-agent | **Opus** | Final quality gate |
-| All others (15) | Sonnet | Escalate on LOW confidence or triggers |
-
-**Escalation**: If you report LOW confidence or BLOCKED, orchestrator may retry with Opus.
-
-See `knowledge/model-selection.md` and RULE-013 in CLAUDE.md for full details.
+</shared-standards>

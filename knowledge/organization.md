@@ -1,427 +1,208 @@
 # Workspace Organization
 
-TRIGGER: organize, workspace, task folder, artifact, snapshot, context
+<knowledge-base name="organization" version="1.0">
+<triggers>organize, workspace, task folder, artifact, snapshot, context</triggers>
+<overview>All task-related artifacts organized in workspace/ folder using task-specific subfolders. Each task has isolated context for agent collaboration.</overview>
 
-## Overview
+<critical-rule name="XML Format Required">
+  <instruction>ALL workspace context.md files MUST use XML structured tags for AI-efficient parsing</instruction>
+  <rationale>XML provides semantic structure, reduces ambiguity, enables attribute lookup</rationale>
+  <format>Use knowledge-base wrapper with triggers and structured content sections</format>
+</critical-rule>
 
-All task-related artifacts should be organized in the `workspace/` folder using task-specific subfolders. Each task has its own isolated context for agent collaboration.
-
-## Folder Structure
-
-```
+<folder-structure><![CDATA[
 workspace/
 └── [task-id]/
     ├── mockups/       # Design references, input images, specifications
     ├── outputs/       # Generated artifacts, final deliverables
     ├── snapshots/     # Screenshots, progress captures, debugging images
     └── context.md     # Task context, notes, agent contributions, handoffs
-```
+]]></folder-structure>
 
-## Task ID Naming Convention
+<task-id-naming>
+  <with-ticket>Use ticket number directly: ASC-914, JIRA-123, GH-456, BUG-789</with-ticket>
+  <without-ticket>Auto-generate: YYYY-MM-DD-short-description (2-4 words, lowercase, hyphen-separated)</without-ticket>
+  <examples>2025-12-04-auth-refactor, 2025-12-04-fix-login-bug</examples>
+</task-id-naming>
 
-### When Ticket Number Exists
-Use the ticket number directly:
-- `ASC-914`
-- `JIRA-123`
-- `GH-456`
-- `BUG-789`
+<folder-contents>
+  <folder name="mockups">Design mockups, wireframes, UI specs, reference images, input files</folder>
+  <folder name="outputs">Generated code, final deliverables, exported reports, completed artifacts</folder>
+  <folder name="snapshots">Screenshots during testing, progress captures, debugging images, before/after comparisons</folder>
+  <folder name="context.md">Task status, notes, findings, agent contributions, handoffs, open questions, session history</folder>
+</folder-contents>
 
-### When No Ticket Number
-Auto-generate using format: `YYYY-MM-DD-short-description`
-- `2025-12-04-auth-refactor`
-- `2025-12-04-fix-login-bug`
-- `2025-12-04-add-caching`
-
-Keep descriptions short (2-4 words), lowercase, hyphen-separated.
-
-## What Goes Where
-
-### mockups/
-- Design mockups and wireframes
-- UI specifications
-- Reference images
-- Input files for the task
-
-### outputs/
-- Generated code snippets
-- Final deliverables
-- Exported reports
-- Completed artifacts
-
-### snapshots/
-- Screenshots during testing
-- Progress captures
-- Debugging images
-- Before/after comparisons
-
-### context.md
-- Task status and description
-- Notes and findings
-- Agent contributions and handoffs
-- Open questions
-- Session history
-
-## context.md Template
-
-Every task folder should have a `context.md` file:
-
-```markdown
+<context-template format="XML"><![CDATA[
 # Task: [Task ID]
 
-## Quick Resume
+<task-context task-id="[ID]" created="[YYYY-MM-DD]" updated="[YYYY-MM-DD]">
+
+<quick-resume>
 [1-2 sentences: Current state for session recovery after compaction]
-
-**NORMAL mode example**: "Implementing auth refactor. debug-agent found root cause in token.ts:45, waiting for test-agent to write regression tests."
-
-**PERSISTENT mode example**: "**MODE: PERSISTENT** | Progress: 23/45 files | Next: Convert src/services/auth.js | Criteria: [1] All .js -> .ts [NOT MET: 22 remaining] [2] tsc passes [NOT MET]"
-
-## Status
-- **State**: [PLANNING/ACTIVE/BLOCKED/COMPLETE]
-- **Current Phase**: [Planning | Execution | Review]
-- **Last Agent**: [Most recent agent that contributed]
-- **Created**: [YYYY-MM-DD]
-- **Updated**: [YYYY-MM-DD]
-
-## Execution Mode
-
-### Mode Configuration
-- **Mode**: [NORMAL/PERSISTENT]
-- **Set By**: [User request / Auto-detected from patterns: "all", "until", "entire", "every", "complete"]
-- **Set At**: [Timestamp]
-
-### Completion Criteria (PERSISTENT mode only)
-| # | Criterion | Verification Command | Threshold | Status |
-|---|-----------|---------------------|-----------|--------|
-| 1 | [e.g., All .js files converted to .ts] | [find . -name "*.js" \| wc -l] | [= 0] | [pending/met/failed] |
-| 2 | [e.g., Test coverage >= 90%] | [npm run coverage --json] | [>= 90] | [pending/met/failed] |
-| 3 | [e.g., No TypeScript errors] | [npx tsc --noEmit; echo $?] | [= 0] | [pending/met/failed] |
-
-### Progress Tracker (PERSISTENT mode only)
-- **Items Total**: [N or "counting..."]
-- **Items Completed**: [M]
-- **Completion %**: [M/N * 100]%
-- **Last Checkpoint**: [Timestamp]
-- **Last Item Processed**: [e.g., src/utils/auth.js]
-- **Next Item**: [e.g., src/utils/crypto.js]
-
-### Continuation Protocol
-- **Continue If**: All criteria NOT met AND status not BLOCKED
-- **Stop If**: All criteria met OR BLOCKED OR user interrupts
-- **Checkpoint Frequency**: Every [N] items (default: 10)
-
-## Plan (Populated by Planning Phase)
-
-### Planning Checklist Results
-| Domain | Needed? | Criteria Met | Agent |
-|--------|---------|--------------|-------|
-| Testing | [Yes/No] | [Specific criteria that triggered this] | test-agent |
-| Documentation | [Yes/No] | [Specific criteria] | docs-agent |
-| Security | [Yes/No] | [Specific criteria] | security-agent |
-| Architecture | [Yes/No] | [Specific criteria] | architect-agent |
-| Performance | [Yes/No] | [Specific criteria] | performance-agent |
-| Review | [Yes/No] | [Specific criteria] | reviewer-agent |
-| Clarity | [Yes/No] | [Specific criteria] | ticket-analyst-agent |
-
-### Subtasks
-| # | Subtask | Agent | Dependencies | Status |
-|---|---------|-------|--------------|--------|
-| 1 | [Name] | [agent] | None | [pending/in_progress/complete] |
-| 2 | [Name] | [agent] | Task 1 | [pending/in_progress/complete] |
-
-### Execution Strategy
-- **Pattern**: [Sequential | Parallel | Hybrid]
-- **Rationale**: [Why this pattern was chosen]
-
-### Approval Status
-- **Plan Mode**: [Active/Inactive]
-- **Approved**: [Yes/No/Pending]
-- **Approved By**: [User/Auto]
-- **Modifications**: [Any changes requested before approval]
-
-### Model Usage
-| Agent | Model | Rationale |
-|-------|-------|-----------|
-| [agent-name] | [opus/sonnet] | [why this model: always-opus agent, complexity trigger, etc.] |
-
-**Summary**:
-- **Opus Usage**: [N] agents ([list])
-- **Sonnet Usage**: [N] agents ([list])
-- **Escalations**: [count and reasons, or "None"]
-
-## Blocked Resolution (if BLOCKED)
-- **Blocked By**: [Specific blocker description]
-- **To Unblock**: [Required action or input needed]
-- **Owner**: [Who needs to act: user/specific-agent/external]
-- **Attempted**: [What has been tried so far]
-
-## Key Files
-[Critical files for this task - read these first when resuming]
-- `path/to/file1.ts` - [why important]
-- `path/to/file2.ts` - [why important]
-
-## Task Description
-[What this task is about, requirements, goals]
-
-## Orchestrator Decisions
-
-### Request Analysis - [Timestamp]
-- **User Request**: [Original request]
-- **Domains Identified**: [testing, debugging, architecture, etc.]
-- **Agents Considered**: [List all agents that could apply]
-- **Agents Spawned**: [List agents actually spawned and WHY]
-- **Rationale**: [Why these specific agents]
-
-## Notes & Findings
-[Human notes, discoveries, key decisions made]
-
-## Agent Contributions
-
-### [Agent Name] - [Timestamp]
-- **Task**: What agent was asked to do
-- **Status**: COMPLETE/BLOCKED/NEEDS_INPUT
-- **Key Findings**: Main discoveries
-- **Output**: What was produced (or path to outputs/ folder)
-- **Handoff Notes**: What next agent needs to know
-
-## Parallel Findings (Updated by concurrent agents)
-
-> When agents run in parallel, they add findings here so other agents can see discoveries in real-time.
-
-| Agent | Finding | Impact | Timestamp |
-|-------|---------|--------|-----------|
-| - | - | - | - |
-<!-- Parallel agents: Add your row IMMEDIATELY when you discover something significant -->
-
-## Handoff Queue
-| Next Agent | Reason | Priority |
-|------------|--------|----------|
-| [agent]    | [why]  | [P0-P2]  |
-
-## Open Questions
-- [ ] Question 1
-- [ ] Question 2
-
-## Next Steps
-1. [First thing to do when resuming]
-2. [Second thing to do]
-3. [Third thing to do]
-
-## Session History
-| Time | Agent | Action | Result |
-|------|-------|--------|--------|
-| - | - | - | - |
-```
-
-## Status Definitions
-
-### Task Status (in context.md)
-
-| Status | Meaning | Actions |
-|--------|---------|---------|
-| **PLANNING** | Planning phase in progress | Complete checklist, generate plan |
-| **ACTIVE** | Execution in progress | Continue with next steps |
-| **BLOCKED** | Cannot proceed | Check "Blocked Resolution" section |
-| **COMPLETE** | Task finished | Archive or clean up |
-
-### Agent Status (in agent outputs)
-
-| Status | Meaning | Orchestrator Action |
-|--------|---------|---------------------|
-| **COMPLETE** | Agent finished successfully | Continue to next agent or synthesize |
-| **BLOCKED** | Cannot proceed | Check blocker, route to unblocking agent or ask user |
-| **NEEDS_INPUT** | Requires user clarification | Present question to user |
-
-## Context Lifecycle
-
-### When to Create context.md
-Create when starting a task that:
-- Involves multiple steps
-- Will have multiple agents collaborate
-- Spans multiple sessions
-- Needs progress tracking
-
-### When to Update context.md
-Update after:
-- Each agent completes work (add to Agent Contributions)
-- Key decisions are made (add to Notes & Findings)
-- Status changes (update State)
-- Questions arise (add to Open Questions)
-
-### State Transitions
-```
-PLANNING → Running Planning Checklist, generating plan
-ACTIVE → Executing plan, agents contributing
-BLOCKED → Cannot proceed, see "Blocked By" field
-COMPLETE → Task finished, final summary in Notes
-```
-
-### When to Archive
-- Mark COMPLETE when task is done
-- Keep folder for reference if artifacts may be needed
-- Clean up during project completion
-
-## When to Create Task Folders
-
-**ALWAYS create a task folder when:**
-- Task involves ANY code changes
-- Task involves multiple steps
-- ANY agent is being spawned
-- You'll generate artifacts (screenshots, outputs)
-- Multiple agents will collaborate
-- Work spans multiple sessions
-- You need to track progress
-
-**ONLY skip task folder for:**
-- Single read-only questions (no file modifications)
-- Simple explanations that fit in one response
-- Codebase navigation questions
-
-**When in doubt → create the folder.**
-
-## Workflow Integration
-
-### Before Starting Work
-1. Determine task ID (ticket number or generate one)
-2. Create `workspace/[task-id]/` folder structure
-3. Create `context.md` from template
-4. Store any input materials in `mockups/`
-
-### During Work
-1. Save screenshots to `snapshots/`
-2. Update `context.md` with findings and agent contributions
-3. Store generated artifacts in `outputs/`
-
-### After Completion
-1. Ensure all artifacts are in proper folders
-2. Update `context.md` state to COMPLETE
-3. Add final summary to Notes & Findings
-4. Clean up any temporary files
-
-## Cleanup Guidelines
-
-### Active Tasks
-- Keep all folders for active/recent tasks
-- Context provides collaboration history
-
-### Completed Tasks
-- Keep for reference if artifacts may be needed later
-- Archive or remove after project completion
-- Final summary should be in context.md before cleanup
-
-### Root Folder Rules
-- Keep workspace root clean
-- Only `.gitkeep` at root level
-- All task work in subfolders
-
-## Example Task Setup
-
-```
-# For ticket ASC-914 (UI button fix)
-workspace/
-└── ASC-914/
-    ├── mockups/
-    │   └── button-design.png
-    ├── outputs/
-    │   └── button-component.tsx
-    ├── snapshots/
-    │   ├── before-fix.png
-    │   └── after-fix.png
-    └── context.md
-
-# For ad-hoc refactoring task
-workspace/
-└── 2025-12-04-auth-refactor/
-    ├── mockups/
-    ├── outputs/
-    │   └── auth-service.ts
-    ├── snapshots/
-    └── context.md
-```
-
-## Integration with Multi-Agent System
-
-When agents collaborate on a task:
-1. All agents reference the same task folder
-2. Each agent reads/updates `context.md` for handoffs
-3. Agent contributions are logged with timestamps
-4. Artifacts are accessible to all collaborating agents
-5. Orchestrator updates context after each agent completes
-
----
-
-## Context Size Management
-
-Keep context.md files manageable for efficient agent collaboration.
-
-### Size Limits
-
-| Metric | Target | Warning | Action |
-|--------|--------|---------|--------|
-| File size | < 30 KB | > 30 KB | Archive old contributions |
-| Agent contributions | < 10 active | > 10 | Move resolved to archive |
-| Parallel findings | < 20 rows | > 20 | Consolidate into summary |
-
-### What to Keep (Active)
-- Current task status and blockers
-- Unresolved open questions
-- Recent agent contributions (last 3-5)
-- Next steps
-- Key files list
-
-### What to Archive
-- Resolved agent contributions (move to `outputs/archive/context-history.md`)
-- Completed parallel findings (consolidate to summary)
-- Old session history entries
-
-### Archiving Process
-When context.md exceeds 30 KB:
-1. Create `outputs/archive/` if it doesn't exist
-2. Move resolved Agent Contributions to `outputs/archive/context-history.md`
-3. Keep only last 3-5 contributions in main context.md
-4. Add summary line: "See `outputs/archive/` for [N] prior agent contributions"
-
----
-
-## Quick Resume Auto-Update Protocol
-
-The Quick Resume section MUST always reflect current state for compaction recovery.
-
-### Update Rule (MANDATORY)
-
-**After EVERY agent completes**, orchestrator MUST update Quick Resume:
-
-```markdown
-## Quick Resume
-[agent-name] completed [task] at [HH:MM]. Next: [immediate next action].
-```
-
-### Examples
-
-```markdown
-## Quick Resume
-debug-agent completed root cause analysis at 14:30. Next: spawn test-agent for regression tests.
-```
-
-```markdown
-## Quick Resume
-security-agent + reviewer-agent completed parallel review at 15:45. Next: synthesize findings for user.
-```
-
-```markdown
-## Quick Resume
-BLOCKED: test-agent needs user input on test framework preference. Waiting for user response.
-```
-
-### Validation
-
-- Quick Resume should NEVER be more than 1 agent behind
-- If compaction occurs, Quick Resume is the first thing read
-- Stale Quick Resume = confused recovery = wasted tokens
-
-### Auto-Update Trigger
-
-Orchestrator updates Quick Resume:
-1. Immediately after receiving agent status
-2. Before spawning next agent
-3. Before any user-facing response
-4. When status changes to BLOCKED
+NORMAL: "Implementing auth refactor. debug-agent found root cause in token.ts:45, waiting for test-agent."
+PERSISTENT: "**MODE: PERSISTENT** | Progress: 23/45 files | Next: Convert src/services/auth.js | Criteria: [1] All .js -> .ts [NOT MET: 22 remaining]"
+</quick-resume>
+
+<status>
+  <state>[PLANNING/ACTIVE/BLOCKED/COMPLETE]</state>
+  <phase>[Planning | Execution | Review]</phase>
+  <last-agent>[Most recent agent]</last-agent>
+</status>
+
+<execution-mode>
+  <mode>[NORMAL/PERSISTENT]</mode>
+  <set-by>[User request / Auto-detected from patterns: "all", "until", "entire", "every", "complete"]</set-by>
+
+  <!-- PERSISTENT mode only -->
+  <completion-criteria>
+    <criterion id="1" verification="[command]" threshold="[value]" status="[pending/met/failed]">[description]</criterion>
+  </completion-criteria>
+
+  <progress-tracker>
+    <total>[N or "counting..."]</total>
+    <completed>[M]</completed>
+    <percentage>[M/N * 100]%</percentage>
+    <last-checkpoint>[Timestamp]</last-checkpoint>
+    <last-item>[e.g., src/utils/auth.js]</last-item>
+    <next-item>[e.g., src/utils/crypto.js]</next-item>
+  </progress-tracker>
+</execution-mode>
+
+<plan>
+  <planning-checklist>
+    <domain name="Testing" needed="[Yes/No]" criteria="[specific]" agent="test-agent"/>
+    <domain name="Documentation" needed="[Yes/No]" criteria="[specific]" agent="docs-agent"/>
+    <domain name="Security" needed="[Yes/No]" criteria="[specific]" agent="security-agent"/>
+    <domain name="Architecture" needed="[Yes/No]" criteria="[specific]" agent="architect-agent"/>
+    <domain name="Performance" needed="[Yes/No]" criteria="[specific]" agent="performance-agent"/>
+    <domain name="Review" needed="[Yes/No]" criteria="[specific]" agent="reviewer-agent"/>
+    <domain name="Clarity" needed="[Yes/No]" criteria="[specific]" agent="ticket-analyst-agent"/>
+  </planning-checklist>
+
+  <subtasks>
+    <subtask id="1" agent="[agent]" dependencies="None" status="[pending/in_progress/complete]">[Name]</subtask>
+  </subtasks>
+
+  <execution-strategy pattern="[Sequential | Parallel | Hybrid]">[Rationale]</execution-strategy>
+
+  <model-usage>
+    <agent name="[name]" model="[opus/sonnet]" rationale="[why]"/>
+    <summary opus="[N agents]" sonnet="[N agents]" escalations="[count and reasons]"/>
+  </model-usage>
+</plan>
+
+<blocked-resolution if="BLOCKED">
+  <blocked-by>[Specific blocker]</blocked-by>
+  <to-unblock>[Required action]</to-unblock>
+  <owner>[user/specific-agent/external]</owner>
+  <attempted>[What has been tried]</attempted>
+</blocked-resolution>
+
+<key-files>
+  <file path="[path]" reason="[why important]"/>
+</key-files>
+
+<task-description>[What this task is about, requirements, goals]</task-description>
+
+<orchestrator-decisions timestamp="[ISO]">
+  <user-request>[Original request]</user-request>
+  <domains-identified>[testing, debugging, architecture, etc.]</domains-identified>
+  <agents-considered>[List all applicable]</agents-considered>
+  <agents-spawned>[List spawned and WHY]</agents-spawned>
+</orchestrator-decisions>
+
+<notes-findings>[Human notes, discoveries, key decisions]</notes-findings>
+
+<agent-contributions>
+  <contribution agent="[Name]" timestamp="[ISO]">
+    <task>[What agent was asked to do]</task>
+    <status>[COMPLETE/BLOCKED/NEEDS_INPUT]</status>
+    <findings>[Main discoveries]</findings>
+    <output>[What was produced or path]</output>
+    <handoff>[What next agent needs to know]</handoff>
+  </contribution>
+</agent-contributions>
+
+<parallel-findings>
+  <!-- Parallel agents add findings here for real-time visibility -->
+  <finding agent="[agent]" impact="[impact]" timestamp="[ISO]">[description]</finding>
+</parallel-findings>
+
+<handoff-queue>
+  <handoff agent="[agent]" reason="[why]" priority="[P0-P2]"/>
+</handoff-queue>
+
+<open-questions>
+  <question resolved="false">[Question]</question>
+</open-questions>
+
+<next-steps>
+  <step order="1">[First thing when resuming]</step>
+</next-steps>
+
+<session-history>
+  <entry time="[ISO]" agent="[agent]" action="[action]" result="[result]"/>
+</session-history>
+
+</task-context>
+]]></context-template>
+
+<status-definitions>
+  <task-status>
+    <status name="PLANNING" meaning="Planning phase in progress" action="Complete checklist, generate plan"/>
+    <status name="ACTIVE" meaning="Execution in progress" action="Continue with next steps"/>
+    <status name="BLOCKED" meaning="Cannot proceed" action="Check Blocked Resolution section"/>
+    <status name="COMPLETE" meaning="Task finished" action="Archive or clean up"/>
+  </task-status>
+  <agent-status>
+    <status name="COMPLETE" meaning="Agent finished successfully" action="Continue to next agent or synthesize"/>
+    <status name="BLOCKED" meaning="Cannot proceed" action="Route to unblocking agent or ask user"/>
+    <status name="NEEDS_INPUT" meaning="Requires user clarification" action="Present question to user"/>
+  </agent-status>
+</status-definitions>
+
+<context-lifecycle>
+  <create-when>
+    <condition>Involves multiple steps</condition>
+    <condition>Multiple agents collaborate</condition>
+    <condition>Spans multiple sessions</condition>
+    <condition>Needs progress tracking</condition>
+    <condition>ANY agent is being spawned</condition>
+    <condition>ANY code changes</condition>
+  </create-when>
+  <skip-only-when>
+    <condition>Single read-only question</condition>
+    <condition>Simple explanation fitting one response</condition>
+    <condition>Codebase navigation question</condition>
+  </skip-only-when>
+  <update-after>
+    <trigger>Each agent completes work</trigger>
+    <trigger>Key decisions made</trigger>
+    <trigger>Status changes</trigger>
+    <trigger>Questions arise</trigger>
+  </update-after>
+</context-lifecycle>
+
+<size-management>
+  <limits>
+    <limit metric="File size" target="< 30 KB" warning="> 30 KB" action="Archive old contributions"/>
+    <limit metric="Agent contributions" target="< 10 active" warning="> 10" action="Move resolved to archive"/>
+    <limit metric="Parallel findings" target="< 20 rows" warning="> 20" action="Consolidate into summary"/>
+  </limits>
+  <keep-active>Current status, unresolved questions, recent contributions (3-5), next steps, key files</keep-active>
+  <archive-to>outputs/archive/context-history.md</archive-to>
+</size-management>
+
+<quick-resume-protocol mandatory="true">
+  <rule>After EVERY agent completes, orchestrator MUST update Quick Resume</rule>
+  <format>[agent-name] completed [task] at [HH:MM]. Next: [immediate next action].</format>
+  <validation>Quick Resume should NEVER be more than 1 agent behind</validation>
+  <triggers>
+    <trigger>Immediately after receiving agent status</trigger>
+    <trigger>Before spawning next agent</trigger>
+    <trigger>Before any user-facing response</trigger>
+    <trigger>When status changes to BLOCKED</trigger>
+  </triggers>
+</quick-resume-protocol>
+
+</knowledge-base>
