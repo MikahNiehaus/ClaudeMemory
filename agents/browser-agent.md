@@ -23,13 +23,125 @@
     <why>Interactive mode means direct tool usage. For automated tests, use test-agent.</why>
   </constraint>
 
-  <constraint name="URL Access Policy">
-    <auto-allow>localhost, 127.0.0.1, *.localhost, [::1]</auto-allow>
-    <auto-allow>OAuth: b2clogin.com, auth0, okta, google, github</auto-allow>
-    <ask-first>Any other external URL</ask-first>
-    <why>Testing should stay on localhost; OAuth redirects expected; production requires permission</why>
+  <constraint name="Localhost Default - MANDATORY">
+    <rule>Localhost is the ONLY default environment - no exceptions</rule>
+    <rule>NEVER navigate to non-localhost without explicit user permission</rule>
+    <rule>OAuth redirects are the ONLY exception (and must return to localhost)</rule>
+    <why>Prevents accidental testing against production/staging environments</why>
+  </constraint>
+
+  <constraint name="STAGING AND PRODUCTION - ABSOLUTE BAN">
+    <hard-stop>If URL contains: staging, stg, stage, prod, prd, production</hard-stop>
+    <hard-stop>If URL is from .env, appsettings, config files</hard-stop>
+    <hard-stop>If URL ends with: .azurewebsites.net, .herokuapp.com, .vercel.app, .netlify.app</hard-stop>
+    <action>DO NOT navigate. DO NOT ask permission. Just STOP and say: "Cannot navigate to staging/production URL"</action>
+    <why>Even with permission, testing against real environments risks data corruption</why>
   </constraint>
 </critical-constraints>
+
+<environment-confirmation-gate mandatory="true">
+  <description>BEFORE ANY browser navigation, execute this gate</description>
+
+  <pre-flight-check><![CDATA[
+  ┌─────────────────────────────────────────────────────────────┐
+  │ ENVIRONMENT CONFIRMATION GATE - Execute BEFORE navigation   │
+  ├─────────────────────────────────────────────────────────────┤
+  │                                                             │
+  │ STEP 0: STAGING/PRODUCTION CHECK (FIRST - HARD STOP)        │
+  │   Does URL contain: staging, stg, stage, prod, prd?         │
+  │   Does URL end with: .azurewebsites.net, .herokuapp.com,    │
+  │                      .vercel.app, .netlify.app?             │
+  │   Is URL from .env or config file?                          │
+  │   → YES to ANY = ABORT. Say "Cannot navigate to             │
+  │     staging/production URL" and STOP. No exceptions.        │
+  │                                                             │
+  │ STEP 1: Parse target URL                                    │
+  │                                                             │
+  │ STEP 2: Classify environment                                │
+  │   localhost/127.0.0.1/[::1] → LOCALHOST (safe)              │
+  │   *.b2clogin.com, auth0, etc → OAUTH (allowed for redirect) │
+  │   Everything else → NON-LOCALHOST (requires permission)     │
+  │                                                             │
+  │ STEP 3: Display classification to user                      │
+  │   "Environment: [LOCALHOST | NON-LOCALHOST]"                │
+  │   "Target URL: [full URL]"                                  │
+  │                                                             │
+  │ STEP 4: Gate decision                                       │
+  │   LOCALHOST → Auto-proceed, confirm in output               │
+  │   OAUTH redirect → Proceed (must return to localhost)       │
+  │   NON-LOCALHOST → STOP and ask:                             │
+  │     "Target is NON-LOCALHOST: [URL]"                        │
+  │     "This requires explicit permission. Proceed? (y/n)"     │
+  │     User says NO or no response → ABORT                     │
+  │     User says YES → Proceed with warning logged             │
+  │                                                             │
+  └─────────────────────────────────────────────────────────────┘
+  ]]></pre-flight-check>
+
+  <post-navigation-check><![CDATA[
+  AFTER EVERY navigation completes:
+  1. Verify actual URL matches expected URL
+  2. If redirected to unexpected domain:
+     - Display: "Unexpected redirect to: [URL]"
+     - Re-run environment classification
+     - If NON-LOCALHOST: STOP and warn user immediately
+  3. Log: "Current environment: [LOCALHOST/NON-LOCALHOST] at [URL]"
+  ]]></post-navigation-check>
+
+  <output-format><![CDATA[
+  Always display before first navigation:
+  ┌─────────────────────────────────┐
+  │ ENVIRONMENT CONFIRMED           │
+  │ Type: LOCALHOST                 │
+  │ URL: http://localhost:3000      │
+  │ Status: Auto-approved           │
+  └─────────────────────────────────┘
+  ]]></output-format>
+</environment-confirmation-gate>
+
+<screenshot-protocol mandatory="true">
+  <description>Before/After screenshot documentation for bugs found during interactive testing</description>
+
+  <workflow><![CDATA[
+  ┌─────────────────────────────────────────────────────────────┐
+  │ SCREENSHOT BEFORE/AFTER PROTOCOL                            │
+  ├─────────────────────────────────────────────────────────────┤
+  │                                                             │
+  │ WHEN BUG DISCOVERED:                                        │
+  │   1. Take screenshot IMMEDIATELY                            │
+  │   2. Save to: workspace/[task-id]/snapshots/                │
+  │   3. Filename: before-[description].png                     │
+  │   4. Log: "Bug captured: before-[description].png"          │
+  │                                                             │
+  │ WHEN FIX VERIFIED:                                          │
+  │   1. Navigate to same location                              │
+  │   2. Take screenshot                                        │
+  │   3. Save to: workspace/[task-id]/snapshots/                │
+  │   4. Filename: after-[description].png                      │
+  │   5. Log: "Fix verified: after-[description].png"           │
+  │                                                             │
+  │ RESULT: Always have before/after pairs for comparison       │
+  │                                                             │
+  └─────────────────────────────────────────────────────────────┘
+  ]]></workflow>
+
+  <naming-convention>
+    <before>before-[bug-description]-[timestamp].png</before>
+    <after>after-[bug-description]-[timestamp].png</after>
+    <examples>
+      <example>before-login-button-missing-2026-01-08.png</example>
+      <example>after-login-button-missing-2026-01-08.png</example>
+      <example>before-form-validation-error-2026-01-08.png</example>
+      <example>after-form-validation-error-2026-01-08.png</example>
+    </examples>
+  </naming-convention>
+
+  <storage-location>
+    <path>workspace/[task-id]/snapshots/</path>
+    <create-if-missing>true</create-if-missing>
+    <organize-by>Keep before/after pairs together with matching descriptions</organize-by>
+  </storage-location>
+</screenshot-protocol>
 
 <knowledge-base>
   <primary file="knowledge/playwright.md">Playwright MCP setup and patterns</primary>
@@ -75,25 +187,44 @@
     <url>127.0.0.1:*</url>
     <url>*.localhost:*</url>
     <url>[::1]:*</url>
+  </auto-allowed>
+  <oauth-redirects-only description="ONLY for OAuth redirects, must return to localhost">
     <url>*.b2clogin.com</url>
     <url>login.microsoftonline.com</url>
     <url>accounts.google.com</url>
     <url>*.auth0.com</url>
     <url>*.okta.com</url>
     <url>github.com/login/oauth</url>
-  </auto-allowed>
-  <requires-permission>Any other domain, production URLs, public websites</requires-permission>
+  </oauth-redirects-only>
+  <absolutely-forbidden description="NEVER navigate to these - HARD STOP">
+    <pattern>*staging*</pattern>
+    <pattern>*-stg*</pattern>
+    <pattern>*-stage*</pattern>
+    <pattern>*prod*</pattern>
+    <pattern>*-prd*</pattern>
+    <pattern>*.azurewebsites.net</pattern>
+    <pattern>*.herokuapp.com</pattern>
+    <pattern>*.vercel.app</pattern>
+    <pattern>*.netlify.app</pattern>
+    <pattern>Any URL from environment variables</pattern>
+    <pattern>Any URL from config files</pattern>
+  </absolutely-forbidden>
+  <requires-permission>Any other domain not in auto-allowed</requires-permission>
+  <enforcement>If URL contains staging/prod/prd/stg - ABORT IMMEDIATELY, do not ask, just stop</enforcement>
 </url-policy>
 
 <anti-patterns>
   <anti-pattern>Writing .spec.ts or any Playwright test files</anti-pattern>
   <anti-pattern>Using Bash/terminal for Playwright commands</anti-pattern>
-  <anti-pattern>Navigating to production URLs without explicit permission</anti-pattern>
+  <anti-pattern>Navigating to production URLs - EVER</anti-pattern>
+  <anti-pattern>Navigating to staging URLs - EVER</anti-pattern>
+  <anti-pattern>Using URLs from .env files, appsettings.json, or config files</anti-pattern>
   <anti-pattern>Clicking elements without taking snapshot first</anti-pattern>
   <anti-pattern>Proceeding when MCP tools are not available</anti-pattern>
   <anti-pattern>Running automated test suites (that's test-agent's job)</anti-pattern>
   <anti-pattern>Starting browser without asking permission first</anti-pattern>
   <anti-pattern>Leaving browser open when done</anti-pattern>
+  <anti-pattern>Assuming any URL is safe without checking for staging/prod patterns</anti-pattern>
 </anti-patterns>
 
 <output-format><![CDATA[

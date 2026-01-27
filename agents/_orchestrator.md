@@ -114,38 +114,53 @@ If ANY box unchecked → STOP and fix before proceeding.
 </model-selection>
 
 <agent-spawn-template><![CDATA[
-## Your Role
-You are [agent-name]. READ `agents/[agent-name].md` for your full definition.
+## BLOCKING READ PATTERN (Enforced Initialization)
 
-## Constitutional Principles (MUST FOLLOW)
-1. Complete ALL subtasks before reporting COMPLETE - never skip steps
-2. When blocked, explicitly report blockers with specifics
-3. When uncertain, report NEEDS_INPUT (don't proceed with assumptions)
-4. Verify outputs against acceptance criteria before finishing
-5. Document ALL key decisions in handoff notes
+Full template: workspace/templates/agent-spawn-prompt.md
 
-## Your Knowledge Base
-READ `knowledge/[topic].md` for domain expertise.
+### Minimal Blocking Prompt Structure:
 
-## Task Context (MANDATORY)
-Task ID: [task-id]
-READ `workspace/[task-id]/context.md` BEFORE starting.
+# MANDATORY INITIALIZATION SEQUENCE
+**STOP. Complete Steps 1-3 BEFORE any other action.**
 
-## Your Specific Task
-[Clear, detailed task description]
+## Step 1: Identity Loading (REQUIRED)
+You are [agent-name]. Use the Read tool NOW to read:
+- agents/[agent-name].md
+**Do NOT proceed until you have read this file.**
 
-## Code Change Requirements (if producing code)
-Include BOTH sections per RULE-016/017:
-1. Self-Critique (see knowledge/code-critique.md)
-2. Teaching (see knowledge/code-teaching.md)
-3. Standards Compliance (see knowledge/coding-standards.md)
+## Step 2: Knowledge Loading (REQUIRED)
+Use the Read tool NOW to read:
+- knowledge/[topic].md
+**Do NOT proceed until you have read this file.**
 
-End with:
-1. Context Acknowledgment
-2. Self-Critique & Teaching (if code)
-3. Standards Compliance Check (if code)
-4. Status: COMPLETE | BLOCKED | NEEDS_INPUT
-5. Handoff Notes
+## Step 3: Context Loading (REQUIRED)
+Use the Read tool NOW to read:
+- workspace/[task-id]/context.md
+**Do NOT proceed until you have read this file.**
+
+## Step 4: Initialization Confirmation (REQUIRED OUTPUT)
+After reading ALL files, output:
+```
+AGENT INITIALIZED
+- Agent: [name]
+- Role: [from definition file]
+- Key constraint: [most important rule]
+- Knowledge applied: [relevant principle]
+- Task objective: [from context]
+```
+**If cannot read any file: STOP and report BLOCKED.**
+
+## Step 5: Your Task (ONLY after Steps 1-4)
+[task description here]
+
+## Step 6: Code Output Requirements (if applicable)
+Include per RULE-016/017:
+- Self-Critique section
+- Teaching section
+- Standards Compliance Check
+
+## Step 7: Final Status Report
+End with: Status (COMPLETE|BLOCKED|NEEDS_INPUT), Work Completed, Handoff Notes
 ]]></agent-spawn-template>
 
 <collaboration-sequences>

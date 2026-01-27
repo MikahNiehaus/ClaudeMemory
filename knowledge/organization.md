@@ -20,9 +20,30 @@ workspace/
 ]]></folder-structure>
 
 <task-id-naming>
-  <with-ticket>Use ticket number directly: ASC-914, JIRA-123, GH-456, BUG-789</with-ticket>
-  <without-ticket>Auto-generate: YYYY-MM-DD-short-description (2-4 words, lowercase, hyphen-separated)</without-ticket>
-  <examples>2025-12-04-auth-refactor, 2025-12-04-fix-login-bug</examples>
+  <priority-order>
+    <priority rank="1" name="Ticket Number (PRIMARY DEFAULT)">
+      <rule>ALWAYS use ticket number when available - this is the DEFAULT</rule>
+      <formats>ASC-914, JIRA-123, GH-456, BUG-789, TICKET-001</formats>
+      <ask-user>If task seems related to a ticket, ASK user for ticket number first</ask-user>
+    </priority>
+    <priority rank="2" name="Date-Based (FALLBACK ONLY)">
+      <rule>ONLY use when NO ticket number exists</rule>
+      <format>YYYY-MM-DD-short-description (2-4 words, lowercase, hyphen-separated)</format>
+      <examples>2026-01-08-auth-refactor, 2026-01-08-fix-login-bug</examples>
+    </priority>
+  </priority-order>
+  <decision-flow><![CDATA[
+  [New Task] → Has ticket number in request?
+                │
+           YES  │  NO
+            ▼   │   ▼
+  Use ticket    │  Ask: "Is this related to a ticket?"
+  (ASC-123)     │       │
+                │  YES  │  NO
+                │   ▼   │   ▼
+                │  Get  │  Use date-based
+                │  #    │  (YYYY-MM-DD-desc)
+  ]]></decision-flow>
 </task-id-naming>
 
 <folder-contents>
