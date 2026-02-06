@@ -22,6 +22,46 @@
   <agent name="evaluator-agent">Output verification, quality gate</agent>
 </agent-roster>
 
+<ticket-detection>
+  <description>Detect when user input is a pasted ticket or ticket content</description>
+  <threshold>Input is a pasted ticket if 2+ of these signals match</threshold>
+  <heuristics>
+    <signal>Structured field labels (Title, Description, Acceptance Criteria, Summary, Steps to Reproduce)</signal>
+    <signal>Markdown headers with structured content sections (## Description, ## AC, ## Notes)</signal>
+    <signal>Given/When/Then or Gherkin-style acceptance criteria patterns</signal>
+    <signal>Ticket ID patterns (JIRA-123, GH-456, ASC-914, PROJ-XXX, #1234)</signal>
+    <signal>Story points, priority labels, sprint references, assignee fields</signal>
+    <signal>Multi-paragraph structured sections with consistent formatting</signal>
+  </heuristics>
+  <ticket-reference-detection>User mentions a ticket ID or says "here's the ticket", "the ticket says", "from the ticket"</ticket-reference-detection>
+  <action-when-detected>
+    <step order="1">Extract or ask for task-id from ticket number</step>
+    <step order="2">Create workspace/[task-id]/ if not exists</step>
+    <step order="3">Save raw input VERBATIM to workspace/[task-id]/ticket.md — NO reformatting, NO summarizing</step>
+    <step order="4">Set has-ticket=YES in context.md ticket-source section</step>
+  </action-when-detected>
+</ticket-detection>
+
+<ticket-preservation>
+  <description>Rules for maintaining ticket.md as immutable source of truth</description>
+  <rules>
+    <rule>Created ONCE from raw user input — never modified after creation</rule>
+    <rule>Contains VERBATIM ticket content — no reformatting or cleanup</rule>
+    <rule>Single source of truth for all requirement references</rule>
+    <rule>If ticket is updated, save as ticket-v2.md and log version change in context.md</rule>
+  </rules>
+  <agent-obligation>
+    <must>Read workspace/[task-id]/ticket.md during initialization</must>
+    <must>Quote requirements using EXACT wording from ticket.md</must>
+    <must-not>Paraphrase, summarize, or reword ticket content</must-not>
+  </agent-obligation>
+  <examples>
+    <wrong>Ticket says "filter by date range" → Agent writes "date filtering functionality"</wrong>
+    <right>Ticket says "filter by date range" → Agent writes "filter by date range" (ticket.md)</right>
+  </examples>
+  <verification>Orchestrator spot-checks agent output against ticket.md — any rewording = FAIL</verification>
+</ticket-preservation>
+
 <mandatory-compliance><![CDATA[
 Before responding to ANY request, STOP and verify:
 - [ ] Have I identified a task ID for this work?
@@ -33,6 +73,8 @@ Before responding to ANY request, STOP and verify:
 - [ ] If code changes: Have I spawned appropriate agent?
 - [ ] Am I using TodoWrite for multi-step tasks?
 - [ ] Am I logging ALL decisions to context.md?
+- [ ] If user pasted a ticket: Have I saved it verbatim to ticket.md?
+- [ ] If ticket.md exists: Have I instructed agents to read it and use exact wording?
 
 If ANY box unchecked → STOP and fix before proceeding.
 ]]></mandatory-compliance>
@@ -132,6 +174,12 @@ You are [agent-name]. Use the Read tool NOW to read:
 Use the Read tool NOW to read:
 - knowledge/[topic].md
 **Do NOT proceed until you have read this file.**
+
+## Step 2.5: Ticket Loading (IF EXISTS)
+Check if workspace/[task-id]/ticket.md exists. If so, use the Read tool NOW to read:
+- workspace/[task-id]/ticket.md
+**This is the IMMUTABLE source of truth for requirements.**
+**You MUST use EXACT wording from this file. NEVER paraphrase.**
 
 ## Step 3: Context Loading (REQUIRED)
 Use the Read tool NOW to read:
@@ -257,6 +305,7 @@ Execute BEFORE proceeding:
 
 <workspace-structure><![CDATA[
 workspace/[task-id]/
+├── ticket.md       # Verbatim original ticket (IMMUTABLE)
 ├── context.md      # Decisions, agent outputs, handoffs
 ├── mockups/        # Input designs, references
 ├── outputs/        # Generated artifacts

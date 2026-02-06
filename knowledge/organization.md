@@ -13,6 +13,7 @@
 <folder-structure><![CDATA[
 workspace/
 └── [task-id]/
+    ├── ticket.md      # Verbatim original ticket/requirement (IMMUTABLE after creation)
     ├── mockups/       # Design references, input images, specifications
     ├── outputs/       # Generated artifacts, final deliverables
     ├── snapshots/     # Screenshots, progress captures, debugging images
@@ -50,6 +51,7 @@ workspace/
   <folder name="mockups">Design mockups, wireframes, UI specs, reference images, input files</folder>
   <folder name="outputs">Generated code, final deliverables, exported reports, completed artifacts</folder>
   <folder name="snapshots">Screenshots during testing, progress captures, debugging images, before/after comparisons</folder>
+  <folder name="ticket.md">Verbatim copy of original ticket/requirement pasted by user. NEVER modified after creation. Single source of truth for all agents. All references to requirements MUST use exact wording from this file.</folder>
   <folder name="context.md">Task status, notes, findings, agent contributions, handoffs, open questions, session history</folder>
 </folder-contents>
 
@@ -122,6 +124,12 @@ PERSISTENT: "**MODE: PERSISTENT** | Progress: 23/45 files | Next: Convert src/se
 <key-files>
   <file path="[path]" reason="[why important]"/>
 </key-files>
+
+<ticket-source>
+  <has-ticket>[YES/NO]</has-ticket>
+  <ticket-file>workspace/[task-id]/ticket.md</ticket-file>
+  <reminder>ALL requirement references MUST use EXACT wording from ticket.md</reminder>
+</ticket-source>
 
 <task-description>[What this task is about, requirements, goals]</task-description>
 

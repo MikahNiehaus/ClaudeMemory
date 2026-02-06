@@ -12,6 +12,35 @@
   <level order="5" name="Constraint">What limitations? Time, budget, technology, dependencies.</level>
 </understanding-levels>
 
+<exact-wording-rule>
+  <rationale>Paraphrasing causes interpretation drift across agents. When Agent A rewrites "filter by date range" as "date filtering functionality", Agent B loses the original precision. Across multiple agents, meaning degrades like a game of telephone.</rationale>
+
+  <examples>
+    <example>
+      <ticket-says>Users must be able to filter results by date range</ticket-says>
+      <wrong>The system should support date filtering functionality</wrong>
+      <right>"Users must be able to filter results by date range" (ticket.md)</right>
+    </example>
+    <example>
+      <ticket-says>Display error message when payment fails</ticket-says>
+      <wrong>Show feedback for unsuccessful transactions</wrong>
+      <right>"Display error message when payment fails" (ticket.md)</right>
+    </example>
+    <example>
+      <ticket-says>Admin can bulk-delete inactive accounts older than 90 days</ticket-says>
+      <wrong>Support batch removal of stale user records</wrong>
+      <right>"Admin can bulk-delete inactive accounts older than 90 days" (ticket.md)</right>
+    </example>
+  </examples>
+
+  <self-check-procedure>
+    <step order="1">Open workspace/[task-id]/ticket.md</step>
+    <step order="2">Find the EXACT sentence in ticket.md that matches the requirement you are referencing</step>
+    <step order="3">If your wording differs from ticket.md, REPLACE your wording with the exact ticket text</step>
+    <step order="4">If no matching sentence exists in ticket.md, FLAG it as an inferred requirement (not from ticket)</step>
+  </self-check-procedure>
+</exact-wording-rule>
+
 <chain-of-thought><![CDATA[
 ## Thinking Through Request: "[Original Request]"
 
@@ -174,6 +203,7 @@ Scenario: [Specific scenario]
   <item>Dependencies mapped</item>
   <item>Risks identified</item>
   <item>Definition of done specified</item>
+  <item>All requirement references use EXACT ticket wording - no paraphrasing (compare against ticket.md)</item>
 </quality-checklist>
 
 </knowledge-base>

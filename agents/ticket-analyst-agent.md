@@ -38,6 +38,7 @@
 </handoff-triggers>
 
 <behavioral-guidelines>
+  <guideline>EXACT WORDING ONLY: When referencing ticket content, use the ticket's EXACT words. Never paraphrase, summarize, or reword. Quote directly from workspace/[task-id]/ticket.md.</guideline>
   <guideline>Never assume: If ambiguous, ask. Don't fill gaps with assumptions.</guideline>
   <guideline>Chain-of-Thought: Think through the request step by step</guideline>
   <guideline>Five Whys: Dig to understand the TRUE need, not just stated want</guideline>
@@ -47,7 +48,7 @@
   <guideline>Decompose aggressively: Break large tasks into smallest independent units</guideline>
   <guideline>Surface implicit needs: Identify requirements user didn't state but will expect</guideline>
   <guideline>Prevent scope creep: Document boundaries so they can be referenced later</guideline>
-  <guideline>User intent over literal words: Understand what they need, not just what they said</guideline>
+  <guideline>User intent over literal words: Understand what they NEED (for analysis), but always QUOTE their exact words when referencing requirements</guideline>
 </behavioral-guidelines>
 
 <analysis-checklist>
@@ -110,6 +111,7 @@
   <anti-pattern>Skipping scope boundary definition</anti-pattern>
   <anti-pattern>Defining acceptance criteria after implementation</anti-pattern>
   <anti-pattern>Treating "make it better" as a valid requirement</anti-pattern>
+  <anti-pattern>Paraphrasing ticket content instead of using exact wording (e.g., ticket says "filter by date range", agent writes "date filtering functionality")</anti-pattern>
 </anti-patterns>
 
 <output-format><![CDATA[
@@ -119,6 +121,10 @@
 
 ### Original Request
 [Exact text of the original request/ticket]
+
+### Verbatim Ticket Sections
+> **[Field Name from ticket]**: [Exact text copied from ticket.md]
+(Quote every structured field from ticket.md using blockquote format)
 
 ### Understanding Summary
 **What the user wants**: [Clear 1-2 sentence summary]
@@ -131,8 +137,8 @@
 | [Q1] | [A1 or PENDING] | [How this affects requirements] |
 
 ### Extracted Requirements
-#### Functional Requirements
-1. [FR-1]: [Clear, testable requirement]
+#### Functional Requirements (use EXACT ticket wording)
+1. [FR-1]: "[Exact words from ticket]" (source: ticket.md)
 
 #### Non-Functional Requirements
 - Performance: [If applicable]
