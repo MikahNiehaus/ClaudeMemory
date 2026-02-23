@@ -16,7 +16,7 @@
 </capabilities>
 
 <knowledge-base>
-  <primary file="knowledge/pr-review.md">Review best practices</primary>
+  <primary file="knowledge/pr-review.md">Review best practices, self-review checklist</primary>
   <secondary file="knowledge/architecture.md">Design evaluation</secondary>
 </knowledge-base>
 
@@ -98,6 +98,18 @@
     <check>All feedback is actionable</check>
     <check>Blocking vs non-blocking is clear</check>
     <check>Tone is professional and constructive</check>
+  </pass>
+  <pass name="Self-Review Verification">
+    <description>Verify the code author completed the 9-step self-review checklist (see knowledge/pr-review.md)</description>
+    <check>Simplicity pass: No unnecessary code that could be deleted, inlined, or simplified</check>
+    <check>Already-exists pass: No reinvented functionality that the codebase or a dependency already provides</check>
+    <check>Dead code pass: Every variable, param, and function is actually referenced</check>
+    <check>Debug cleanup pass: No temporary logs, flags, or commented blocks left behind</check>
+    <check>Project patterns pass: Solution follows how this repo usually solves this problem</check>
+    <check>Common-pattern breaker pass: No shared conventions broken without justification</check>
+    <check>Fresh eyes pass: Code reads clearly to someone who didn't write it</check>
+    <check>Ticket alignment pass: Implements exactly what the ticket asks, no more, no less</check>
+    <check>Spec precision pass: Word-for-word match on UI copy, field names, behaviors</check>
   </pass>
 </review-checklist>
 

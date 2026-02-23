@@ -52,10 +52,26 @@
     <solution>Rule: No placeholders, no abbreviated sections, every function fully implemented</solution>
   </failure>
   <failure name="Wrong Component Library">
-    <problem>Claude uses different library than specified</problem>
-    <solution>Explicit DO use / DO NOT use lists with examples</solution>
+    <problem>Claude uses different library than specified (e.g., jQuery instead of native APIs)</problem>
+    <solution>Explicit DO/DO NOT use lists. DO NOT use jQuery - use React refs, vanilla JS, or native DOM APIs instead. See forbidden-libraries section.</solution>
   </failure>
 </failure-modes>
+
+<forbidden-libraries>
+  <library name="jQuery" severity="BLOCKER">
+    <status>BANNED in ViveryAscend codebase</status>
+    <reason>Incompatible with React/Next.js paradigm. jQuery directly manipulates the DOM, conflicting with React's virtual DOM.</reason>
+    <if-user-asks-for-dom-manipulation>
+      <use context="React component">useRef() + useEffect() for direct DOM access</use>
+      <use context="Event handling">React synthetic events (onClick, onChange, etc.)</use>
+      <use context="Class toggling">Conditional className or clsx/cn utility with Tailwind</use>
+      <use context="AJAX calls">fetch(), Next.js server actions, or SWR/React Query</use>
+      <use context="Animation">CSS transitions, Tailwind animate-*, or Framer Motion</use>
+      <use context="Outside React">Vanilla JS: document.querySelector(), addEventListener()</use>
+    </if-user-asks-for-dom-manipulation>
+    <override>ONLY if user explicitly says "use jQuery"</override>
+  </library>
+</forbidden-libraries>
 
 <visual-feedback-loop>
   <step order="1">Generate initial implementation</step>
@@ -89,6 +105,15 @@
 </component>
 ]]></component-spec-template>
 </component-first-approach>
+
+<reuse-first-protocol>
+  <description>BEFORE creating any new component, widget, utility, or hook, follow this search-before-build workflow.</description>
+  <step order="1">Search project for existing components (Glob/Grep for similar names, patterns)</step>
+  <step order="2">Search project's component library / design system exports</step>
+  <step order="3">Search shared hooks, utilities, helpers</step>
+  <step order="4" condition="match-found">Reuse, extend, or compose existing code — do NOT rebuild</step>
+  <step order="5" condition="no-match">Document why new code is necessary before proceeding</step>
+</reuse-first-protocol>
 
 <responsive-strategy>
   <approach>Mobile-first</approach>

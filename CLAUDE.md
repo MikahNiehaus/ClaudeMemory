@@ -97,6 +97,7 @@
     <item>Skip Alternatives Analysis for any plan</item>
     <item>Paraphrase, summarize, or reword ticket content - use EXACT original wording</item>
     <item>Modify workspace/[task-id]/ticket.md after initial creation</item>
+    <item>Use jQuery or other banned libraries (see RULE-024) unless user explicitly requests it</item>
   </forbidden-actions>
 
   <rules>
@@ -161,6 +162,22 @@
       <immutable>ticket.md is NEVER modified after creation</immutable>
       <enforcement>All agents MUST read ticket.md and use EXACT wording - no paraphrasing</enforcement>
       <spot-check>Compare agent output phrases against ticket.md - any rewording = FAIL</spot-check>
+    </rule>
+
+    <rule id="024" name="Forbidden Libraries Enforcement">
+      <when>Any code-producing agent generates or modifies frontend/UI code</when>
+      <action>Agent MUST check imports against knowledge/coding-standards.md forbidden-libraries list</action>
+      <jquery-specific>
+        <status>BANNED in ViveryAscend codebase</status>
+        <detection>Any import/require of jquery, $() selectors, $.ajax, or jQuery CDN script tags</detection>
+        <alternatives>React hooks (useRef, useEffect, useState), vanilla JS (querySelector, addEventListener), native fetch()</alternatives>
+        <override>ONLY permitted if user explicitly requests jQuery</override>
+      </jquery-specific>
+      <enforcement>
+        <reviewer-agent>Flag jQuery usage as BLOCKER in code review</reviewer-agent>
+        <standards-validator-agent>FAIL verdict if jQuery detected without explicit user override</standards-validator-agent>
+      </enforcement>
+      <spot-check>Search code output for: $( , jQuery, import.*jquery, require.*jquery, cdn.*jquery</spot-check>
     </rule>
   </rules>
 

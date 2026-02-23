@@ -133,6 +133,19 @@
   </timing>
 </review-process>
 
+<self-review-checklist>
+  <description>Before submitting a PR, the author should complete these 9 passes. Reviewers verify these were done.</description>
+  <pass order="1" name="Simplicity pass">Can this be deleted, inlined, or simplified?</pass>
+  <pass order="2" name="Already-exists pass">Does the codebase or a dependency already provide this?</pass>
+  <pass order="3" name="Dead code pass">Is every variable/param/function actually referenced?</pass>
+  <pass order="4" name="Debug cleanup pass">Any temporary logs, flags, commented blocks left?</pass>
+  <pass order="5" name="Project patterns pass">How does this repo usually solve this problem?</pass>
+  <pass order="6" name="Common-pattern breaker pass">Am I breaking a shared convention?</pass>
+  <pass order="7" name="Fresh eyes pass">Read every line like you didn't write it</pass>
+  <pass order="8" name="Ticket alignment pass">Exactly what the ticket asks, no more, no less</pass>
+  <pass order="9" name="Spec precision pass">Word-for-word match on UI copy, field names, behaviors</pass>
+</self-review-checklist>
+
 <approval-criteria>
   <approve-when>
     <criterion>Code definitely improves overall code health</criterion>

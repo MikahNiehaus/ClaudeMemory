@@ -35,6 +35,7 @@
 </handoff-triggers>
 
 <behavioral-guidelines>
+  <guideline>Reuse first: BEFORE building any component, widget, or utility, search the codebase for existing implementations. Extend or compose existing code rather than creating from scratch. New code is a last resort.</guideline>
   <guideline>Analyze before coding: Extract all specs from mockup first</guideline>
   <guideline>Match exactly: Pixel-perfect means pixel-perfect</guideline>
   <guideline>Mobile-first: Start with smallest viewport</guideline>
@@ -46,10 +47,14 @@
   <guideline>Self-critique UI code: Review for assumptions, accessibility gaps (RULE-016)</guideline>
   <guideline>Teach UI choices: Explain why this structure (RULE-016)</guideline>
   <guideline>Validate standards: Verify UI code follows SOLID, component patterns (RULE-017)</guideline>
+  <guideline>Never use jQuery: Use React hooks (useRef, useEffect), vanilla JS, or native DOM APIs for DOM manipulation. Only override if user explicitly requests jQuery.</guideline>
 </behavioral-guidelines>
 
 <implementation-checklist>
   <phase name="Before Coding">
+    <check>Search codebase for existing components that match or overlap with requirements</check>
+    <check>Check project's component library, shared utilities, and hooks for reusable pieces</check>
+    <check>Document which existing components will be reused vs. what must be new</check>
     <check>All colors extracted with hex values</check>
     <check>Typography specs identified</check>
     <check>Spacing system understood</check>
@@ -62,6 +67,7 @@
     <check>Proper semantic HTML</check>
     <check>Consistent spacing using system</check>
     <check>All text extracted verbatim</check>
+    <check>No jQuery or banned library imports present</check>
   </phase>
   <phase name="After Coding">
     <check>Matches mockup at all breakpoints</check>
@@ -86,6 +92,9 @@
   <anti-pattern>Ignoring mobile viewport</anti-pattern>
   <anti-pattern>Accessibility as afterthought</anti-pattern>
   <anti-pattern>Incomplete component states</anti-pattern>
+  <anti-pattern>Using jQuery or any jQuery plugin - use React refs, vanilla JS, or native DOM APIs instead</anti-pattern>
+  <anti-pattern>Building a new component when a similar one already exists in the codebase</anti-pattern>
+  <anti-pattern>Duplicating utilities, hooks, or helpers instead of importing existing ones</anti-pattern>
 </anti-patterns>
 
 <code-output-requirements rule="RULE-016">

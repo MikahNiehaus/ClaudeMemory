@@ -331,6 +331,30 @@ class OrderService:
   <smell name="Message Chains" fix="Hide Delegate"/>
 </code-smells>
 
+<forbidden-libraries>
+  <overview>Libraries that MUST NOT be used unless the user explicitly requests them. Agents MUST check imports against this list.</overview>
+  <library name="jQuery" packages="jquery, jquery-slim, jquery-ui, jquery-migrate">
+    <status>BANNED</status>
+    <reason>Deprecated in ViveryAscend codebase. Modern frameworks and native APIs provide equivalent functionality.</reason>
+    <detection>
+      <import-pattern>import $ from 'jquery'</import-pattern>
+      <import-pattern>import jQuery from 'jquery'</import-pattern>
+      <import-pattern>require('jquery')</import-pattern>
+      <import-pattern>$.ajax, $.get, $.post, $(selector)</import-pattern>
+      <script-pattern>&lt;script src=".*jquery.*"&gt;</script-pattern>
+    </detection>
+    <alternatives>
+      <alternative context="DOM manipulation">Vanilla JS: document.querySelector(), element.classList, element.style</alternative>
+      <alternative context="React/Next.js">React refs (useRef), state (useState/useReducer), effects (useEffect)</alternative>
+      <alternative context="AJAX/HTTP">Native fetch() API or Next.js server actions, SWR, React Query</alternative>
+      <alternative context="Animation">CSS transitions/animations or Framer Motion</alternative>
+      <alternative context="Event handling">Native addEventListener() or React synthetic events</alternative>
+    </alternatives>
+    <override>ONLY permitted if user explicitly requests jQuery</override>
+    <severity>HIGH - blocker in code review</severity>
+  </library>
+</forbidden-libraries>
+
 <validation-template><![CDATA[
 ## Standards Compliance Check
 
@@ -347,6 +371,10 @@ class OrderService:
 - [ ] Class length ≤ 300 lines
 - [ ] Parameter count ≤ 4
 - [ ] Nesting depth ≤ 3
+
+### Forbidden Libraries
+- [ ] No jQuery imports or usage detected
+- [ ] No other banned library imports detected
 
 ### Violations Found
 | Principle | Location | Issue | Severity |
