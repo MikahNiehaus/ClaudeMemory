@@ -50,6 +50,96 @@
   </best-practices>
 </structured-logging>
 
+<code-level-logging-guide>
+  <overview>Practical guide for agents writing code. Defines WHEN to log, WHAT to include, and at which LEVEL.</overview>
+
+  <when-to-log>
+    <category name="Always Log">
+      <item level="INFO">API endpoint entry and response (method, path, status, duration)</item>
+      <item level="ERROR">Caught errors and exceptions (with full context)</item>
+      <item level="DEBUG/INFO">External service calls (before call at DEBUG, after at INFO with outcome)</item>
+      <item level="INFO/WARN">Authentication and authorization decisions (success at INFO, failure at WARN)</item>
+      <item level="INFO">Data mutations (create, update, delete with entity IDs)</item>
+      <item level="INFO">Configuration changes (what changed, old vs new values — never log secrets)</item>
+      <item level="INFO">Application startup and shutdown (version, config loaded, dependencies connected)</item>
+      <item level="WARN">Retries and circuit breaker activations (attempt count, backoff, threshold)</item>
+      <item level="INFO">Non-obvious business logic decisions (why a path was taken, with relevant IDs)</item>
+    </category>
+    <category name="Conditionally Log">
+      <item level="DEBUG">Cache hits and misses (key, hit/miss, TTL remaining)</item>
+      <item level="INFO">Scheduled job execution (job name, start, end, items processed)</item>
+      <item level="DEBUG/INFO">Queue message processing (message type at DEBUG, batch summary at INFO)</item>
+      <item level="DEBUG">Slow queries exceeding threshold (query, duration, threshold)</item>
+      <item level="DEBUG">Feature flag evaluations (flag name, resolved value, user segment)</item>
+    </category>
+    <category name="Do NOT Log">
+      <item>Tight loops or high-frequency iterations (will flood logs)</item>
+      <item>Pure functions with no side effects</item>
+      <item>Simple getters and setters</item>
+      <item>Utility and helper functions (string formatting, math, etc.)</item>
+      <item>Simple data classes, DTOs, or type definitions</item>
+      <item>Sensitive data: passwords, tokens, API keys, PII, credit card numbers</item>
+    </category>
+  </when-to-log>
+
+  <what-to-include>
+    <required>
+      <field name="operation">What action is being performed (e.g., "createOrder", "authenticateUser")</field>
+      <field name="entity_ids">Relevant identifiers (user_id, order_id, request_id)</field>
+      <field name="outcome">Success, failure, or specific result</field>
+      <field name="level">Appropriate log level matching severity</field>
+    </required>
+    <recommended>
+      <field name="duration_ms">How long the operation took</field>
+      <field name="correlation_id">Trace or request ID for distributed tracing</field>
+    </recommended>
+    <prohibited>
+      <field>Passwords or password hashes</field>
+      <field>Authentication tokens, API keys, secrets</field>
+      <field>PII (email, phone, SSN, address) unless explicitly required and masked</field>
+      <field>Credit card numbers or financial account details</field>
+      <field>Raw request/response bodies containing user data</field>
+    </prohibited>
+  </what-to-include>
+
+  <log-level-decision-tree><![CDATA[
+    Is the operation a failure?
+    ├── YES → Can the system recover automatically?
+    │   ├── YES → WARN (recoverable failure: retry, fallback, degraded mode)
+    │   └── NO  → Can the application continue running?
+    │       ├── YES → ERROR (operation failed, but app survives)
+    │       └── NO  → FATAL (app must shut down)
+    └── NO → Is this normal operational flow?
+        ├── YES → INFO (business events, request completion, state changes)
+        └── NO  → Is this useful only during development/debugging?
+            ├── YES → DEBUG (internal state, intermediate values, flow tracing)
+            └── NO  → TRACE (variable-level detail, method entry/exit in libraries)
+  ]]></log-level-decision-tree>
+
+  <anti-patterns>
+    <anti-pattern name="Log-and-Forget">
+      <description>Catching an exception, logging it, then swallowing it without re-throwing or handling</description>
+      <bad><![CDATA[catch (error) { logger.error(error); }  // Error is silently swallowed]]></bad>
+      <good><![CDATA[catch (error) { logger.error("Failed to process order", { order_id, error }); throw error; }]]></good>
+    </anti-pattern>
+    <anti-pattern name="No Context">
+      <description>Logging a message without any identifying information</description>
+      <bad><![CDATA[logger.error("Failed");  // What failed? For whom? Why?]]></bad>
+      <good><![CDATA[logger.error("Failed to charge payment", { user_id, order_id, amount, error_code });]]></good>
+    </anti-pattern>
+    <anti-pattern name="Logging Secrets">
+      <description>Including sensitive data in log output</description>
+      <bad><![CDATA[logger.info("User login", { email, password, token });]]></bad>
+      <good><![CDATA[logger.info("User login", { user_id, login_method: "password" });]]></good>
+    </anti-pattern>
+    <anti-pattern name="Log Flooding">
+      <description>Logging inside tight loops or high-frequency code paths</description>
+      <bad><![CDATA[for (item in items) { logger.debug("Processing item", { item }); }]]></bad>
+      <good><![CDATA[logger.info("Processing batch", { count: items.length }); // Log summary, not each item]]></good>
+    </anti-pattern>
+  </anti-patterns>
+</code-level-logging-guide>
+
 <log-tools>
   <tool name="ELK Stack" best-for="Self-hosted, full control"/>
   <tool name="Datadog" best-for="Unified platform, integrated"/>

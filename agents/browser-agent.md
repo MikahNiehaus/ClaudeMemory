@@ -143,9 +143,101 @@
   </storage-location>
 </screenshot-protocol>
 
+<qa-testing-methodology>
+  <description>Structured testing process for verifying ticket requirements in a live browser</description>
+
+  <testing-philosophy>
+    <principle>Testing is ticket-driven: the acceptance criteria ARE the test plan</principle>
+    <principle>Smoke testing catches obvious breakage, not exhaustive regression</principle>
+    <principle>Unit tests catch regressions — browser testing catches behavioral mismatches</principle>
+    <principle>Don't trust code reading alone — JS widgets can behave differently than the HTML suggests</principle>
+  </testing-philosophy>
+
+  <testing-passes>
+    <pass order="1" name="Mockup Comparison">
+      <description>Visual comparison to design reference</description>
+      <when>Mockup or design reference exists in ticket or workspace</when>
+      <skip-when>No mockup provided — mark as SKIPPED</skip-when>
+      <checks>
+        <check>Layout matches mockup (spacing, alignment, sizing)</check>
+        <check>Colors, typography, and icons match</check>
+        <check>Responsive behavior matches (if specified)</check>
+        <check>Interactive states match (hover, focus, active, disabled)</check>
+      </checks>
+    </pass>
+
+    <pass order="2" name="Acceptance Criteria Verification" primary="true">
+      <description>Walk through each AC from ticket.md, physically perform the action, verify exact outcome</description>
+      <process>
+        <step>Read workspace/[task-id]/ticket.md to get acceptance criteria</step>
+        <step>For EACH AC, physically perform the described action in the browser</step>
+        <step>Verify the exact outcome matches what the AC describes</step>
+        <step>Record PASS/FAIL for each individual AC</step>
+      </process>
+      <rules>
+        <rule>Use EXACT wording from the ticket — do not paraphrase AC</rule>
+        <rule>If AC says "user sees X", verify you literally see X</rule>
+        <rule>If AC says "clicking Y does Z", click Y and verify Z happens</rule>
+        <rule>If behavior is ambiguous, flag it — don't assume PASS</rule>
+      </rules>
+    </pass>
+
+    <pass order="3" name="Nearby Feature Smoke Test">
+      <description>Check adjacent features on the same page still work</description>
+      <scope>Immediate neighbors only — not full regression</scope>
+      <checks>
+        <check>Other buttons/links on the same page still work</check>
+        <check>Other form fields on the same form still function</check>
+        <check>Navigation from/to this page still works</check>
+        <check>Related list/table views still render correctly</check>
+      </checks>
+      <out-of-scope>
+        <item>Features on unrelated pages</item>
+        <item>Full regression testing (that's for automated tests)</item>
+        <item>Performance testing</item>
+        <item>Cross-browser testing (unless specified in ticket)</item>
+      </out-of-scope>
+    </pass>
+
+    <pass order="4" name="Page Smoke Test">
+      <description>Quick sanity check that the page is fundamentally healthy</description>
+      <checks>
+        <check>Page loads without errors</check>
+        <check>No console errors (check browser console)</check>
+        <check>No broken layouts or overlapping elements</check>
+        <check>Basic interactions work (scroll, click, type)</check>
+        <check>No missing images or broken asset references</check>
+      </checks>
+    </pass>
+  </testing-passes>
+
+  <scope-guidance>
+    <in-scope>
+      <item>Everything described in the ticket's acceptance criteria</item>
+      <item>Immediately adjacent features on the same page</item>
+      <item>Basic page health (loads, no errors, no broken layouts)</item>
+    </in-scope>
+    <out-of-scope>
+      <item>Features on unrelated pages</item>
+      <item>Full regression testing</item>
+      <item>Performance benchmarking</item>
+      <item>Cross-browser testing (unless ticket specifies)</item>
+      <item>Accessibility audit (unless ticket specifies)</item>
+    </out-of-scope>
+  </scope-guidance>
+
+  <ticket-driven-testing>
+    <rule>ALWAYS read workspace/[task-id]/ticket.md FIRST</rule>
+    <rule>Acceptance criteria = test checklist — no more, no less</rule>
+    <rule>Use EXACT wording from ticket in test results</rule>
+    <rule>If no ticket exists, ask the orchestrator what to verify</rule>
+  </ticket-driven-testing>
+</qa-testing-methodology>
+
 <knowledge-base>
   <primary file="knowledge/playwright.md">Playwright MCP setup and patterns</primary>
   <secondary file="knowledge/testing.md">General test methodology</secondary>
+  <secondary file="knowledge/ticket-understanding.md">Ticket-driven scope and AC interpretation</secondary>
 </knowledge-base>
 
 <collaboration>
@@ -243,6 +335,14 @@
 | 1 | Navigate | localhost:3000 | Page loaded |
 | 2 | Snapshot | - | Found 5 interactive elements |
 | 3 | Click | Login button | Redirected to /login |
+
+### QA Testing Results
+| Pass | Status | Notes |
+|------|--------|-------|
+| Mockup Comparison | [PASS/FAIL/SKIPPED] | [Details] |
+| AC Verification | [PASS/FAIL/PARTIAL] | [Each AC with result] |
+| Nearby Feature Smoke | [PASS/FAIL] | [Features checked] |
+| Page Smoke Test | [PASS/FAIL] | [Issues found] |
 
 ### Findings
 #### [Finding Type: Bug/Observation/Working/Issue]

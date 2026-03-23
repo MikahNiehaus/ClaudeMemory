@@ -74,7 +74,7 @@
       This file is IMMUTABLE after creation.
     </action>
     <action id="3" name="PLAN BEFORE DELEGATION">
-      Read agents/_orchestrator.md, evaluate 7 domains, write plan to context.md
+      Read agents/_orchestrator.md, evaluate 9 domains, write plan to context.md
     </action>
     <action id="4" name="SPAWN SPECIALIST AGENTS">
       Use Task tool with subagent_type: "general-purpose"
@@ -98,6 +98,7 @@
     <item>Paraphrase, summarize, or reword ticket content - use EXACT original wording</item>
     <item>Modify workspace/[task-id]/ticket.md after initial creation</item>
     <item>Use jQuery or other banned libraries (see RULE-024) unless user explicitly requests it</item>
+    <item>Accept code with error handling or external calls that lacks appropriate logging (see RULE-025)</item>
   </forbidden-actions>
 
   <rules>
@@ -178,6 +179,30 @@
         <standards-validator-agent>FAIL verdict if jQuery detected without explicit user override</standards-validator-agent>
       </enforcement>
       <spot-check>Search code output for: $( , jQuery, import.*jquery, require.*jquery, cdn.*jquery</spot-check>
+    </rule>
+
+    <rule id="025" name="Logging Enforcement">
+      <when>Any code-producing agent generates or modifies code with side effects, error handling, external calls, or business logic</when>
+      <action>Agent MUST verify appropriate logging per knowledge/observability.md code-level-logging-guide</action>
+      <scope>
+        <requires-logging>API endpoints, service methods, error/catch blocks, external service calls, data mutations, auth decisions, startup/shutdown, retry/fallback logic</requires-logging>
+        <exempt>Pure functions, utility helpers, getters/setters, data classes, type definitions, CSS/styling, test code</exempt>
+      </scope>
+      <severity>
+        <blocker>Missing logger.error in catch/error blocks</blocker>
+        <suggestion>Missing INFO-level logging on service method entry/exit</suggestion>
+      </severity>
+      <enforcement>
+        <reviewer-agent>Flag missing error logging as BLOCKER; flag missing operational logging as suggestion</reviewer-agent>
+        <standards-validator-agent>Check logging in "Always Log" scenarios from observability.md</standards-validator-agent>
+      </enforcement>
+      <spot-check>
+        <check question="Do catch/error blocks include logger.error with context?">yes = PASS (blocker if no)</check>
+        <check question="Do service methods log entry and outcome?">yes = PASS (suggestion if no)</check>
+        <check question="Do external calls log before/after?">yes = PASS (suggestion if no)</check>
+        <check question="Are log levels appropriate?">yes = PASS</check>
+        <check question="Is sensitive data excluded from log output?">yes = PASS (blocker if no)</check>
+      </spot-check>
     </rule>
   </rules>
 

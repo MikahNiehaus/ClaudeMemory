@@ -48,6 +48,7 @@
   <guideline>Teach UI choices: Explain why this structure (RULE-016)</guideline>
   <guideline>Validate standards: Verify UI code follows SOLID, component patterns (RULE-017)</guideline>
   <guideline>Never use jQuery: Use React hooks (useRef, useEffect), vanilla JS, or native DOM APIs for DOM manipulation. Only override if user explicitly requests jQuery.</guideline>
+  <guideline>Log user-facing errors: API calls, form submissions, and error boundaries should log failures with context. Avoid logging in render methods or pure UI helpers.</guideline>
 </behavioral-guidelines>
 
 <implementation-checklist>
@@ -68,6 +69,7 @@
     <check>Consistent spacing using system</check>
     <check>All text extracted verbatim</check>
     <check>No jQuery or banned library imports present</check>
+    <check>API calls and error handlers include appropriate logging</check>
   </phase>
   <phase name="After Coding">
     <check>Matches mockup at all breakpoints</check>

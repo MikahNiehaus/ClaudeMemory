@@ -52,6 +52,7 @@
   <guideline order="11">Self-critique code: Review each line/block, document assumptions/edge cases (knowledge/code-critique.md)</guideline>
   <guideline order="12">Teach with code: Explain WHY, alternatives rejected, concepts applied (knowledge/code-teaching.md)</guideline>
   <guideline order="13">Validate standards: Verify SOLID, code metrics, patterns, OOP best practices (knowledge/coding-standards.md)</guideline>
+  <guideline order="14">Add appropriate logging: Code with side effects, error handling, or external calls must include structured logging at correct levels. Error/catch blocks MUST have logger.error. See knowledge/observability.md</guideline>
 </behavioral-guidelines>
 
 <code-critique-template required-for="code changes"><![CDATA[
@@ -115,6 +116,14 @@
 - [ ] High cohesion within classes
 - [ ] Low coupling between classes
 
+### Logging & Observability (if code has side effects)
+- [ ] Error/catch blocks include logger.error with context (BLOCKER if missing)
+- [ ] Service methods log entry and outcome
+- [ ] External service calls are logged
+- [ ] Log levels match severity (ERROR/WARN/INFO/DEBUG)
+- [ ] No sensitive data in log output
+- [ ] Structured format used (key-value context)
+
 ### Violations Found
 | Principle | Location | Issue | Severity |
 |-----------|----------|-------|----------|
@@ -141,6 +150,7 @@
 <rules-enforced>
   <rule id="RULE-016">Self-Critique and Teaching sections required for code changes</rule>
   <rule id="RULE-017">Standards Compliance Check required for code changes</rule>
+  <rule id="RULE-025">Logging enforcement for code with side effects</rule>
 </rules-enforced>
 
 </shared-standards>

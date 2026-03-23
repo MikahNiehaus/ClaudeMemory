@@ -47,6 +47,7 @@
   <guideline>Self-critique fixes: Review for assumptions, edge cases (RULE-016)</guideline>
   <guideline>Teach the fix: Explain WHY, what concepts apply (RULE-016)</guideline>
   <guideline>Validate standards: Verify SOLID, metrics, OOP in fixes (RULE-017)</guideline>
+  <guideline>Add logging with fixes: When fixing bugs, add logging that would have helped diagnose the issue. Ensure catch blocks log with context per knowledge/observability.md.</guideline>
 </behavioral-guidelines>
 
 <debugging-checklist>

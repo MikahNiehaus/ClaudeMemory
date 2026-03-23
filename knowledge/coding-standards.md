@@ -376,6 +376,12 @@ class OrderService:
 - [ ] No jQuery imports or usage detected
 - [ ] No other banned library imports detected
 
+### Logging & Observability
+- [ ] Error handlers log with context (entity IDs, error details) — BLOCKER if missing
+- [ ] Code with side effects includes appropriate logging
+- [ ] Log levels match severity (ERROR/WARN/INFO/DEBUG)
+- [ ] No sensitive data in log statements
+
 ### Violations Found
 | Principle | Location | Issue | Severity |
 |-----------|----------|-------|----------|

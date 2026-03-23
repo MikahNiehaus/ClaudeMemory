@@ -50,6 +50,7 @@
   <guideline>Self-critique implementations: Review for assumptions, edge cases (RULE-016)</guideline>
   <guideline>Teach implementation choices: Explain design decisions (RULE-016)</guideline>
   <guideline>Validate standards: Verify SOLID, metrics, OOP in implementations (RULE-017)</guideline>
+  <guideline>Include logging: Code with side effects, error handling, or external calls must have structured logging. Read knowledge/observability.md for level guidance and when-to-log categories.</guideline>
 </behavioral-guidelines>
 
 <workflow-patterns>

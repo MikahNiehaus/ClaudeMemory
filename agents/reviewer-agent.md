@@ -99,10 +99,18 @@
     <check>Blocking vs non-blocking is clear</check>
     <check>Tone is professional and constructive</check>
   </pass>
+  <pass name="Observability">
+    <check>Error/catch blocks include logger.error with context (BLOCKER if missing)</check>
+    <check>Service methods log entry and outcome</check>
+    <check>External calls are logged</check>
+    <check>Log levels appropriate for the situation</check>
+    <check>No sensitive data in log statements</check>
+    <check>Pure functions/utilities correctly exempt</check>
+  </pass>
   <pass name="Self-Review Verification">
-    <description>Verify the code author completed the 9-step self-review checklist (see knowledge/pr-review.md)</description>
+    <description>Verify the code author completed the 11-step self-review checklist (see knowledge/pr-review.md)</description>
     <check>Simplicity pass: No unnecessary code that could be deleted, inlined, or simplified</check>
-    <check>Already-exists pass: No reinvented functionality that the codebase or a dependency already provides</check>
+    <check>Already-exists pass: No reinvented functionality that the codebase or a dependency already provides — but verify the existing thing actually meets the requirement (reusing a single-select widget for a multi-select requirement is worse than creating a new one)</check>
     <check>Dead code pass: Every variable, param, and function is actually referenced</check>
     <check>Debug cleanup pass: No temporary logs, flags, or commented blocks left behind</check>
     <check>Project patterns pass: Solution follows how this repo usually solves this problem</check>
@@ -110,6 +118,21 @@
     <check>Fresh eyes pass: Code reads clearly to someone who didn't write it</check>
     <check>Ticket alignment pass: Implements exactly what the ticket asks, no more, no less</check>
     <check>Spec precision pass: Word-for-word match on UI copy, field names, behaviors</check>
+    <check>Manual smoke test pass: Author actually used the feature in a browser for each AC scenario — code reading alone is insufficient for JS widget behavior</check>
+    <check>Migration/Schema pass: Every model property add/remove has a matching migration that does what's expected</check>
+  </pass>
+  <pass name="Code Smells">
+    <description>Detect structural indicators of deeper design problems (see knowledge/coding-standards.md)</description>
+    <check>Long Method: Methods exceeding 40 lines or doing too many things</check>
+    <check>Large Class: Classes exceeding 300 lines or mixing unrelated concerns</check>
+    <check>Long Parameter List: Functions with more than 4 parameters</check>
+    <check>Switch Statements: Type-checking conditionals that should use polymorphism</check>
+    <check>Duplicate Code: Repeated logic that should be extracted</check>
+    <check>Feature Envy: Methods that use another class's data more than their own</check>
+    <check>Data Clumps: Groups of data that travel together and should be a class</check>
+    <check>Primitive Obsession: Overuse of primitives instead of value objects</check>
+    <check>Inappropriate Intimacy: Classes that access each other's internals excessively</check>
+    <check>Message Chains: Long chains of method calls that should be delegated</check>
   </pass>
 </review-checklist>
 
@@ -160,6 +183,11 @@
 - [ ] Complexity ≤ 10 | Methods ≤ 40 lines | Classes ≤ 300 lines
 
 **Best Practices Verdict**: [PASS / PASS_WITH_WARNINGS / FAIL]
+
+### Code Smells Detected
+| Smell | Location | Severity | Suggested Fix |
+|-------|----------|----------|---------------|
+| [Smell name] | [file:line] | [High/Medium/Low] | [Fix pattern] |
 
 ### Blocking Issues
 #### blocker: [Issue Title]

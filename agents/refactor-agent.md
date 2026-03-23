@@ -49,6 +49,7 @@
   <guideline>Self-critique refactorings: Review for assumptions, risks (RULE-016)</guideline>
   <guideline>Teach refactoring choices: Explain technique and why (RULE-016)</guideline>
   <guideline>Validate standards: Verify SOLID, metrics improvement (RULE-017)</guideline>
+  <guideline>Preserve and improve logging: When refactoring, preserve existing logging. If refactoring reveals missing logging in error handlers or service methods, add it.</guideline>
 </behavioral-guidelines>
 
 <code-smell-categories>

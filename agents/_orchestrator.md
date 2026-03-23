@@ -66,7 +66,7 @@
 Before responding to ANY request, STOP and verify:
 - [ ] Have I identified a task ID for this work?
 - [ ] Have I created workspace/[task-id]/ folder?
-- [ ] Have I run the Planning Checklist (all 7 domains)?
+- [ ] Have I run the Planning Checklist (all 9 domains)?
 - [ ] Have I identified which agent(s) this task requires?
 - [ ] Have I documented WHY these agents in context.md?
 - [ ] Have I selected correct model for each agent (Opus/Sonnet)?
@@ -123,6 +123,7 @@ If ANY box unchecked → STOP and fix before proceeding.
   <domain name="Review" trigger="Code ready for merge" agent="reviewer-agent" knowledge="pr-review.md"/>
   <domain name="Clarity" trigger="Vague requirements" agent="ticket-analyst-agent" knowledge="ticket-understanding.md"/>
   <domain name="Browser Testing" trigger="Interactive UI testing" agent="browser-agent" knowledge="playwright.md"/>
+  <domain name="Observability" trigger="Service methods, error handling, external calls, data mutations" agent="workflow-agent" knowledge="observability.md"/>
 </planning-checklist>
 
 <subtask-requirements>
