@@ -15,7 +15,8 @@
       "Bash(gt hook:*)",
       "Bash(bd new:*)",
       "Bash(bd dep:*)",
-      "Skill(review)"
+      "Skill(review)",
+      "Bash(gt dolt:*)"
     ],
     "deny": [],
     "ask": [
