@@ -10,7 +10,12 @@
       "mcp__playwright__browser_run_code",
       "mcp__playwright__browser_type",
       "mcp__playwright__browser_navigate",
-      "mcp__playwright__browser_wait_for"
+      "mcp__playwright__browser_wait_for",
+      "Bash(gt prime:*)",
+      "Bash(gt hook:*)",
+      "Bash(bd new:*)",
+      "Bash(bd dep:*)",
+      "Skill(review)"
     ],
     "deny": [],
     "ask": [
