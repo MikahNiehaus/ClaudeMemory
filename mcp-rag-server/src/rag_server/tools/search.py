@@ -36,7 +36,7 @@ def rag_search(
 
     all_results = []
     for collection in collections:
-        if not store.collection_exists(collection):
+        if not store.collection_exists(collection) or store.count(collection) == 0:
             continue
         results = store.search(
             collection=collection,

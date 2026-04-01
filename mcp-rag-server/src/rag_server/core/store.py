@@ -32,7 +32,7 @@ class ChromaStore(StorePort):
         try:
             self._client.get_collection(collection)
             return True
-        except ValueError:
+        except Exception:
             return False
 
     def add_chunks(self, collection: str, chunks: list[Chunk]) -> int:
@@ -93,7 +93,7 @@ class ChromaStore(StorePort):
     def count(self, collection: str) -> int:
         try:
             return self._get_collection(collection).count()
-        except ValueError:
+        except Exception:
             return 0
 
     def list_sources(self, collection: str) -> list[str]:
